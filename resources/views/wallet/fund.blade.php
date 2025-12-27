@@ -45,16 +45,21 @@
                         <i class="bi bi-bank text-primary"></i>
                       </div>
                     </div>
+                    
+                    <!-- Account Number - Fixed to match account name size -->
                     <div class="col-12">
                       <label class="text-xs text-uppercase fw-bold text-muted mb-1">Account Number</label>
-                      <div class="input-group">
-                        <input type="text" class="form-control fw-bold fs-5 text-dark bg-white border-end-0" 
-                               value="{{ $virtualAccount->accountNo }}" id="accountNo" readonly>
-                        <button class="btn btn-outline-secondary border-start-0 bg-white" type="button" onclick="copyToClipboard('accountNo')">
-                          <i class="bi bi-clipboard"></i>
+                      <div class="d-flex align-items-center justify-content-between bg-white p-2 rounded border">
+                        <span class="fw-medium text-dark">{{ $virtualAccount->accountNo }}</span>
+                        <button class="btn btn-sm btn-outline-secondary ms-2 py-1 px-2" 
+                                type="button" 
+                                onclick="copyToClipboard('{{ $virtualAccount->accountNo }}')">
+                            <i class="bi bi-clipboard"></i>
                         </button>
                       </div>
                     </div>
+                    
+                    <!-- Account Name -->
                     <div class="col-12">
                       <label class="text-xs text-uppercase fw-bold text-muted mb-1">Account Name</label>
                       <div class="d-flex align-items-center justify-content-between bg-white p-2 rounded border">
@@ -215,14 +220,13 @@
   </div>
 
   <script>
-    function copyToClipboard(elementId) {
-      var copyText = document.getElementById(elementId);
-      copyText.select();
-      copyText.setSelectionRange(0, 99999);
-      navigator.clipboard.writeText(copyText.value);
-      
-      // Optional: Show toast or tooltip styling here
-      // alert("Copied: " + copyText.value);
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        // Optional: Show success message
+        // alert("Account number copied to clipboard!");
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
     }
   </script>
 

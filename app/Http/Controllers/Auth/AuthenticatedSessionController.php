@@ -28,6 +28,18 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if ($request->user()->role !== 'api') {
+            Auth::guard('web')->logout();
+
+            $request->session()->invalidate();
+
+            $request->session()->regenerateToken();
+
+            return back()->withErrors([
+                'email' => 'Access denied. You do not have permission to access this portal.',
+            ]);
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
