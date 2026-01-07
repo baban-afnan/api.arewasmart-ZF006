@@ -57,7 +57,7 @@
                     $application = Auth::user()->apiApplication;
                 @endphp
                 
-                @if(Auth::user()->role === 'api')
+                 @if(Auth::user()->role === 'api' && Auth::user()->api_token)
                     <div class="alert alert-success d-flex align-items-center mb-0">
                         <i class="fas fa-check-circle me-2"></i>
                         <div>

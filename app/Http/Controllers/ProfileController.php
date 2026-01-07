@@ -7,10 +7,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -37,88 +37,209 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('settings.services')->with('status', 'profile-updated');
     }
 
     /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
-    }
-    /**
-     * Handle the forced profile update (KYC).
+     * Update required profile information for onboarding.
      */
     public function updateRequired(Request $request): RedirectResponse
     {
+        $user = Auth::user();
+        
         $validated = $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'middle_name' => ['nullable', 'string', 'max:255'],
-            'phone_no' => ['required', 'string', 'max:15'], // Adjusted max len
-            'bvn' => ['required', 'string', 'size:11'], // BVN usually 11 digits
-            'nin' => ['nullable', 'string', 'max:20'],
-            'state' => ['required', 'string', 'max:255'],
-            'lga' => ['required', 'string', 'max:255'],
-            'address' => ['required', 'string', 'max:500'],
-            'pin' => ['required', 'numeric', 'digits:5'],
+            'first_name' => 'required|string|max:255|min:2',
+            'last_name' => 'required|string|max:255|min:2',
+            'middle_name' => 'nullable|string|max:255',
+            'phone_no' => 'required|string|max:15|min:10|regex:/^[0-9+\-\s()]+$/',
+            'lga' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'address' => 'required|string|max:500',
+            'bvn' => 'required|digits:11|unique:users,bvn,' . $user->id,
+            'nin' => 'required|digits:11|unique:users,nin,' . $user->id,
+            'pin' => 'required|digits:5',
+            'termsCheck' => 'required|string|max:500', 
+        ], [
+            'pin.required' => 'Transaction PIN is required.',
+            'pin.digits' => 'PIN must be exactly 5 digits.',
         ]);
 
-        $user = $request->user();
-        
-        $user->forceFill([
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'],
-            'middle_name' => $validated['middle_name'],
-            'phone_no' => $validated['phone_no'],
-            'bvn' => $validated['bvn'],
-            'nin' => $validated['nin'],
-            'state' => $validated['state'],
-            'lga' => $validated['lga'],
-            'address' => $validated['address'],
-            'pin' => $validated['pin'],
-        ])->save();
+        try {
+            $user->update([
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'middle_name' => $validated['middle_name'],
+                'phone_no' => $validated['phone_no'],
+                'lga' => $validated['lga'],
+                'state' => $validated['state'],
+                'address' => $validated['address'],
+                'bvn' => $validated['bvn'],
+                'nin' => $validated['nin'],
+                'pin' => bcrypt($validated['pin']), 
+                'profile_completed' => true, 
+            ]);
 
-        return Redirect::route('dashboard')->with('status', 'profile-updated-success');
+            return redirect()->route('dashboard')->with('success', 'Account successfully! Welcome aboard! 🎉');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update profile: ' . $e->getMessage());
+        }
     }
 
     /**
-     * Update the user's profile photo.
+     * Upload or update profile photo.
      */
     public function updatePhoto(Request $request): RedirectResponse
     {
         $request->validate([
-            'photo' => ['required', 'image', 'max:2048'], // 2MB Max
+            'photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048', // 2MB max
         ]);
 
-        $user = $request->user();
+        $user = Auth::user();
 
-        if ($request->hasFile('photo')) {
-            // Delete old photo if exists
+        try {
+            // ✅ Delete old photo if exists (with improved logic)
             if ($user->photo) {
-                Storage::delete($user->photo);
+                $this->deleteOldProfilePhoto($user->photo);
             }
 
-            $path = $request->file('photo')->store('public/photos');
-            $user->photo = Storage::url($path);
-            $user->save();
+            // ✅ Store new image using Laravel's Storage facade
+            $file = $request->file('photo');
+            $fileName = 'profile_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            
+            // Store in storage/app/public/uploads/profile_photos
+            $path = $file->storeAs('uploads/profile_photos', $fileName, 'public');
+            
+            // ✅ Build full HTTP link
+            $fullUrl = Storage::disk('public')->url($path);
+
+            // ✅ Save to database
+            $user->update([
+                'photo' => $fullUrl,
+            ]);
+
+            return back()->with('status', '✅ Profile photo updated successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', '❌ Failed to update profile photo: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete old profile photo with proper handling
+     */
+    private function deleteOldProfilePhoto(string $photoUrl): void
+    {
+        // Skip external URLs (like gravatar)
+        if (Str::startsWith($photoUrl, 'http') && !Str::contains($photoUrl, '/storage/')) {
+            return;
         }
 
-        return Redirect::route('profile.edit')->with('status', 'Photo updated successfully.');
+        try {
+            // If it's a storage URL, extract the path
+            if (Str::contains($photoUrl, '/storage/')) {
+                // Remove the base URL to get the storage path
+                $baseUrl = config('app.url') . '/storage/';
+                $path = str_replace($baseUrl, '', $photoUrl);
+                Storage::disk('public')->delete($path);
+            } 
+            // If it's already a storage path (not full URL)
+            elseif (Storage::disk('public')->exists($photoUrl)) {
+                Storage::disk('public')->delete($photoUrl);
+            }
+            // For old-style public/uploads paths
+            elseif (Str::contains($photoUrl, '/uploads/')) {
+                // Extract filename from URL
+                $filename = basename($photoUrl);
+                Storage::disk('public')->delete('uploads/profile_photos/' . $filename);
+            }
+        } catch (\Exception $e) {
+            // Log error but don't fail the upload
+            \Log::error('Failed to delete old profile photo: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Check if user needs to complete profile (for modal trigger)
+     */
+    public function checkProfileCompletion(): bool
+    {
+        $user = Auth::user();
+        
+        // Define required fields that must be filled
+        $requiredFields = [
+            'first_name', 'last_name', 'phone_no', 'lga', 
+            'state', 'address', 'bvn', 'nin'
+        ];
+
+        foreach ($requiredFields as $field) {
+            if (empty($user->$field)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
+    /**
+     * Update additional profile information (only if not already set).
+     */
+    public function updateAdditionalInfo(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+        
+        $validated = $request->validate([
+            'business_name' => 'nullable|string|max:255',
+            'nin' => 'nullable|digits:11|unique:users,nin,' . $user->id,
+            'bvn' => 'nullable|digits:11|unique:users,bvn,' . $user->id,
+            'state' => 'nullable|string|max:255',
+            'lga' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:500',
+        ]);
+
+        $updates = [];
+
+        // Only allow updating if the field is currently empty in the database
+        if (empty($user->business_name) && !empty($validated['business_name'])) {
+            $updates['business_name'] = $validated['business_name'];
+        }
+        if (empty($user->nin) && !empty($validated['nin'])) {
+            $updates['nin'] = $validated['nin'];
+        }
+        if (empty($user->bvn) && !empty($validated['bvn'])) {
+            $updates['bvn'] = $validated['bvn'];
+        }
+        if (empty($user->state) && !empty($validated['state'])) {
+            $updates['state'] = $validated['state'];
+        }
+        if (empty($user->lga) && !empty($validated['lga'])) {
+            $updates['lga'] = $validated['lga'];
+        }
+        if (empty($user->address) && !empty($validated['address'])) {
+            $updates['address'] = $validated['address'];
+        }
+
+        if (!empty($updates)) {
+            $user->update($updates);
+            return back()->with('status', 'Additional information updated successfully.');
+        }
+
+        return back()->with('info', 'No changes made or fields are already set.');
+    }
+
+    /**
+     * Update the user's password.
+     */
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $validated = $request->validateWithBag('updatePassword', [
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        $request->user()->update([
+            'password' => bcrypt($validated['password']),
+        ]);
+
+        return back()->with('status', 'password-updated');
     }
 
     /**
@@ -128,13 +249,26 @@ class ProfileController extends Controller
     {
         $validated = $request->validate([
             'current_password' => ['required', 'current_password'],
-            'pin' => ['required', 'numeric', 'digits:5', 'confirmed'],
+            'pin' => ['required', 'digits:5', 'confirmed'],
         ]);
 
+        $request->user()->update([
+            'pin' => bcrypt($validated['pin']),
+        ]);
+
+        return back()->with('status', 'pin-updated');
+    }
+    /**
+     * Regenerate the user's API Token.
+     */
+    public function regenerateApiToken(Request $request): RedirectResponse
+    {
+        $token = Str::random(60);
+        
         $request->user()->forceFill([
-            'pin' => $validated['pin'],
+            'api_token' => $token,
         ])->save();
 
-        return Redirect::route('profile.edit')->with('status', 'PIN updated successfully.');
+        return back()->with('status', 'API Token regenerating successfully! New Token: ' . $token);
     }
 }

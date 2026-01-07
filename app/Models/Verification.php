@@ -59,6 +59,9 @@ class Verification extends Model
     'submission_date',
     'status',
     'idno',
+    'tax_id',
+    'tax_residency',
+    'amount',
     'created_at',
     'updated_at',
 ];

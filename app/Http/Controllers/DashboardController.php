@@ -38,6 +38,7 @@ class DashboardController extends Controller
         // 1. Total Transaction Amount (Debit)
         $totalTransactionAmount = Transaction::where('user_id', $user->id)
             ->where('type', 'debit')
+            ->where('trans_source', 'api')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('amount');
 
@@ -65,11 +66,14 @@ class DashboardController extends Controller
         // 5. Recent 10 Transactions
         $recentTransactions = Transaction::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
+            ->where('trans_source', 'api')
             ->take(10)
             ->get();
 
+
         // 6. Transaction Statistics
         $transactionStats = Transaction::where('user_id', $user->id)
+            ->where('trans_source', 'api')
             ->selectRaw('count(*) as total')
             ->selectRaw("count(case when status = 'completed' then 1 end) as completed")
             ->selectRaw("count(case when status = 'pending' then 1 end) as pending")

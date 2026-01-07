@@ -168,6 +168,9 @@
                             <button class="btn btn-outline-danger rounded-pill py-2 fw-semibold shadow-sm d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#pinModal">
                                 <i class="ti ti-key me-2"></i> Reset Transaction PIN
                             </button>
+                            <button class="btn btn-outline-info rounded-pill py-2 fw-semibold shadow-sm d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#apiTokenModal">
+                                <i class="ti ti-code me-2"></i> Show API Token
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -344,5 +347,91 @@
             </div>
         </div>
     </div>
+
+    <!-- API Token Modal -->
+    <div class="modal fade" id="apiTokenModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 shadow-lg border-0 overflow-hidden">
+                <div class="modal-header bg-primary text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold"><i class="ti ti-code me-2"></i>Your API Token</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-info border-0 bg-info-subtle text-info-emphasis d-flex align-items-center rounded-3 mb-4" role="alert">
+                        <i class="ti ti-info-circle me-2 fs-4"></i>
+                        <div class="small fw-semibold">Keep this token secret. It allows access to your wallet API.</div>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold">API Token</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="apiTokenInput" value="{{ $user->api_token ?? 'Not Generated' }}" readonly>
+                            <button class="btn btn-outline-primary" type="button" onclick="copyApiToken()">
+                                <i class="ti ti-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    
+                    @if(!$user->api_token)
+                    <div class="text-center mt-3">
+                        <small class="text-danger">You have not generated an API token yet. Please contact support or run the generation command.</small>
+                    </div>
+                    @endif
+
+                    <div class="d-flex justify-content-center mt-4">
+                        <form action="{{ route('profile.api-token.regenerate') }}" method="POST" id="regenerateTokenForm">
+                            @csrf
+                            <button type="button" class="btn btn-outline-danger rounded-pill px-4" onclick="confirmRegenerate()">
+                                <i class="ti ti-refresh me-2"></i> Regenerate Token
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-light justify-content-center py-3">
+                    <button type="button" class="btn btn-secondary rounded-pill px-5" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyApiToken() {
+            var copyText = document.getElementById("apiTokenInput");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // For mobile devices
+            navigator.clipboard.writeText(copyText.value).then(function() {
+                // Optional: Show a toast or change button text temporarily
+                var btn = event.currentTarget;
+                var originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="ti ti-check"></i> Copied!';
+                btn.classList.remove('btn-outline-primary');
+                btn.classList.add('btn-success');
+                setTimeout(function() {
+                    btn.innerHTML = originalHtml;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-outline-primary');
+                }, 2000);
+            }, function(err) {
+                console.error('Async: Could not copy text: ', err);
+            });
+        }
+
+        function confirmRegenerate() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Regenerating your API token will invalidate the old one immediately. Any applications using the old token will stop working.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, regenerate it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('regenerateTokenForm').submit();
+                }
+            })
+        }
+    </script>
+
 
 </x-app-layout>

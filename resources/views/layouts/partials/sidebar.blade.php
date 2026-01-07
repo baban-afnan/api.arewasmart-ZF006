@@ -99,24 +99,6 @@
                     </a>
                 </li>
 
-                <!-- Utility Bill Payment -->
-                <li class="submenu">
-                    <a href="javascript:void(0);">
-                        <i class="ti ti-credit-card"></i>
-                        <span>Utility Bill Payment</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul>
-                        <li><a href="#">Buy Airtime</a></li>
-                        <li><a href="#">Buy Data</a></li>
-                        <li><a href="#">Pay Electric</a></li>
-                        <li><a href="#">Pay Cable TV</a></li>
-                    </ul>
-                </li>
-                <!-- /Utility Bill Payment -->
-
-              
-
                 <!-- NIN Services -->
                 <li class="submenu">
                     <a href="javascript:void(0);">
@@ -139,8 +121,9 @@
                         <span class="menu-arrow"></span>
                     </a>
                     <ul>
-                        <li><a href="#">BVN v1</a></li>
-                        <li><a href="#">NIN v1</a></li>
+                        <li><a href="{{ route('developer.bvn.docs') }}">BVN API Docs</a></li>
+                        <li><a href="{{ route('developer.nin.docs') }}">NIN API Docs</a></li>
+                        <li><a href="{{ route('developer.tin.docs') }}">TIN API Docs</a></li>
                     </ul>
                 </li>
                 <!-- /Verification -->
