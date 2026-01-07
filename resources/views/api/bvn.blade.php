@@ -109,6 +109,22 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Service Fee Information -->
+                            <div class="alert alert-soft-success border-start border-4 border-success p-4 rounded-3 mb-0 mt-4">
+                                <div class="d-flex align-items-start">
+                                    <i class="ti ti-wallet text-success me-3 mt-1 fs-4"></i>
+                                    <div class="flex-grow-1">
+                                        <h5 class="alert-heading fw-bold mb-2 text-success">
+                                            <i class="ti ti-coin me-1"></i> Service Fee
+                                        </h5>
+                                        <p class="mb-0 text-dark">
+                                            You will be charged <span class="fw-bold">₦{{ number_format($verificationPrice, 2) }}</span> per successful verification.
+                                            <span class="badge bg-success ms-2">{{ ucfirst($user->role ?? 'user') }} Rate</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="text-end mt-4">
