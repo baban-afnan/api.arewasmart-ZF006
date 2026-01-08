@@ -296,22 +296,22 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td class="ps-4"><code class="text-success fw-bold">00000000</code></td>
+                                                <td class="ps-4"><code class="text-success fw-bold">111111</code></td>
                                                 <td><span class="badge bg-soft-success text-success">Successful</span></td>
                                                 <td><span class="badge bg-danger">Charged</span></td>
                                             </tr>
                                             <tr>
-                                                <td class="ps-4"><code class="text-warning fw-bold">99120010</code></td>
+                                                <td class="ps-4"><code class="text-warning fw-bold">222222</code></td>
                                                 <td><span class="badge bg-soft-warning text-warning">NIN do not exist</span></td>
                                                 <td><span class="badge bg-danger">Charged</span></td>
                                             </tr>
                                             <tr>
-                                                <td class="ps-4"><code class="text-secondary fw-bold">99120012</code></td>
+                                                <td class="ps-4"><code class="text-secondary fw-bold">333333</code></td>
                                                 <td>Parameter error in the interface call</td>
                                                 <td><span class="badge bg-success">Not Charged</span></td>
                                             </tr>
                                             <tr>
-                                                <td class="ps-4"><code class="text-secondary fw-bold">99120013</code></td>
+                                                <td class="ps-4"><code class="text-secondary fw-bold">444444</code></td>
                                                 <td>System Error</td>
                                                 <td><span class="badge bg-success">Not Charged</span></td>
                                             </tr>

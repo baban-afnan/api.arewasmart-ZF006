@@ -353,52 +353,52 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td class="ps-4"><code>00000000</code></td>
+                                                            <td class="ps-4"><code>111111</code></td>
                                                             <td><span class="badge bg-success">Charge</span></td>
                                                             <td>Successful Verification</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="ps-4"><code>99120020</code></td>
+                                                            <td class="ps-4"><code>222222</code></td>
                                                             <td><span class="badge bg-success">Charge</span></td>
                                                             <td>BVN does not exist</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="ps-4"><code>99120012</code></td>
+                                                            <td class="ps-4"><code>333333</code></td>
                                                             <td><span class="badge bg-secondary">Not Charge</span></td>
                                                             <td>Parameters wrong</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="ps-4"><code>99120023</code></td>
+                                                            <td class="ps-4"><code>444444</code></td>
                                                             <td><span class="badge bg-secondary">Not Charge</span></td>
                                                             <td>System error</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="ps-4"><code>99120024</code></td>
+                                                            <td class="ps-4"><code>555555</code></td>
                                                             <td><span class="badge bg-success">Charge</span></td>
                                                             <td>BVN suspended</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="ps-4"><code>99120025</code></td>
+                                                            <td class="ps-4"><code>666666</code></td>
                                                             <td><span class="badge bg-secondary">Not Charge</span></td>
                                                             <td>BVN_PARAMETER_INVALID</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="ps-4"><code>99120026</code></td>
+                                                            <td class="ps-4"><code>777777</code></td>
                                                             <td><span class="badge bg-success">Charge</span></td>
                                                             <td>BIRTH_DATE_INVALID</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="ps-4"><code>99120027</code></td>
+                                                            <td class="ps-4"><code>888888</code></td>
                                                             <td><span class="badge bg-success">Charge</span></td>
                                                             <td>NAME_INVALID</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="ps-4"><code>99120028</code></td>
+                                                            <td class="ps-4"><code>999999</code></td>
                                                             <td><span class="badge bg-success">Charge</span></td>
                                                             <td>GENDER_NULL</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="ps-4"><code>99120029</code></td>
+                                                            <td class="ps-4"><code>111222</code></td>
                                                             <td><span class="badge bg-success">Charge</span></td>
                                                             <td>PHOTO_INVALID</td>
                                                         </tr>

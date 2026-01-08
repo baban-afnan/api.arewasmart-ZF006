@@ -164,13 +164,15 @@
                         <div class="d-flex flex-column gap-2 mt-2">
                              <button class="btn btn-outline-primary rounded-pill py-2 fw-semibold shadow-sm d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#passwordModal">
                                 <i class="ti ti-lock me-2"></i> Change Password
-                            </button>
-                            <button class="btn btn-outline-danger rounded-pill py-2 fw-semibold shadow-sm d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#pinModal">
+                                </button>
+                                <button class="btn btn-outline-danger rounded-pill py-2 fw-semibold shadow-sm d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#pinModal">
                                 <i class="ti ti-key me-2"></i> Reset Transaction PIN
-                            </button>
-                            <button class="btn btn-outline-info rounded-pill py-2 fw-semibold shadow-sm d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#apiTokenModal">
-                                <i class="ti ti-code me-2"></i> Show API Token
-                            </button>
+                               </button>
+                                @if($user->apiApplication && $user->apiApplication->status === 'approved')
+                               <button class="btn btn-outline-info rounded-pill py-2 fw-semibold shadow-sm d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#apiTokenModal">
+                               <i class="ti ti-code me-2"></i> Show API Token
+                               </button>
+                             @endif
                         </div>
                     </div>
                 </div>

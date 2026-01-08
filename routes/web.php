@@ -39,7 +39,7 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureApiUser::class
 // API Routes are now in routes/api.php
 
 // Developer Documentation
-Route::group(['prefix' => 'developer', 'as' => 'developer.'], function () {
+Route::group(['prefix' => 'developer', 'as' => 'developer.', 'middleware' => ['auth']], function () {
     Route::get('/bvn', [App\Http\Controllers\Api\BvnVerificationController::class, 'index'])->name('bvn.docs');
 
     Route::get('/nin', [App\Http\Controllers\Api\NinVerificationController::class, 'index'])->name('nin.docs');

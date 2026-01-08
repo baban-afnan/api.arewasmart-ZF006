@@ -81,4 +81,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(Wallet::class);
     }
+
+    /**
+     * Relationship: A user has one API Application
+     */
+    public function apiApplication()
+    {
+        return $this->hasOne(ApiApplication::class);
+    }
 }
