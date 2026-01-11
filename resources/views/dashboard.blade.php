@@ -104,7 +104,81 @@
             </div>
         </div>
 
-        <!-- Transactions and Statistics Row -->
+        <!-- Monthly Statistics Section -->
+        @if(Auth::user()->role === 'api')
+        <div class="row g-3 mb-4">
+            <div class="col-12">
+                <h5 class="fw-bold mb-0">Monthly Service Overview</h5>
+                <p class="text-muted small">Your transaction counts for this month.</p>
+            </div>
+            
+            <!-- verification Card -->
+            <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.1s;">
+                <div class="financial-card shadow-sm h-100 p-4" style="background: var(--primary-gradient);">
+                    <div class="d-flex justify-content-between align-items-start position-relative z-1">
+                        <div>
+                            <p class="stats-label mb-1" style="color: white;">Verification</p>
+                            <h3 class="stats-value mb-0">{{ number_format(($monthlyStats['nin'] ?? 0) + ($monthlyStats['bvn'] ?? 0) + ($monthlyStats['tin'] ?? 0)) }}</h3>
+                            <small class="text-white-50 fs-12 fw-medium">Total Verifications</small>
+                        </div>
+                        <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-3">
+                            <i class="fas fa-id-card fs-24 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- validation and ipe Card -->
+            <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.2s;">
+                <div class="financial-card shadow-sm h-100 p-4" style="background: var(--success-gradient);">
+                    <div class="d-flex justify-content-between align-items-start position-relative z-1">
+                        <div>
+                            <p class="stats-label mb-1" style="color: white;">Validation and IPE</p>
+                            <h3 class="stats-value mb-0">{{ number_format(($monthlyStats['validation'] ?? 0) + ($monthlyStats['ipe'] ?? 0)) }}</h3>
+                            <small class="text-white-50 fs-12 fw-medium">Total Validation and IPE</small>
+                        </div>
+                        <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-3">
+                            <i class="fas fa-fingerprint fs-24 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- modifications Card -->
+            <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.3s;">
+                <div class="financial-card shadow-sm h-100 p-4" style="background: var(--info-gradient);">
+                    <div class="d-flex justify-content-between align-items-start position-relative z-1">
+                        <div>
+                            <p class="stats-label mb-1" style="color: white;">NIN & BVN Modifications</p>
+                            <h3 class="stats-value mb-0">{{ number_format(($monthlyStats['nin_modification'] ?? 0) + ($monthlyStats['nin modification'] ?? 0) + ($monthlyStats['bvn_modification'] ?? 0)) + ($monthlyStats['bvn modification'] ?? 0) }}</h3>
+                            <small class="text-white-50 fs-12 fw-medium">Total NIN & BVN Modifications</small>
+                        </div>
+                        <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-3">
+                            <i class="fas fa-user-edit fs-24 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- utility card -->
+            <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.4s;">
+                 <div class="financial-card shadow-sm h-100 p-4" style="background: var(--warning-gradient);">
+                    <div class="d-flex justify-content-between align-items-start position-relative z-1">
+                        <div>
+                            <p class="stats-label mb-1" style="color: white;">Bill Payments</p>
+                            <h3 class="stats-value mb-0">{{ number_format($monthlyStats['validation'] ?? 0) }}</h3>
+                            <small class="text-white-50 fs-12 fw-medium">Total bill payments transaction</small>
+                        </div>
+                        <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-3">
+                            <i class="fas fa-money-bill-wave fs-24 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+
         <div class="row g-3">
             <!-- Recent Transactions -->
             <div class="col-xxl-8 col-xl-7">
@@ -454,6 +528,57 @@
     </script>
 
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --success-gradient: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+            --info-gradient: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 100%);
+            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --danger-gradient: linear-gradient(135deg, #ef4444 0%, #f43f5e 100%);
+        }
+
+        .financial-card {
+            position: relative;
+            overflow: hidden;
+            border: none;
+            border-radius: 1rem;
+            color: white;
+        }
+        .financial-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+        .financial-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-30%, 30%);
+        }
+        
+        .stats-label { font-size: 0.875rem; font-weight: 500; opacity: 0.9; }
+        .stats-value { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-up {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        .avatar-lg { width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; }
+
         /* Fix modal shaking and improve styling */
         .modal-backdrop {
             background-color: rgba(0, 0, 0, 0.5);

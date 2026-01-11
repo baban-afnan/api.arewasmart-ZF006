@@ -75,6 +75,14 @@ class NinVerificationController extends Controller
             ], 401);
         }
 
+        // 1b. Check User Status
+        if ($user->status !== 'active') { 
+             return response()->json([
+                'status' => 'error',
+                'message' => 'Your account is not active please contact admin'
+            ], 403);
+        }
+
         // 2. Validate Request
         $validator = Validator::make($request->all(), [
             'nin' => 'required|string|size:11|regex:/^[0-9]{11}$/',
@@ -89,11 +97,9 @@ class NinVerificationController extends Controller
         }
 
         // 3. Get Verification Service
-        $service = Service::where('name', 'Verification')
-            ->where('is_active', true)
-            ->first();
+        $service = Service::where('name', 'Verification')->first();
 
-        if (!$service) {
+        if (!$service || !$service->is_active) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Verification service is currently unavailable.'
@@ -103,13 +109,12 @@ class NinVerificationController extends Controller
         // 4. Get NIN Verification ServiceField (Code 610)
         $serviceField = $service->fields()
             ->where('field_code', '610')
-            ->where('is_active', true)
             ->first();
 
-        if (!$serviceField) {
+        if (!$serviceField || !$serviceField->is_active) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'NIN verification service field (610) is not configured.'
+                'message' => 'NIN verification service field (610) is not active.'
             ], 503);
         }
 

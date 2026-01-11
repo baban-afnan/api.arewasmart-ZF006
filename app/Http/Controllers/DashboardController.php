@@ -65,7 +65,7 @@ class DashboardController extends Controller
 
         // 5. Recent 10 Transactions
         $recentTransactions = Transaction::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
+            ->latest()
             ->where('trans_source', 'api')
             ->take(10)
             ->get();
@@ -90,6 +90,65 @@ class DashboardController extends Controller
         $pendingPercentage = $totalTransactions > 0 ? round(($pendingTransactions / $totalTransactions) * 100) : 0;
         $failedPercentage = $totalTransactions > 0 ? round(($failedTransactions / $totalTransactions) * 100) : 0;
 
+        // --- NEW: API User Statistics ---
+        $statusCounts = [];
+        $monthlyStats = [];
+
+        if ($user->role === 'api') {
+            // 1. Status Counts (AgentService)
+            $statusCountsRaw = AgentService::where('user_id', $user->id)
+                ->selectRaw("count(case when status = 'pending' then 1 end) as pending")
+                ->selectRaw("count(case when status = 'processing' then 1 end) as processing")
+                ->selectRaw("count(case when status = 'resolved' or status = 'successful' or status = 'completed' then 1 end) as resolved")
+                ->selectRaw("count(case when status = 'rejected' or status = 'failed' then 1 end) as rejected")
+                ->first();
+            
+            $statusCounts = [
+                'pending' => $statusCountsRaw->pending ?? 0,
+                'processing' => $statusCountsRaw->processing ?? 0,
+                'resolved' => $statusCountsRaw->resolved ?? 0,
+                'rejected' => $statusCountsRaw->rejected ?? 0,
+            ];
+
+            // 2. Monthly Verification Counts (Verification Table)
+            // NIN (610), BVN (600), TIN (800, 801)
+            $startOfMonth = Carbon::now()->startOfMonth();
+            $endOfMonth = Carbon::now()->endOfMonth();
+
+            $monthlyVerifications = \App\Models\Verification::where('user_id', $user->id)
+                ->whereBetween('verifications.created_at', [$startOfMonth, $endOfMonth])
+                ->join('service_fields', 'verifications.service_field_id', '=', 'service_fields.id')
+                ->selectRaw("count(case when service_fields.field_code = '610' then 1 end) as nin")
+                ->selectRaw("count(case when service_fields.field_code = '600' then 1 end) as bvn")
+                ->selectRaw("count(case when service_fields.field_code = '800' or service_fields.field_code = '801' then 1 end) as tin")
+                ->first();
+
+            $monthlyStats['nin'] = $monthlyVerifications->nin ?? 0;
+            $monthlyStats['bvn'] = $monthlyVerifications->bvn ?? 0;
+            $monthlyStats['tin'] = $monthlyVerifications->tin ?? 0;
+
+            // 3. Monthly Agency Services (AgentService Table)
+            // Validation (015), IPE (002), NIN Modify (Contains 'Modification')
+            $monthlyAgency = AgentService::where('user_id', $user->id)
+                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->selectRaw("count(case when field_code like '%015%' or service_type = 'NIN_VALIDATION' then 1 end) as validation")
+                ->selectRaw("count(case when field_code like '%002%' or service_type = 'IPE' then 1 end) as ipe")
+                ->selectRaw("count(case when (service_field_name like '%NIN%' and service_field_name like '%Modification%') or (description like '%NIN%' and description like '%Modification%') or service_type = 'NIN MODIFICATION' then 1 end) as nin_modification")
+                ->selectRaw("count(case when (service_field_name like '%BVN%' and service_field_name like '%Modification%') or (description like '%BVN%' and description like '%Modification%') or service_type = 'BVN MODIFICATION' then 1 end) as bvn_modification")
+                ->first();
+
+            $monthlyStats['validation'] = $monthlyAgency->validation ?? 0;
+            $monthlyStats['ipe'] = $monthlyAgency->ipe ?? 0;
+            $monthlyStats['nin_modification'] = $monthlyAgency->nin_modification ?? 0;
+            $monthlyStats['bvn_modification'] = $monthlyAgency->bvn_modification ?? 0;
+
+            // Aggregated for UI Cards
+            $monthlyStats['total_verifications'] = $monthlyStats['nin'] + $monthlyStats['bvn'] + $monthlyStats['tin'];
+            $monthlyStats['total_validation_ipe'] = $monthlyStats['validation'] + $monthlyStats['ipe']; 
+        }
+
+        $application = $user->apiApplication;
+
         return view('dashboard', compact(
             'user', 
             'wallet', 
@@ -109,7 +168,10 @@ class DashboardController extends Controller
             'failedTransactions',
             'completedPercentage',
             'pendingPercentage',
-            'failedPercentage'
+            'failedPercentage',
+            'statusCounts',
+            'monthlyStats',
+            'application'
         ));
     }
 }

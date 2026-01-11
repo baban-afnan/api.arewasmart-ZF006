@@ -1,11 +1,11 @@
 <x-app-layout>
     <div class="content container-fluid">
-          <!-- Page Header -->
+         <!-- Page Header -->
         <div class="page-header mb-5">
             <div class="row align-items-center">
                 <div class="col">
                     <h3 class="page-title fw-bold text-primary display-6">
-                        BVN Verification API
+                        NIN IPE AND Validation  API
                     </h3>
 
                     <ul class="breadcrumb bg-transparent p-0 mt-2 mb-1">
@@ -15,7 +15,7 @@
                     </ul>
 
                     <p class="text-muted mb-0">
-                        View and manage BVN Verification API requests
+                        NIN IPE AND Validation  API requests
                     </p>
                 </div>
                 <div class="col-auto">
@@ -46,14 +46,17 @@
                                     <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); return false;">
                                         <i class="ti ti-info-circle me-2 fs-5 opacity-75"></i> Overview
                                     </a>
+                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#services" onclick="switchTab('services'); return false;">
+                                        <i class="ti ti-currency-naira me-2 fs-5 opacity-75"></i> Services & Pricing
+                                    </a>
                                     <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); return false;">
                                         <i class="ti ti-shield-lock me-2 fs-5 opacity-75"></i> Authentication
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); return false;">
-                                        <i class="ti ti-server me-2 fs-5 opacity-75"></i> Verify Endpoint
+                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#submit" onclick="switchTab('submit'); return false;">
+                                        <i class="ti ti-server me-2 fs-5 opacity-75"></i> Submit Request
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#responses" onclick="switchTab('responses'); return false;">
-                                        <i class="ti ti-message-code me-2 fs-5 opacity-75"></i> Responses & Billing
+                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#status" onclick="switchTab('status'); return false;">
+                                        <i class="ti ti-activity me-2 fs-5 opacity-75"></i> Check Status
                                     </a>
                                 </div>
                             </div>
@@ -87,14 +90,17 @@
                         <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); closeOffcanvas(); return false;">
                             <i class="ti ti-info-circle me-2"></i> Overview
                         </a>
+                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#services" onclick="switchTab('services'); closeOffcanvas(); return false;">
+                            <i class="ti ti-currency-naira me-2"></i> Services & Pricing
+                        </a>
                         <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); closeOffcanvas(); return false;">
                             <i class="ti ti-shield-lock me-2"></i> Authentication
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); closeOffcanvas(); return false;">
-                            <i class="ti ti-server me-2"></i> Verify Endpoint
+                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#submit" onclick="switchTab('submit'); closeOffcanvas(); return false;">
+                            <i class="ti ti-server me-2"></i> Submit Request
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#responses" onclick="switchTab('responses'); closeOffcanvas(); return false;">
-                            <i class="ti ti-message-code me-2"></i> Responses & Billing
+                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#status" onclick="switchTab('status'); closeOffcanvas(); return false;">
+                            <i class="ti ti-activity me-2"></i> Check Status
                         </a>
                     </div>
                 </div>
@@ -111,8 +117,8 @@
                             <span class="badge bg-soft-primary text-primary mb-3">Introduction</span>
                             <h2 class="fw-bold text-dark mb-3">Integration Guide</h2>
                             <p class="text-muted lead mb-4">
-                                Verify Bank Verification Numbers (BVN) instantly with our secure API. 
-                                Retrieve detailed identity information associated with the BVN.
+                                Seamlessly integrate our robust NIN Validation and IPE Clearance services into your application. 
+                                Our RESTful API ensures secure, fast, and reliable identity verification.
                             </p>
                             
                             <!-- Endpoint Box -->
@@ -127,28 +133,89 @@
                                         <i class="ti ti-copy me-1"></i> Copy
                                     </button>
                                 </div>
-                                <div class="mt-3 d-flex align-items-center small text-warBVNg">
+                                <div class="mt-3 d-flex align-items-center small text-warning">
                                     <i class="ti ti-alert-triangle me-2"></i>
                                     <span>Ensure all requests are made via <strong>HTTPS</strong>.</span>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="text-end">
+                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="services">
+                            Next: Services <i class="ti ti-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
 
-                     <!-- Service Fee Information -->
-                     <div class="alert alert-success border border-success border-opacity-25 rounded-3 d-flex align-items-start p-4 mb-4" role="alert">
-                        <i class="ti ti-wallet fs-4 me-3 mt-1 text-success"></i>
-                        <div>
-                            <h5 class="alert-heading fw-bold mb-2">Service Fee</h5>
-                            <p class="mb-0 text-dark">
-                                You will be charged <span class="fw-bold">₦{{ number_format($verificationPrice ?? 0, 2) }}</span> per successful verification.
-                                <span class="badge bg-success bg-opacity-10 text-success ms-1 border border-success border-opacity-25">{{ ucfirst($user->role ?? 'user') }} Rate</span>
+                <!-- Services Section -->
+                <div class="docs-section d-none fade-in" id="services">
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-5">
+                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">1</span>
+                                Services & Pricing
+                            </h4>
+                            
+                            <!-- Refund Policy Alert - Requested Item -->
+                            <div class="alert alert-warning border border-warning border-opacity-25 rounded-3 d-flex align-items-start p-4 mb-4" role="alert">
+                                <i class="ti ti-info-circle fs-4 me-3 mt-1"></i>
+                                <div>
+                                    <h5 class="alert-heading fw-bold mb-2">Refund Policy</h5>
+                                    <p class="mb-0 text-dark">
+                                        Please note our refund policy regarding failed transaction attempts:
+                                    </p>
+                                    <ul class="mb-0 mt-2">
+                                        <li class="mb-1"><strong>IPE Clearance (002):</strong> <span class="badge bg-success bg-opacity-10 text-success ms-1">Auto-Refund</span> We provide instant automatic refunds for failed or rejected IPE requests.</li>
+                                        <li><strong>NIN Validation (015):</strong> <span class="badge bg-danger bg-opacity-10 text-danger ms-1">No Refund</span> There are <strong>no refunds</strong> for failed or rejected validation requests. Ensure data is accurate before submission.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <p class="text-muted mb-4">
+                                Use the corresponding <strong>Service Field Code</strong> when initializing a transaction.
                             </p>
+                            
+                            <div class="table-responsive rounded-3 border">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr class="text-uppercase small text-muted">
+                                            <th class="py-3 ps-4">Service Name</th>
+                                            <th class="py-3">Type</th>
+                                            <th class="py-3">Field Code (Required)</th>
+                                            <th class="py-3 text-end pe-4">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="border-top-0">
+                                        @forelse($services as $service)
+                                            <tr>
+                                                <td class="ps-4 fw-medium text-dark">{{ $service->name }}</td>
+                                                <td>
+                                                    @if($service->type == 'Validation')
+                                                        <span class="badge bg-indigo-soft text-indigo border border-indigo border-opacity-10 py-2 px-3 rounded-pill">Validation</span>
+                                                    @else
+                                                        <span class="badge bg-teal-soft text-teal border border-teal border-opacity-10 py-2 px-3 rounded-pill">IPE Clearance</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <code class="bg-light text-primary border rounded px-2 py-1 fw-bold fs-14">{{ $service->code }}</code>
+                                                </td>
+                                                <td class="text-end pe-4 fw-bold text-dark">₦{{ number_format($service->price, 2) }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center py-4 text-muted">No active services found used by this account.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="text-end">
-                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="auth">
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="overview">
+                            <i class="ti ti-arrow-left me-2"></i> Previous
+                        </button>
+                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="auth">
                             Next: Authentication <i class="ti ti-arrow-right ms-2"></i>
                         </button>
                     </div>
@@ -159,7 +226,7 @@
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
                             <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
-                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">1</span>
+                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">2</span>
                                 Authentication
                             </h4>
                             <p class="text-muted mb-4">
@@ -191,37 +258,37 @@
                                 <div class="card-body bg-black bg-opacity-25 font-monospace p-4">
                                     <div class="d-flex">
                                         <span class="text-info me-3">Authorization:</span>
-                                        <span class="text-warBVNg">Bearer <span class="text-white-50">{{ substr(Auth::user()->api_token, 0, 15) }}...</span></span>
+                                        <span class="text-warning">Bearer <span class="text-white-50">{{ substr(Auth::user()->api_token, 0, 15) }}...</span></span>
                                     </div>
                                     <div class="d-flex mt-2">
                                         <span class="text-info me-3">Accept:</span>
-                                        <span class="text-warBVNg">application/json</span>
+                                        <span class="text-warning">application/json</span>
                                     </div>
                                      <div class="d-flex mt-2">
                                         <span class="text-info me-3">Content-Type:</span>
-                                        <span class="text-warBVNg">application/json</span>
+                                        <span class="text-warning">application/json</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="overview">
+                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="services">
                             <i class="ti ti-arrow-left me-2"></i> Previous
                         </button>
-                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="endpoint">
-                            Next: Verify Endpoint <i class="ti ti-arrow-right ms-2"></i>
+                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="submit">
+                            Next: Submit Request <i class="ti ti-arrow-right ms-2"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Verify Endpoint Section -->
-                <div class="docs-section d-none fade-in" id="endpoint">
+                <!-- Submit Request Section -->
+                <div class="docs-section d-none fade-in" id="submit">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
                             <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
-                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">2</span>
-                                Verify Endpoint
+                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">3</span>
+                                Submit a Request
                             </h4>
 
                             <!-- Endpoint -->
@@ -229,14 +296,10 @@
                                 <div class="card-body d-flex align-items-center justify-content-between p-4 flex-wrap gap-2">
                                     <div class="d-flex align-items-center">
                                         <span class="badge bg-primary px-3 py-2 rounded-2 fw-bold fs-14 shadow-sm me-3">POST</span>
-                                        <code class="text-primary fw-bold fs-18 text-break">{{ url('/') }}/api/v1/bvn/verify</code>
+                                        <code class="text-primary fw-bold fs-18 text-break">{{ url('/') }}/api/v1/nin/validation</code>
                                     </div>
                                 </div>
                             </div>
-
-                             <p class="text-muted mb-4">
-                                Verify a Bank Verification Number (BVN) by sending a POST request with the BVN.
-                            </p>
 
                             <div class="row g-4">
                                 <!-- Request Body -->
@@ -247,8 +310,16 @@
                                         </div>
                                         <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace"><code>{
-  <span class="text-muted">// Required. 11 digit BVN</span>
-  <span class="text-info">"bvn"</span>: <span class="text-warBVNg">"12345678901"</span>
+  <span class="text-muted">// Required. 015 for Validation, 002 for IPE</span>
+  <span class="text-info">"field_code"</span>: <span class="text-warning">"015"</span>, 
+
+  <span class="text-muted">// Required if field_code is 015</span>
+  <span class="text-info">"nin"</span>: <span class="text-warning">"12345678901"</span>,
+  
+  <span class="text-muted">// Required if field_code is 002</span>
+  <span class="text-info">"tracking_id"</span>: <span class="text-warning">"IPE-1234..."</span>,
+  
+  <span class="text-info">"description"</span>: <span class="text-warning">"My Reference"</span>
 }</code></pre>
                                         </div>
                                     </div>
@@ -262,15 +333,14 @@
                                         </div>
                                         <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace"><code>{
-  <span class="text-info">"status"</span>: <span class="text-warBVNg">"success"</span>,
-  <span class="text-info">"message"</span>: <span class="text-warBVNg">"Verification Successful"</span>,
+  <span class="text-info">"success"</span>: <span class="text-warning">true</span>,
+  <span class="text-info">"message"</span>: <span class="text-warning">"Request submitted..."</span>,
   <span class="text-info">"data"</span>: {
-    <span class="text-info">"bvn"</span>: <span class="text-warBVNg">"12345678901"</span>,
-    <span class="text-info">"firstName"</span>: <span class="text-warBVNg">"ABDULLAHI"</span>,
-    <span class="text-info">"lastName"</span>: <span class="text-warBVNg">"GARBA"</span>,
-    <span class="text-muted">// ... other details</span>
-  },
-  <span class="text-info">"transaction_ref"</span>: <span class="text-warBVNg">"BVN-123..."</span>
+    <span class="text-info">"reference"</span>: <span class="text-warning">"REF-123..."</span>,
+    <span class="text-info">"trx_ref"</span>: <span class="text-warning">"val123..."</span>,
+    <span class="text-info">"status"</span>: <span class="text-warning">"processing"</span>,
+    <span class="text-info">"response"</span>: <span class="text-warning">"..."</span>
+  }
 }</code></pre>
                                         </div>
                                     </div>
@@ -282,81 +352,75 @@
                         <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="auth">
                             <i class="ti ti-arrow-left me-2"></i> Previous
                         </button>
-                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="responses">
-                            Next: Responses & Billing <i class="ti ti-arrow-right ms-2"></i>
+                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="status">
+                            Next: Check Status <i class="ti ti-arrow-right ms-2"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Responses Section -->
-                <div class="docs-section d-none fade-in" id="responses">
+                <!-- Status Section -->
+                <div class="docs-section d-none fade-in" id="status">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
                             <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
-                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">3</span>
-                                Responses & Billing
+                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">4</span>
+                                Check Transaction Status
                             </h4>
 
-                             <!-- Billing Policy Alert -->
-                            <div class="alert alert-warBVNg border border-warBVNg border-opacity-25 rounded-3 d-flex align-items-start p-4 mb-4" role="alert">
-                                <i class="ti ti-info-circle fs-4 me-3 mt-1"></i>
-                                <div>
-                                    <h5 class="alert-heading fw-bold mb-2">Billing Policy & Response Codes</h5>
-                                    <p class="mb-0 text-dark">
-                                        Please note that some responses are chargeable even if the BVN is not found. Review the table below carefully.
-                                    </p>
+                            <!-- Endpoint -->
+                             <div class="card border-0 bg-soft-success mb-4 overflow-hidden">
+                                <div class="card-body d-flex align-items-center justify-content-between p-4 flex-wrap gap-2">
+                                     <div class="d-flex align-items-center">
+                                        <span class="badge bg-success px-3 py-2 rounded-2 fw-bold fs-14 shadow-sm me-3">GET</span>
+                                        <code class="text-success fw-bold fs-18 text-break">{{ url('/') }}/api/v1/nin/validation</code>
+                                    </div>
                                 </div>
                             </div>
                             
-                            <div class="table-responsive rounded-3 border">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="bg-light">
-                                        <tr class="text-uppercase small text-muted">
-                                            <th class="py-3 ps-4">Code</th>
-                                            <th class="py-3">Description</th>
-                                            <th class="py-3">Status</th>
-                                            <th class="py-3 text-end pe-4">Billing</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="border-top-0">
-                                        <tr>
-                                            <td class="ps-4"><code class="text-success fw-bold">111111</code></td>
-                                            <td class="text-dark fw-medium">Successful Verification</td>
-                                            <td><span class="badge bg-soft-success text-success">Success</span></td>
-                                            <td class="text-end pe-4"><span class="badge bg-danger">Charged</span></td>
-                                        </tr>
-                                         <tr>
-                                            <td class="ps-4"><code class="text-warBVNg fw-bold">222222</code></td>
-                                            <td class="text-dark fw-medium">BVN does not exist</td>
-                                            <td><span class="badge bg-soft-warBVNg text-warBVNg">Not Found</span></td>
-                                            <td class="text-end pe-4"><span class="badge bg-danger">Charged</span></td>
-                                        </tr>
-                                         <tr>
-                                            <td class="ps-4"><code class="text-secondary fw-bold">333333</code></td>
-                                            <td class="text-dark fw-medium">Parameter Error</td>
-                                            <td><span class="badge bg-light text-dark">Error</span></td>
-                                            <td class="text-end pe-4"><span class="badge bg-success">Free</span></td>
-                                        </tr>
-                                         <tr>
-                                            <td class="ps-4"><code class="text-secondary fw-bold">444444</code></td>
-                                            <td class="text-dark fw-medium">System Error</td>
-                                            <td><span class="badge bg-light text-dark">Error</span></td>
-                                            <td class="text-end pe-4"><span class="badge bg-success">Free</span></td>
-                                        </tr>
-                                         <tr>
-                                            <td class="ps-4"><code class="text-danger fw-bold">555555</code></td>
-                                            <td class="text-dark fw-medium">BVN Suspended</td>
-                                            <td><span class="badge bg-soft-danger text-danger">Suspended</span></td>
-                                            <td class="text-end pe-4"><span class="badge bg-danger">Charged</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                            <p class="text-muted mb-4">
+                                Retrieve the current status using a query parameter.
+                            </p>
 
+                            <div class="row g-4">
+                                <div class="col-lg-6">
+                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
+                                        <div class="card-header bg-light border-bottom py-3">
+                                            <h6 class="fw-bold text-dark mb-0">Query Parameters</h6>
+                                        </div>
+                                        <div class="card-body p-4 bg-white">
+                                            <ul class="list-unstyled mb-0 font-monospace text-dark">
+                                                <li class="mb-3">
+                                                    <span class="badge bg-light text-dark border me-2">OPTION 1</span>
+                                                    <strong>?nin=</strong><span class="text-muted">12345678901</span>
+                                                </li>
+                                                <li>
+                                                    <span class="badge bg-light text-dark border me-2">OPTION 2</span>
+                                                    <strong>?nin=</strong><span class="text-muted">TRACKING-ID</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
+                                        <div class="card-header bg-light border-bottom py-3">
+                                            <h6 class="fw-bold text-success mb-0">Response</h6>
+                                        </div>
+                                        <div class="card-body p-0 bg-dark">
+<pre class="m-0 p-4 text-white font-monospace"><code>{
+  <span class="text-info">"success"</span>: <span class="text-warning">true</span>,
+  <span class="text-info">"nin"</span>: <span class="text-warning">"12345678901"</span>,
+  <span class="text-info">"status"</span>: <span class="text-warning">"successful"</span>,
+  <span class="text-info">"comment"</span>: <span class="text-warning">"{ JSON Data Here }"</span>
+}</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                      <div class="d-flex justify-content-between">
-                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="endpoint">
+                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="submit">
                             <i class="ti ti-arrow-left me-2"></i> Previous
                         </button>
                     </div>
@@ -433,10 +497,10 @@
 
         // Copy Token Logic
         function copyToken() {
-            const tokeBVNput = document.getElementById('apiToken');
-            tokeBVNput.select();
-            tokeBVNput.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(tokeBVNput.value).then(() => {
+            const tokenInput = document.getElementById('apiToken');
+            tokenInput.select();
+            tokenInput.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(tokenInput.value).then(() => {
                 const btnText = document.getElementById('copyBtnText');
                 const originalText = btnText.innerText;
                 btnText.innerText = 'Copied!';
@@ -476,6 +540,12 @@
         .custom-sidebar-nav .list-group-item:hover { background-color: rgba(var(--bs-primary-rgb), 0.05); color: var(--bs-primary) !important; transform: translateX(5px); }
         .custom-sidebar-nav .list-group-item.active { background-color: rgba(var(--bs-primary-rgb), 0.1); color: var(--bs-primary); border-left: 3px solid var(--bs-primary); }
         
+        /* Badges */
+        .bg-indigo-soft { background-color: rgba(102, 16, 242, 0.1); }
+        .text-indigo { color: #6610f2; }
+        .bg-teal-soft { background-color: rgba(32, 201, 151, 0.1); }
+        .text-teal { color: #20c997; }
+
         /* Mobile Adjustments */
         @media (max-width: 991.98px) {
             .sticky-top { position: relative !important; top: 0 !important; z-index: 1 !important; }

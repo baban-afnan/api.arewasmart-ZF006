@@ -81,17 +81,25 @@ class BvnVerificationController extends Controller
             ], 401);
         }
 
+        // 1b. Check User Status
+        if ($user->status !== 'active') { 
+             return response()->json([
+                'status' => 'error',
+                'message' => 'Your account is not active please contact admin'
+            ], 403);
+        }
+
         // 3. Get Verification Service & Field
-        $service = Service::where('name', 'Verification')->where('is_active', true)->first();
-        if (!$service) {
+        $service = Service::where('name', 'Verification')->first();
+        if (!$service || !$service->is_active) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Verification service unavailable.'
             ], 503);
         }
 
-        $serviceField = $service->fields()->where('field_code', '600')->where('is_active', true)->first();
-        if (!$serviceField) {
+        $serviceField = $service->fields()->where('field_code', '600')->first();
+        if (!$serviceField || !$serviceField->is_active) {
              return response()->json([
                 'status' => 'error',
                 'message' => 'BVN verification service unavailable.'

@@ -45,6 +45,10 @@ Route::group(['prefix' => 'developer', 'as' => 'developer.', 'middleware' => ['a
     Route::get('/nin', [App\Http\Controllers\Api\NinVerificationController::class, 'index'])->name('nin.docs');
 
     Route::get('/tin', [\App\Http\Controllers\Api\TinVerificationController::class, 'index'])->name('tin.docs');
+    
+    Route::get('/nin-validation', [\App\Http\Controllers\Agency\NinValidationController::class, 'index'])->name('nin.validation.docs');
+
+    Route::get('/nin-modification', [\App\Http\Controllers\Agency\NinModificationController::class, 'index'])->name('nin.modification.docs');
 });
 
 require __DIR__.'/auth.php';

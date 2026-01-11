@@ -107,8 +107,8 @@
                         <span class="menu-arrow"></span>
                     </a>
                     <ul>
-                        <li><a href="#">Validation</a></li>
-                        <li><a href="#">IPE</a></li>
+                        <li><a href="{{ route('developer.nin.validation.docs') }}">Validation & IPE API Docs</a></li>
+                        <li><a href="{{ route('developer.nin.modification.docs') }}">Modification</a></li>
                     </ul>
                 </li>
                 <!-- /NIN Services -->

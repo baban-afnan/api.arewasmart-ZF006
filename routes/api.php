@@ -30,4 +30,15 @@ Route::prefix('v1')->group(function () {
 
     // TIN Verification
     Route::post('/tin/verify', [\App\Http\Controllers\Api\TinVerificationController::class, 'verify']);
+
+    // NIN Validation & IPE Status Check
+    Route::post('/nin/validation', [\App\Http\Controllers\Agency\NinValidationController::class, 'store']);
+    Route::get('/nin/validation', [\App\Http\Controllers\Agency\NinValidationController::class, 'checkStatus']);
+
+    // NIN Modification
+    Route::post('/nin/modification', [\App\Http\Controllers\Agency\NinModificationController::class, 'store']);
+    Route::get('/nin/modification', [\App\Http\Controllers\Agency\NinModificationController::class, 'checkStatus']);
 });
+
+// Webhooks
+Route::post('/nin/webhook', [\App\Http\Controllers\Agency\NinValidationController::class, 'webhook']);

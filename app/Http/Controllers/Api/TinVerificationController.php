@@ -75,24 +75,29 @@ class TinVerificationController extends Controller
             ], 401);
         }
 
+        // 1b. Check User Status
+        // Assuming 'status' column exists on users table, or we check if user is active.
+        // If the column is named differently (e.g., is_active), we should adjust.
+        // Based on request: "if the user status is not active return with the error message your account is not active please contact admin"
+        if ($user->status !== 'active') { 
+             return response()->json([
+                'status' => 'error',
+                'message' => 'Your account is not active please contact admin'
+            ], 403);
+        }
+
         // 2. Determine Request Type & Validate
         $type = null;
         $serviceCode = null;
 
-        // User Requirements:
-        // Corporate: { type: "2", rc: "8891227" }
-        // Individual: { nin: "...", firstName: "...", lastName: "...", dateOfBirth: "..." }
-
         if ($request->has('rc')) {
-            // Corporate Registration
             $type = 'corporate';
             $serviceCode = '801';
             $validator = Validator::make($request->all(), [
                 'rc' => 'required|string',
-                'type' => 'required|string', // CAC Type
+                'type' => 'required|string',
             ]);
         } elseif ($request->has('nin')) {
-             // Individual Registration
             $type = 'individual';
             $serviceCode = '800';
             $validator = Validator::make($request->all(), [
@@ -118,27 +123,26 @@ class TinVerificationController extends Controller
         }
 
         // 3. Get TIN REGISTRATION Service
-        $service = Service::where('name', 'TIN REGISTRATION')
-            ->where('is_active', true)
-            ->first();
+        $service = Service::where('name', 'TIN REGISTRATION')->first();
 
-        if (!$service) {
+        // Check if main service is active
+        if (!$service || !$service->is_active) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'TIN REGISTRATION service is currently unavailable.'
+                'message' => 'Service is not active'
             ], 503);
         }
 
         // 4. Get Specific ServiceField (800 or 801)
         $serviceField = $service->fields()
             ->where('field_code', $serviceCode)
-            ->where('is_active', true)
             ->first();
 
-        if (!$serviceField) {
+        // Check if specific field is active
+        if (!$serviceField || !$serviceField->is_active) {
             return response()->json([
                 'status' => 'error',
-                'message' => "Service field ($serviceCode) is not configured for TIN REGISTRATION."
+                'message' => 'Service is not active'
             ], 503);
         }
 
@@ -165,8 +169,7 @@ class TinVerificationController extends Controller
 
         // 7. Process API Request to Upstream
         try {
-            // Prepare API payload
-            $apiKey = 'RTERSwIscARdIERIspENsAnTROcLEgrA'; // Hardcoded as per request
+            $apiKey = 'RTERSwIscARdIERIspENsAnTROcLEgrA'; 
             $url = 'https://live.ninauth.nimc.gov.ng/v1/resolve';
             $payload = [];
 
@@ -175,7 +178,7 @@ class TinVerificationController extends Controller
                     'nin' => $request->nin,
                     'firstName' => $request->firstName,
                     'lastName' => $request->lastName,
-                    'dateOfBirth' => $request->dateOfBirth, // Passing directly as per user example
+                    'dateOfBirth' => $request->dateOfBirth, 
                 ];
             } else {
                 $payload = [
@@ -184,14 +187,12 @@ class TinVerificationController extends Controller
                 ];
             }
 
-            // Make API call
             $response = Http::withHeaders([
                 'x-api-key' => $apiKey,
             ])->timeout(30)->post($url, $payload);
 
             $decodedData = $response->json();
 
-            // Check Upstream Response
             if ($response->successful() && isset($decodedData['success']) && $decodedData['success'] === true) {
                 return $this->processChargeAndReturn(
                     $wallet,
