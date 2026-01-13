@@ -38,6 +38,10 @@ Route::prefix('v1')->group(function () {
     // NIN Modification
     Route::post('/nin/modification', [\App\Http\Controllers\Agency\NinModificationController::class, 'store']);
     Route::get('/nin/modification', [\App\Http\Controllers\Agency\NinModificationController::class, 'checkStatus']);
+
+    // BVN Modification
+    Route::post('/bvn/modification', [\App\Http\Controllers\Agency\BvnModificationController::class, 'store'])->name('bvn.modification.store');
+    Route::get('/bvn/modification', [\App\Http\Controllers\Agency\BvnModificationController::class, 'checkStatus']);
 });
 
 // Webhooks

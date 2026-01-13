@@ -51,13 +51,13 @@
         <!-- API Access Section -->
         <div class="card border-0 shadow-sm rounded-4 mb-3">
             <div class="card-body">
-                <h5 class="fw-bold mb-3">API Access</h5>
                 
                 @php
                     $application = Auth::user()->apiApplication;
+                    $isApiUser = !empty(Auth::user()->api_token);
                 @endphp
                 
-                 @if(Auth::user()->role === 'api' && Auth::user()->api_token)
+                 @if($isApiUser)
                     <div class="alert alert-success d-flex align-items-center mb-0">
                         <i class="fas fa-check-circle me-2"></i>
                         <div>
@@ -68,35 +68,44 @@
                 @else
                     @if($application && $application->status === 'pending')
                         <div class="alert alert-info d-flex align-items-center mb-0">
-                            <i class="fas fa-clock me-2"></i>
-                            <div>
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-clock fs-4"></i>
+                            </div>
+                            <div class="ms-3">
                                 <strong>Application Under Review</strong>
                                 <p class="mb-0 small">We received your request on {{ $application->created_at->format('M d, Y') }} and our team is reviewing it.</p>
                             </div>
                         </div>
                     @elseif($application && $application->status === 'rejected')
-                        <div class="alert alert-danger d-flex align-items-center mb-3">
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                            <div>
+                        <div class="alert alert-danger d-flex align-items-start mb-3">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-circle fs-4 mt-1"></i>
+                            </div>
+                            <div class="ms-3">
                                 <strong>Application Rejected</strong>
                                 <p class="mb-0 small">
-                                    Your previous request was not approved. 
+                                    Your request was not approved. 
                                     @if($application->comment)
-                                        <a href="javascript:void(0)" class="text-primary fw-medium" data-bs-toggle="modal" data-bs-target="#rejectionModal">
+                                        <a href="javascript:void(0)" class="text-danger fw-bold text-decoration-underline" data-bs-toggle="modal" data-bs-target="#rejectionModal">
                                             View Reason
                                         </a>
                                     @endif
-                                    You can submit a new application below.
                                 </p>
+                                <button class="btn btn-sm btn-outline-danger mt-2" data-bs-toggle="modal" data-bs-target="#apiAccessModal">
+                                    <i class="fas fa-redo me-1"></i> Try Again
+                                </button>
                             </div>
                         </div>
                     @endif
 
-                    @if(!$application || $application->status !== 'pending')
-                        <div class="d-flex justify-content-between align-items-center">
-                            <p class="text-muted mb-0">Request access to our API for personal or business use.</p>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#apiAccessModal">
-                                Request Access
+                    @if(!$application)
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">Unlock Developer Features</h6>
+                                <p class="text-muted small mb-0">Integrate our services directly into your business or application.</p>
+                            </div>
+                            <button type="button" class="btn btn-primary px-4 rounded-pill fw-medium shadow-sm" data-bs-toggle="modal" data-bs-target="#apiAccessModal">
+                                Request Access <i class="fas fa-arrow-right ms-1"></i>
                             </button>
                         </div>
                     @endif
@@ -105,7 +114,7 @@
         </div>
 
         <!-- Monthly Statistics Section -->
-        @if(Auth::user()->role === 'api')
+        @if($isApiUser)
         <div class="row g-3 mb-4">
             <div class="col-12">
                 <h5 class="fw-bold mb-0">Monthly Service Overview</h5>
@@ -304,58 +313,85 @@
 
     <!-- API Access Modal -->
     <div class="modal fade" id="apiAccessModal" tabindex="-1" aria-labelledby="apiAccessModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content border-0 shadow-lg" style="min-height: 200px;">
-                <form action="{{ route('api.application.store') }}" method="POST" id="apiAccessForm">
-                    @csrf
-                    <div class="modal-header border-bottom-0 bg-light">
-                        <h5 class="modal-title fw-bold text-primary" id="apiAccessModalLabel">Request API Access</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-bottom-0 bg-light py-4 px-4 px-md-5">
+                    <div>
+                        <h5 class="modal-title fw-bold text-primary mb-1" id="apiAccessModalLabel">Request API Access</h5>
+                        <p class="text-muted small mb-0">Fill in the details below to integrate with our services.</p>
                     </div>
-                    <div class="modal-body py-4">
-                        <div class="mb-3">
-                            <label for="api_type" class="form-label fw-medium">API Type <span class="text-danger">*</span></label>
-                            <select class="form-select rounded-3" id="api_type" name="api_type" required>
-                                <option value="" selected disabled>Select Type</option>
-                                <option value="personal">Personal</option>
-                                <option value="business">Business</option>
-                                <option value="partner">Partner</option>
-                            </select>
-                            <div class="invalid-feedback">Please select an API type</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body p-4 p-md-5 bg-white">
+                    <form action="{{ route('api.application.store') }}" method="POST" id="apiAccessForm" class="needs-validation" novalidate>
+                        @csrf
+                        <div class="row g-4">
+                            <!-- Left Column -->
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <select class="form-select border-light bg-light rounded-3" id="api_type" name="api_type" required>
+                                        <option value="" selected disabled>Select Type</option>
+                                        <option value="personal">Personal Usage</option>
+                                        <option value="business">Business / Enterprise</option>
+                                        <option value="partner">Partnership</option>
+                                    </select>
+                                    <label for="api_type">Account Type <span class="text-danger">*</span></label>
+                                    <div class="invalid-feedback">Please select an account type.</div>
+                                </div>
+                                
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control border-light bg-light rounded-3" id="business_name" name="business_name" placeholder="Business Name" required>
+                                    <label for="business_name">Business / App Name <span class="text-danger">*</span></label>
+                                    <div class="invalid-feedback">Please enter your business or app name.</div>
+                                </div>
+                                
+                                <div class="form-floating">
+                                    <input type="url" class="form-control border-light bg-light rounded-3" id="website_link" name="website_link" placeholder="https://..." required>
+                                    <label for="website_link">Website URL <span class="text-danger">*</span></label>
+                                    <div class="invalid-feedback">Please enter a valid URL (include http/https).</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right Column -->
+                            <div class="col-md-6">
+                                <div class="form-floating h-100">
+                                    <textarea class="form-control border-light bg-light rounded-3 h-100" id="business_description" name="business_description" placeholder="Description" style="min-height: 150px" required></textarea>
+                                    <label for="business_description">Business Description & Use Case <span class="text-danger">*</span></label>
+                                    <div class="invalid-feedback">Please verify how you intend to use the API.</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Full Width -->
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control border-light bg-light rounded-3" id="business_nature" name="business_nature" placeholder="e.g. Fintech" required>
+                                    <label for="business_nature">Nature of Business / Industry <span class="text-danger">*</span></label>
+                                    <div class="invalid-feedback">Please specify your industry.</div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <div class="p-3 rounded-3 bg-light border border-light">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="1" id="terms" name="terms" required>
+                                        <label class="form-check-label small text-secondary" for="terms">
+                                            By submitting this request, I agree to the <a href="#" class="text-primary fw-medium text-decoration-none">API Usage Policy</a> and <a href="#" class="text-primary fw-medium text-decoration-none">Terms of Service</a>. I understand that my application will be reviewed by the compliance team.
+                                        </label>
+                                        <div class="invalid-feedback">You must agree to the terms to proceed.</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="business_name" class="form-label fw-medium">Business Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control rounded-3" id="business_name" name="business_name" placeholder="Your Business Name" required>
-                            <div class="invalid-feedback">Please provide your business name</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="website_link" class="form-label fw-medium">Website Link <span class="text-muted small">(Optional)</span></label>
-                            <input type="url" class="form-control rounded-3" id="website_link" name="website_link" placeholder="https://example.com">
-                            <div class="form-text">Provide your website URL if applicable</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="business_nature" class="form-label fw-medium">Nature of Business <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control rounded-3" id="business_nature" name="business_nature" placeholder="e.g. Fintech, E-commerce" required>
-                            <div class="invalid-feedback">Please specify the nature of your business</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="business_description" class="form-label fw-medium">Business Description <span class="text-danger">*</span></label>
-                            <textarea class="form-control rounded-3" id="business_description" name="business_description" rows="4" placeholder="Tell us about how you plan to use the API..." required></textarea>
-                            <div class="invalid-feedback">Please provide a business description</div>
-                        </div>
-                        <div class="form-check mb-0">
-                            <input class="form-check-input" type="checkbox" value="1" id="terms" name="terms" required>
-                            <label class="form-check-label small" for="terms">
-                                I agree to the <a href="#" class="text-primary">Terms and Conditions</a> for API usage.
-                            </label>
-                            <div class="invalid-feedback">You must agree to the terms and conditions</div>
-                        </div>
-                    </div>
-                    <div class="modal-footer border-top-0 bg-light">
-                        <button type="button" class="btn btn-outline-secondary rounded-3 px-4" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary rounded-3 px-4">Submit Request</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
+                
+                <div class="modal-footer border-top-0 d-flex justify-content-between p-4 px-md-5 bg-white">
+                    <button type="button" class="btn btn-light text-muted px-4 rounded-pill fw-medium" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="apiAccessForm" class="btn btn-primary px-5 rounded-pill fw-medium shadow-sm">
+                        <i class="fas fa-paper-plane me-2"></i> Submit Application
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -364,65 +400,43 @@
     @if($application && $application->status === 'rejected')
     <div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="rejectionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header border-bottom-0 bg-light">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-bottom-0 bg-danger bg-opacity-10 py-3">
                     <h5 class="modal-title fw-bold text-danger" id="rejectionModalLabel">
-                        <i class="fas fa-exclamation-triangle me-2"></i>Application Rejection Details
+                        <i class="fas fa-exclamation-triangle me-2"></i>Application Rejection
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body py-4">
-                    <div class="alert alert-light border">
-                        <div class="d-flex align-items-start">
-                            <div class="flex-shrink-0">
-                                <i class="fas fa-info-circle text-info fs-4 mt-1"></i>
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <h6 class="alert-heading fw-semibold mb-2">Reason for Rejection</h6>
-                                <p class="mb-0 text-dark">{{ $application->comment ?? 'No specific reason provided.' }}</p>
-                            </div>
-                        </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-light border shadow-sm rounded-3 mb-4">
+                        <h6 class="text-dark fw-bold mb-2">Reviewer Feedback:</h6>
+                        <p class="mb-0 text-secondary">{{ $application->comment ?? 'No specific reason provided.' }}</p>
                     </div>
                     
-                    <div class="mt-4">
-                        <h6 class="fw-semibold mb-2">Application Details</h6>
-                        <ul class="list-group list-group-flush small">
-                            <li class="list-group-item d-flex justify-content-between px-0 border-0">
-                                <span class="text-muted">Submitted Date:</span>
-                                <span class="fw-medium">
-                                    {{ $application->created_at ? $application->created_at->format('M d, Y') : 'N/A' }}
-                                </span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between px-0 border-0">
-                                <span class="text-muted">API Type:</span>
-                                <span class="badge bg-secondary">
-                                    {{ $application->api_type ? ucfirst($application->api_type) : 'N/A' }}
-                                </span>
-                            </li>
-                            @if($application->website_link)
-                            <li class="list-group-item d-flex justify-content-between px-0 border-0">
-                                <span class="text-muted">Website:</span>
-                                <a href="{{ $application->website_link }}" target="_blank" class="text-primary text-decoration-none">
-                                    {{ $application->website_link }}
-                                </a>
-                            </li>
-                            @endif
-                        </ul>
-                    </div>
-                    
-                    <div class="alert alert-info mt-4 mb-0">
-                        <div class="d-flex">
-                            <i class="fas fa-lightbulb text-warning me-2 mt-1"></i>
-                            <div>
-                                <strong>Tip:</strong> Address the feedback above and submit a new application for reconsideration.
+                    <h6 class="fw-bold mb-3 small text-uppercase text-muted">Application Summary</h6>
+                    <div class="card bg-light border-0 rounded-3">
+                        <div class="card-body py-3">
+                            <div class="row g-2 small">
+                                <div class="col-6 text-muted">Submitted:</div>
+                                <div class="col-6 fw-medium text-end">{{ $application->created_at ? $application->created_at->format('M d, Y') : 'N/A' }}</div>
+                                
+                                <div class="col-6 text-muted">Type:</div>
+                                <div class="col-6 fw-medium text-end">{{ ucfirst($application->api_type ?? 'N/A') }}</div>
+                                
+                                @if($application->website_link)
+                                <div class="col-6 text-muted">Website:</div>
+                                <div class="col-6 fw-medium text-end text-truncate">
+                                    <a href="{{ $application->website_link }}" target="_blank">{{ $application->website_link }}</a>
+                                </div>
+                                @endif
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-top-0 bg-light">
-                    <button type="button" class="btn btn-outline-secondary rounded-3 px-4" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary rounded-3 px-4" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#apiAccessModal">
-                        Reapply
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#apiAccessModal">
+                        Fix & Reapply
                     </button>
                 </div>
             </div>
@@ -483,16 +497,16 @@
             });
 
             // Form validation
-            const apiAccessForm = document.getElementById('apiAccessForm');
-            if (apiAccessForm) {
-                apiAccessForm.addEventListener('submit', function(event) {
-                    if (!this.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
                     }
-                    this.classList.add('was-validated');
-                });
-            }
+                    form.classList.add('was-validated')
+                }, false)
+            });
 
             // Auto-focus first input in modal
             const apiAccessModal = document.getElementById('apiAccessModal');
@@ -599,17 +613,15 @@
         }
         
         .modal-header {
-            padding: 1.25rem 1.5rem;
+            /* padding: 1.25rem 1.5rem; */ /* Overwritten by new styles */
         }
         
         .modal-body {
-            padding: 1.5rem;
-            max-height: 70vh;
-            overflow-y: auto;
+            /* padding: 1.5rem; */ /* Overwritten by new styles */
         }
         
         .modal-footer {
-            padding: 1rem 1.5rem;
+            /* padding: 1rem 1.5rem; */ /* Overwritten by new styles */
         }
         
         /* Smooth transitions */
@@ -630,6 +642,21 @@
         /* Ensure tables are responsive */
         .table-responsive {
             min-height: 400px;
+        }
+        
+        /* Custom Scrollbar for Modal */
+        .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .modal-body::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #bbb;
         }
     </style>
 </x-app-layout>

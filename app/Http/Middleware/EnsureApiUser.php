@@ -16,7 +16,7 @@ class EnsureApiUser
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && $request->user()->role !== 'api') {
+        if ($request->user() && !in_array($request->user()->role, ['api', 'personal', 'agency', 'admin', 'super_admin', 'staff'])) {
             Auth::guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();

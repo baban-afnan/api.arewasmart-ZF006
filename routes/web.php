@@ -49,6 +49,9 @@ Route::group(['prefix' => 'developer', 'as' => 'developer.', 'middleware' => ['a
     Route::get('/nin-validation', [\App\Http\Controllers\Agency\NinValidationController::class, 'index'])->name('nin.validation.docs');
 
     Route::get('/nin-modification', [\App\Http\Controllers\Agency\NinModificationController::class, 'index'])->name('nin.modification.docs');
+    
+    Route::get('/bvn-modification', [\App\Http\Controllers\Agency\BvnModificationController::class, 'index'])->name('bvn.modification.docs');
+    Route::get('/bvn-modification/fields/{serviceId}', [\App\Http\Controllers\Agency\BvnModificationController::class, 'getServiceFields'])->name('bvn.modification.fields');
 });
 
 require __DIR__.'/auth.php';

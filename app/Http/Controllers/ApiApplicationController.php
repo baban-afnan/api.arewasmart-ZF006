@@ -25,7 +25,7 @@ class ApiApplicationController extends Controller
         $request->validate([
             'api_type' => 'required|string',
             'business_name' => 'required|string',
-            'website_link' => 'nullable|url',
+            'website_link' => 'required|url',
             'business_description' => 'required|string',
             'business_nature' => 'required|string',
             'terms' => 'required|accepted',

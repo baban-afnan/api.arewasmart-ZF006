@@ -93,11 +93,50 @@
                     </a>
                 </li>
                 
-                 <li>
+                <li>
                     <a href="{{ route('wallet') }}" class="{{ request()->routeIs('wallet') ? 'active' : '' }}">
                         <i class="ti ti-wallet"></i><span>Wallet</span>
                     </a>
                 </li>
+
+                <!-- Utility bill payment Services -->
+                <li class="submenu">
+                    <a href="javascript:void(0);">
+                        <i class="ti ti-user-check"></i>
+                        <span>Bill payment</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul>
+                        <li><a href="#">Airtime</a></li>
+                        <li><a href="#">Data</a></li>
+                        <li><a href="#">Electricity</a></li>
+                        <li><a href="#">TV</a></li>
+                        <li><a href="#">Education Pin</a></li>
+                    </ul>
+                </li>
+                <!-- /Utility bill payment Services-->
+
+                <!-- BVN Services -->
+                <li class="submenu">
+                    <a href="javascript:void(0);">
+                        <i class="ti ti-user-check"></i>
+                        <span>BVN Services</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul>
+                        <li>
+                            <a href="{{ route('developer.bvn.modification.docs') }}" class="{{ request()->routeIs('developer.bvn.modification.docs') ? 'active' : '' }}">
+                                BVN Modification Docs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                BVN Search Docs
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- /BVN Services -->
 
                 <!-- NIN Services -->
                 <li class="submenu">
@@ -107,13 +146,13 @@
                         <span class="menu-arrow"></span>
                     </a>
                     <ul>
-                        <li><a href="{{ route('developer.nin.validation.docs') }}">Validation & IPE API Docs</a></li>
-                        <li><a href="{{ route('developer.nin.modification.docs') }}">Modification</a></li>
+                        <li><a href="{{ route('developer.nin.validation.docs') }}" class="{{ request()->routeIs('developer.nin.validation.docs') ? 'active' : '' }}">Validation & IPE API Docs</a></li>
+                        <li><a href="{{ route('developer.nin.modification.docs') }}" class="{{ request()->routeIs('developer.nin.modification.docs') ? 'active' : '' }}">Modification</a></li>
                     </ul>
                 </li>
                 <!-- /NIN Services -->
 
-                 <!-- Verification -->
+                <!-- Verification -->
                 <li class="submenu">
                     <a href="javascript:void(0);">
                         <i class="ti ti-user-check"></i>
@@ -121,29 +160,27 @@
                         <span class="menu-arrow"></span>
                     </a>
                     <ul>
-                        <li><a href="{{ route('developer.bvn.docs') }}">BVN API Docs</a></li>
-                        <li><a href="{{ route('developer.nin.docs') }}">NIN API Docs</a></li>
-                        <li><a href="{{ route('developer.tin.docs') }}">TIN API Docs</a></li>
+                        <li><a href="{{ route('developer.bvn.docs') }}" class="{{ request()->routeIs('developer.bvn.docs') ? 'active' : '' }}">BVN API Docs</a></li>
+                        <li><a href="{{ route('developer.nin.docs') }}" class="{{ request()->routeIs('developer.nin.docs') ? 'active' : '' }}">NIN API Docs</a></li>
+                        <li><a href="{{ route('developer.tin.docs') }}" class="{{ request()->routeIs('developer.tin.docs') ? 'active' : '' }}">TIN API Docs</a></li>
                     </ul>
                 </li>
                 <!-- /Verification -->
-
               
                 <!-- Account Section -->
                 <li class="menu-title"><span>Account</span></li>
                 
                 <li>
-                    <a href="{{ route('profile.edit') }}">
+                    <a href="{{ route('profile.edit') }}" class="{{ request()->routeIs('profile.edit') ? 'active' : '' }}">
                         <i class="ti ti-settings"></i><span>Settings</span>
                     </a>
                 </li>
                 
                 <li>
-                    <a href="{{ route('transactions.index') }}">
+                    <a href="{{ route('transactions.index') }}" class="{{ request()->routeIs('transactions.index') ? 'active' : '' }}">
                         <i class="ti ti-receipt"></i><span>Transactions</span>
                     </a>
                 </li>
-                
                 
                 <li>
                     <a href="javascript:void(0);" onclick="confirmSupport()">
@@ -227,7 +264,7 @@
 
 /* Active state */
 .sidebar-menu li a.active {
-    background: #007bff;
+    background: #f1d2aeff;
     color: white;
 }
 

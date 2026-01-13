@@ -12,6 +12,7 @@ class ApiApplication extends Model
     protected $fillable = [
         'user_id',
         'api_type',
+        'business_name',
         'website_link',
         'business_description',
         'business_nature',
