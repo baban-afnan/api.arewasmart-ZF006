@@ -42,6 +42,12 @@ Route::prefix('v1')->group(function () {
     // BVN Modification
     Route::post('/bvn/modification', [\App\Http\Controllers\Agency\BvnModificationController::class, 'store'])->name('bvn.modification.store');
     Route::get('/bvn/modification', [\App\Http\Controllers\Agency\BvnModificationController::class, 'checkStatus']);
+
+
+    // Airtime Purchase (No Web Auth needed, handled by Controller)
+    Route::post('/airtime/purchase', [\App\Http\Controllers\Billpayment\AirtimeController::class, 'purchase'])->name('api.airtime.purchase');
+
+   
 });
 
 // Webhooks

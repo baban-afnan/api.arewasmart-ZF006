@@ -169,17 +169,17 @@
                 </div>
             </div>
 
-            <!-- utility card -->
+            <!-- Commission/Bonus card -->
             <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.4s;">
                  <div class="financial-card shadow-sm h-100 p-4" style="background: var(--warning-gradient);">
                     <div class="d-flex justify-content-between align-items-start position-relative z-1">
                         <div>
-                            <p class="stats-label mb-1" style="color: white;">Bill Payments</p>
-                            <h3 class="stats-value mb-0">{{ number_format($monthlyStats['validation'] ?? 0) }}</h3>
-                            <small class="text-white-50 fs-12 fw-medium">Total bill payments transaction</small>
+                            <p class="stats-label mb-1" style="color: white;">Commissions Earned</p>
+                            <h3 class="stats-value mb-0">₦{{ number_format($monthlyStats['bonus_total'] ?? 0, 2) }}</h3>
+                            <small class="text-white-50 fs-12 fw-medium">Total bonus this month</small>
                         </div>
                         <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-3">
-                            <i class="fas fa-money-bill-wave fs-24 text-white"></i>
+                            <i class="fas fa-gift fs-24 text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -222,11 +222,12 @@
                                         <td>
                                             <span class="badge bg-{{ match($transaction->type) {
                                                 'credit' => 'success-subtle text-success',
+                                                'bonus' => 'success-subtle text-success',
                                                 'debit' => 'danger-subtle text-danger',
                                                 'refund' => 'info-subtle text-info',
                                                 'chargeback' => 'warning-subtle text-warning',
                                                 default => 'secondary-subtle text-secondary'
-                                            } }} border-0 rounded-pill px-2 py-1">
+                                                 } }} border-0 rounded-pill px-2 py-1">
                                                 <i class="ti ti-{{ $transaction->type == 'credit' ? 'arrow-down-left' : 'arrow-up-right' }} me-1"></i>
                                                 {{ ucfirst($transaction->type) }}
                                             </span>

@@ -92,22 +92,32 @@
                         <i class="ti ti-home"></i><span>Dashboard</span>
                     </a>
                 </li>
-                
-                <li>
-                    <a href="{{ route('wallet') }}" class="{{ request()->routeIs('wallet') ? 'active' : '' }}">
-                        <i class="ti ti-wallet"></i><span>Wallet</span>
+
+
+                   <!-- wallet -->
+                <li class="submenu">
+                    <a href="javascript:void(0);">
+                        <i class="ti ti-wallet"></i>
+                        <span>Wallet</span>
+                        <span class="menu-arrow"></span>
                     </a>
+                    <ul>
+                        <li><a href="{{ route('wallet') }}" class="{{ request()->routeIs('wallet') ? 'active' : '' }}">Wallet</a></li>
+                        <li><a href="{{ route('wallet.bonus') }}" class="{{ request()->routeIs('wallet.bonus') ? 'active' : '' }}">Bonus</a></li>
+                    </ul>
                 </li>
+                <!-- /wallet-->
+                
 
                 <!-- Utility bill payment Services -->
                 <li class="submenu">
                     <a href="javascript:void(0);">
-                        <i class="ti ti-user-check"></i>
+                        <i class="ti ti-currency-naira"></i>
                         <span>Bill payment</span>
                         <span class="menu-arrow"></span>
                     </a>
                     <ul>
-                        <li><a href="#">Airtime</a></li>
+                        <li><a href="{{ route('developer.airtime.docs') }}" class="{{ request()->routeIs('developer.airtime.docs') ? 'active' : '' }}">Airtime</a></li>
                         <li><a href="#">Data</a></li>
                         <li><a href="#">Electricity</a></li>
                         <li><a href="#">TV</a></li>
@@ -119,7 +129,7 @@
                 <!-- BVN Services -->
                 <li class="submenu">
                     <a href="javascript:void(0);">
-                        <i class="ti ti-user-check"></i>
+                        <i class="ti ti-home"></i>
                         <span>BVN Services</span>
                         <span class="menu-arrow"></span>
                     </a>
@@ -155,7 +165,7 @@
                 <!-- Verification -->
                 <li class="submenu">
                     <a href="javascript:void(0);">
-                        <i class="ti ti-user-check"></i>
+                        <i class="ti ti-fingerprint"></i>
                         <span>Verification</span>
                         <span class="menu-arrow"></span>
                     </a>

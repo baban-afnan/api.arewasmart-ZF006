@@ -93,8 +93,9 @@ class DashboardController extends Controller
         // --- NEW: API User Statistics ---
         $statusCounts = [];
         $monthlyStats = [];
+        $isApiUser = !empty($user->api_token);
 
-        if ($user->role === 'api') {
+        if ($isApiUser) {
             // 1. Status Counts (AgentService)
             $statusCountsRaw = AgentService::where('user_id', $user->id)
                 ->selectRaw("count(case when status = 'pending' then 1 end) as pending")
@@ -142,6 +143,12 @@ class DashboardController extends Controller
             $monthlyStats['nin_modification'] = $monthlyAgency->nin_modification ?? 0;
             $monthlyStats['bvn_modification'] = $monthlyAgency->bvn_modification ?? 0;
 
+            // 4. Bonus/Commission Total (type = 'bonus')
+            $monthlyStats['bonus_total'] = Transaction::where('user_id', $user->id)
+                ->where('type', 'bonus')
+                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->sum('amount');
+
             // Aggregated for UI Cards
             $monthlyStats['total_verifications'] = $monthlyStats['nin'] + $monthlyStats['bvn'] + $monthlyStats['tin'];
             $monthlyStats['total_validation_ipe'] = $monthlyStats['validation'] + $monthlyStats['ipe']; 
@@ -171,7 +178,8 @@ class DashboardController extends Controller
             'failedPercentage',
             'statusCounts',
             'monthlyStats',
-            'application'
+            'application',
+            'isApiUser'
         ));
     }
 }

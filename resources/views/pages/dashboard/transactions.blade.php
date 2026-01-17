@@ -99,6 +99,7 @@
                                         <td>
                                             <span class="badge bg-{{ match($transaction->type) {
                                                 'credit' => 'success',
+                                                'bonus' => 'success',
                                                 'debit' => 'danger',
                                                 'refund' => 'info',
                                                 'chargeback' => 'warning',

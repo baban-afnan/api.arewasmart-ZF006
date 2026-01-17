@@ -26,8 +26,10 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureApiUser::class
 
     // Wallet Funding
     Route::get('/wallet', [App\Http\Controllers\WalletController::class, 'index'])->name('wallet');
+    Route::get('/wallet/bonus', [App\Http\Controllers\WalletController::class, 'bonus'])->name('wallet.bonus');
     Route::post('/wallet/claim-bonus', [App\Http\Controllers\WalletController::class, 'claimBonus'])->name('wallet.claimBonus');
     Route::post('/wallet/create-virtual-account', [App\Http\Controllers\WalletController::class, 'createWallet'])->name('wallet.create');
+    Route::post('/wallet/transfer-available', [App\Http\Controllers\WalletController::class, 'transferAvailableBalance'])->name('wallet.transfer');
 
     // Transactions
     Route::get('/transactions', [App\Http\Controllers\TransactionController::class, 'index'])->name('transactions.index');
@@ -51,7 +53,15 @@ Route::group(['prefix' => 'developer', 'as' => 'developer.', 'middleware' => ['a
     Route::get('/nin-modification', [\App\Http\Controllers\Agency\NinModificationController::class, 'index'])->name('nin.modification.docs');
     
     Route::get('/bvn-modification', [\App\Http\Controllers\Agency\BvnModificationController::class, 'index'])->name('bvn.modification.docs');
+
     Route::get('/bvn-modification/fields/{serviceId}', [\App\Http\Controllers\Agency\BvnModificationController::class, 'getServiceFields'])->name('bvn.modification.fields');
+
+    // Airtime API Docs
+    Route::get('/airtime', [\App\Http\Controllers\Billpayment\AirtimeController::class, 'index'])->name('airtime.docs');
 });
+
+// Authenticated API Routes (Web-based auth for docs/usage or just API endpoints)
+// Ideally API endpoints should be in routes/api.php but based on 'EnsureApiUser' usage in web.php for other verification routes:
+
 
 require __DIR__.'/auth.php';

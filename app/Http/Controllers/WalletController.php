@@ -47,6 +47,36 @@ class WalletController extends Controller
     }
 
     /**
+     * Show bonus/available balance page
+     */
+    public function bonus()
+    {
+        $userId = Auth::id();
+        $user = Auth::user();
+
+        $wallet = Wallet::where('user_id', $userId)->first();
+
+        // Handle case where wallet might not exist yet
+        if (!$wallet) {
+            $walletData = [
+                'wallet_balance'    => 0,
+                'bonus'             => $user->referral_bonus ?? 0,
+                'status'            => 'inactive',
+                'available_balance' => 0,
+            ];
+        } else {
+            $walletData = [
+                'wallet_balance'    => $wallet->balance,
+                'bonus'             => $user->referral_bonus ?? 0,
+                'status'            => $wallet->status ?? 'active',
+                'available_balance' => $wallet->available_balance ?? 0,
+            ];
+        }
+
+        return view('wallet.bonus', compact('walletData'));
+    }
+
+    /**
      * Create Virtual Wallet
      */
     public function createWallet(Request $request)
@@ -123,6 +153,86 @@ class WalletController extends Controller
         });
 
         return redirect()->route('wallet')->with(['success' => 'Bonus successfully claimed and added to your wallet balance.']);
+    }
+
+    /**
+     * Transfer available_balance to main wallet balance
+     */
+    public function transferAvailableBalance(Request $request)
+    {
+        $request->validate([
+            'pin' => 'required|numeric|digits:5',
+        ]);
+
+        $userId = Auth::id();
+        $user = Auth::user();
+        
+        // Verify PIN
+        if (!\Illuminate\Support\Facades\Hash::check($request->pin, $user->pin)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid transaction PIN.'
+            ], 403);
+        }
+
+        try {
+            return DB::transaction(function () use ($userId, $user) {
+                $wallet = Wallet::where('user_id', $userId)->lockForUpdate()->first();
+
+                if (!$wallet) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Wallet not found.'
+                    ], 404);
+                }
+
+                $availableBalance = $wallet->available_balance ?? 0;
+
+                if ($availableBalance <= 0) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No available balance to transfer.'
+                    ], 400);
+                }
+
+                // Transfer available_balance to balance
+                $wallet->balance += $availableBalance;
+                $wallet->available_balance = 0;
+                $wallet->save();
+
+                // Create transaction record using user's preferred format
+                $performedBy = $user->first_name . ' ' . $user->last_name;
+                $transactionRef = 'Btr1101-' . strtoupper(Str::random(10));
+
+                Transaction::create([
+                    'user_id'         => $userId,
+                    'payer_name'      => $performedBy,
+                    'transaction_ref' => $transactionRef,
+                    'type'            => 'credit',
+                    'description'     => 'Transfer from Available Balance to Main Wallet',
+                    'amount'          => $availableBalance,
+                    'status'          => 'completed',
+                    'performed_by'    => $performedBy,
+                    'trans_source'    => 'api',
+                    'metadata'        => json_encode(['source' => 'available_balance']),
+                    'created_at'      => \Carbon\Carbon::now(),
+                    'updated_at'      => \Carbon\Carbon::now(),
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Transfer successful',
+                    'amount' => $availableBalance,
+                    'new_balance' => $wallet->balance,
+                    'transaction_ref' => $transactionRef
+                ], 200);
+            });
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transfer failed: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 }
