@@ -1,5 +1,5 @@
 <x-app-layout>
-  <title>Arewa Smart - {{ $title ?? 'Wallet Funding' }}</title>
+  <title>Arewa Smart - wallet funding</title>
   
   <div class="container-fluid py-4">
     <div class="row g-4 align-items-start">

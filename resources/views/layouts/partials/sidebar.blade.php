@@ -118,8 +118,8 @@
                     </a>
                     <ul>
                         <li><a href="{{ route('developer.airtime.docs') }}" class="{{ request()->routeIs('developer.airtime.docs') ? 'active' : '' }}">Airtime</a></li>
-                        <li><a href="#">Data</a></li>
-                        <li><a href="#">Electricity</a></li>
+                        <li><a href="{{ route('developer.data.docs') }}" class="{{ request()->routeIs('developer.data.docs') ? 'active' : '' }}">Data</a></li>
+                        <li><a href="{{ route('developer.electricity.docs') }}" class="{{ request()->routeIs('developer.electricity.docs') ? 'active' : '' }}">Electricity</a></li>
                         <li><a href="#">TV</a></li>
                         <li><a href="#">Education Pin</a></li>
                     </ul>

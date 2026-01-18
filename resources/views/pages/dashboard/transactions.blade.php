@@ -1,5 +1,5 @@
 <x-app-layout>
-      <title>Arewa Smart - {{ $title ?? 'Transactions' }}</title>
+    <title>Arewa Smart - {{ $title ?? 'API Transactions' }}</title>
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -109,14 +109,18 @@
                                                 {{ ucfirst($transaction->type) }}
                                             </span>
                                         </td>
-                                        <td>₦{{ number_format($transaction->amount, 2) }}</td>
+                                        <td class="fw-bold {{ in_array($transaction->type, ['credit', 'bonus', 'refund']) ? 'text-success' : 'text-danger' }}">
+                                            {{ in_array($transaction->type, ['credit', 'bonus', 'refund']) ? '+' : '-' }}₦{{ number_format($transaction->amount, 2) }}
+                                        </td>
                                         <td>
                                             <span class="badge bg-{{ $transaction->status === 'completed' ? 'success' : ($transaction->status === 'pending' ? 'warning' : 'danger') }}">
                                                 {{ ucfirst($transaction->status) }}
                                             </span>
                                         </td>
                                         <td>{{ $transaction->created_at->format('M d, Y H:i A') }}</td>
-                                        <td>{{ $transaction->description }}</td>
+                                        <td title="{{ $transaction->description }}">
+                                            {{ \Illuminate\Support\Str::limit($transaction->description, 15) }}
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>

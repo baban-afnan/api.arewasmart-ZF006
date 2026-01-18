@@ -1,4 +1,5 @@
 <x-app-layout>
+    <title>Arewa Smart - {{ $title ?? 'NIN Validation API' }}</title>
     <div class="content container-fluid">
          <!-- Page Header -->
         <div class="page-header mb-5">

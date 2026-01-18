@@ -1,5 +1,5 @@
 <x-app-layout>
-     <title>Arewa Smart - {{ $title ?? 'settings' }}</title>
+    <title>Arewa Smart - {{ $title ?? 'Profile Settings' }}</title>
 
     <!-- Custom CSS for Profile Page -->
     <style>

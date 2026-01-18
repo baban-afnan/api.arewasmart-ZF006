@@ -234,8 +234,8 @@
                                         </td>
                                     
                                         <td>
-                                            <span class="fw-bold {{ $transaction->type == 'credit' ? 'text-success' : 'text-danger' }}">
-                                                {{ $transaction->type == 'credit' ? '+' : '-' }}₦{{ number_format($transaction->amount, 2) }}
+                                           <span class="fw-bold {{ in_array($transaction->type, ['credit', 'bonus', 'refund']) ? 'text-success' : 'text-danger' }}">
+                                              {{ in_array($transaction->type, ['credit', 'bonus', 'refund']) ? '+' : '-' }}₦{{ number_format($transaction->amount, 2) }}
                                             </span>
                                         </td>
                                         <td>

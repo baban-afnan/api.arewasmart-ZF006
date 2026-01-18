@@ -44,10 +44,17 @@ Route::prefix('v1')->group(function () {
     Route::get('/bvn/modification', [\App\Http\Controllers\Agency\BvnModificationController::class, 'checkStatus']);
 
 
-    // Airtime Purchase (No Web Auth needed, handled by Controller)
+    // Airtime Purchase
     Route::post('/airtime/purchase', [\App\Http\Controllers\Billpayment\AirtimeController::class, 'purchase'])->name('api.airtime.purchase');
 
-   
+    // Data API (Variations & Purchase)
+    Route::get('/data/variations', [\App\Http\Controllers\Billpayment\DataController::class, 'getVariations'])->name('api.data.variations');
+    Route::post('/data/purchase', [\App\Http\Controllers\Billpayment\DataController::class, 'purchase'])->name('api.data.purchase');
+
+    // Electricity API
+    Route::get('/electricity/variations', [\App\Http\Controllers\Billpayment\ElectricityController::class, 'getVariations'])->name('api.electricity.variations');
+    Route::post('/electricity/verify', [\App\Http\Controllers\Billpayment\ElectricityController::class, 'verifyMeter'])->name('api.electricity.verify');
+    Route::post('/electricity/purchase', [\App\Http\Controllers\Billpayment\ElectricityController::class, 'purchase'])->name('api.electricity.purchase');
 });
 
 // Webhooks

@@ -1,5 +1,5 @@
 <x-app-layout>
-    <title>Arewa Smart - Available Balance</title>
+     <title>Arewa Smart - {{ $title ?? 'transaction Bonus' }}</title>
     
     <div class="container-fluid py-4">
         <!-- Header Section -->

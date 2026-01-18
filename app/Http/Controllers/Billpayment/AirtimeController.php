@@ -147,7 +147,7 @@ class AirtimeController extends Controller
                 $commissionAmount = 0;
                 if ($serviceData['commission'] > 0) {
                     $commissionAmount = ($request->amount * $serviceData['commission']) / 100;
-                    $wallet->increment('balance', $commissionAmount);
+                    $wallet->increment('available_balance', $commissionAmount);
                     
                     $commissionRef = $this->generateTransactionRef();
 

@@ -58,6 +58,12 @@ Route::group(['prefix' => 'developer', 'as' => 'developer.', 'middleware' => ['a
 
     // Airtime API Docs
     Route::get('/airtime', [\App\Http\Controllers\Billpayment\AirtimeController::class, 'index'])->name('airtime.docs');
+
+    // Data API Docs
+    Route::get('/data', [\App\Http\Controllers\Billpayment\DataController::class, 'index'])->name('data.docs');
+
+    // Electricity API Docs
+    Route::get('/electricity', [\App\Http\Controllers\Billpayment\ElectricityController::class, 'index'])->name('electricity.docs');
 });
 
 // Authenticated API Routes (Web-based auth for docs/usage or just API endpoints)
