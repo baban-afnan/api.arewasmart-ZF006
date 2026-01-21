@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Billpayment;
 use App\Helpers\RequestIdHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use App\Models\ServiceField;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use App\Models\User;
@@ -26,7 +27,7 @@ class DataController extends Controller
         $user = Auth::user();
         
         // Fetch Service Price/Commission details for Documentation
-        $service = Service::where('name', 'Data')->first();
+        $service = Service::firstOrCreate(['name' => 'Data'], ['description' => 'Data Services', 'is_active' => true]);
         $commissions = [];
 
         $networks = [
@@ -47,22 +48,18 @@ class DataController extends Controller
             $fieldCode = $fieldCodeMap[$networkCode] ?? null;
             
             if ($fieldCode) {
-                $field = DB::table('service_fields')
-                    ->where('service_id', 16) // Data service ID
-                    ->where('field_code', $fieldCode)
-                    ->first();
+                $field = $service->fields()->where('field_code', $fieldCode)->first()
+                    ?? $service->fields()->create([
+                        'field_name' => $name,
+                        'field_code' => $fieldCode,
+                        'base_price' => 0,
+                        'is_active' => true
+                    ]);
 
-                if ($field) {
-                    $role = $user->role ?? 'user';
-                    $priceObj = DB::table('service_prices')
-                        ->where('service_fields_id', $field->id)
-                        ->where('user_type', $role)
-                        ->first();
-                    
-                    $commissions[$networkCode] = $priceObj ? $priceObj->price : $field->base_price;
-                } else {
-                    $commissions[$networkCode] = 0;
-                }
+                $role = $user->role ?? 'user';
+                $priceObj = $field->prices()->where('user_type', $role)->first();
+                
+                $commissions[$networkCode] = $priceObj ? $priceObj->price : $field->base_price;
             } else {
                 $commissions[$networkCode] = 0;
             }
@@ -283,7 +280,13 @@ class DataController extends Controller
 
     private function getServiceAndCommission($code, $name, $user)
     {
-        // Hardcoded mapping of user identifiers to database field_code values
+        // 1. Ensure "Data" Service exists
+        $service = Service::firstOrCreate(
+            ['name' => 'Data'],
+            ['description' => 'Data purchase services', 'is_active' => true]
+        );
+
+        // 2. Network to Field Code Mapping
         $fieldCodeMap = [
             'mtn-data'      => '104',
             'airtel-data'   => '105',
@@ -297,18 +300,22 @@ class DataController extends Controller
             return ['success' => false, 'message' => 'Service field configuration not found for ' . $code];
         }
 
-        // Find the actual service field ID using the field_code
-        $field = DB::table('service_fields')
-            ->where('service_id', 16) // Data service ID
-            ->where('field_code', $fieldCode)
-            ->first();
+        // 3. Find or Create the Service Field (the specific network)
+        $field = $service->fields()->where('field_code', $fieldCode)->first();
 
         if (!$field) {
-            return ['success' => false, 'message' => 'Service field not found in database for code ' . $fieldCode];
+            // Auto-create the field if missing to prevent system burial
+            $field = $service->fields()->create([
+                'field_name'  => $name . ' Data',
+                'field_code'  => $fieldCode,
+                'base_price'  => 0, // Default 0% commission if not set
+                'is_active'   => true,
+                'description' => "Automated entry for {$name} Data"
+            ]);
         }
 
-        $price = DB::table('service_prices')
-            ->where('service_fields_id', $field->id)
+        // 4. Lookup Price/Commission for user role
+        $price = $field->prices()
             ->where('user_type', $user->role ?? 'user')
             ->first();
 

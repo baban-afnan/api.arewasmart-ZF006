@@ -219,7 +219,7 @@ class NinVerificationController extends Controller
                     $wallet->decrement('balance', $servicePrice);
 
                     // 3. Create Verification Record
-                    Verification::create([
+                    $verification = Verification::create([
                         'user_id' => $user->id,
                         'service_field_id' => $serviceField->id,
                         'service_id' => $service->id,
@@ -228,8 +228,8 @@ class NinVerificationController extends Controller
                         'idno' => $resData['nin'] ?? '',
                         'firstname' => $resData['firstName'] ?? '',
                         'middlename' => $resData['middleName'] ?? '',
-                        'surname' => $resData['lastName'] ?? '',
-                        'birthdate' =>  $resData['birthday'] ?? '',
+                        'surname' => $resData['surname'] ?? $resData['lastName'] ?? '',
+                        'birthdate' =>  $resData['birthDate'] ?? $resData['birthday'] ?? '',
                         'gender' => $resData['gender'] ?? '',
                         'telephoneno' => $resData['phoneNumber'] ?? '',
                         'photo_path' => $resData['photo'] ?? '',
@@ -240,7 +240,18 @@ class NinVerificationController extends Controller
                     return response()->json([
                         'status' => 'success',
                         'message' => 'Successful',
-                        'data' => $resData,
+                        'data' => [
+                            'nin' => $verification->idno,
+                            'firstName' => $verification->firstname,
+                            'middleName' => $verification->middlename,
+                            'surname' => $verification->surname,
+                            'gender' => $verification->gender,
+                            'birthDate' => $verification->birthdate,
+                            'phoneNumber' => $verification->telephoneno,
+                            'photo' => $verification->photo_path,
+                            'reference' => $verification->reference,
+                            'submission_date' => $verification->submission_date->toDateTimeString(),
+                        ],
                         'transaction_ref' => $transactionRef,
                         'charge' => $servicePrice
                     ], 200);
