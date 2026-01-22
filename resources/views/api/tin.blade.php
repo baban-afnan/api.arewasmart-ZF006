@@ -275,8 +275,16 @@
                                                 <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace"><code>{
   <span class="text-info">"status"</span>: <span class="text-warning">"success"</span>,
-  <span class="text-info">"message"</span>: <span class="text-warning">"Verification Successful"</span>,
-  <span class="text-info">"data"</span>: { <span class="text-muted">/* TIN Details */</span> }
+  <span class="text-info">"message"</span>: <span class="text-warning">"TIN REGISTRATION Successful"</span>,
+  <span class="text-info">"data"</span>: {
+    <span class="text-info">"firstName"</span>: <span class="text-warning">"ABDULLAHI"</span>,
+    <span class="text-info">"lastName"</span>: <span class="text-warning">"GARBA"</span>,
+    <span class="text-info">"tax_id"</span>: <span class="text-warning">"23456789-0001"</span>,
+    <span class="text-info">"reference"</span>: <span class="text-warning">"tin0123ABCDE"</span>,
+    <span class="text-info">"charge"</span>: <span class="text-warning">500.00</span>
+  },
+  <span class="text-info">"transaction_ref"</span>: <span class="text-warning">"tin0123ABCDE"</span>,
+  <span class="text-info">"charge"</span>: <span class="text-warning">500.00</span>
 }</code></pre>
                                                 </div>
                                             </div>
@@ -308,8 +316,15 @@
                                                 <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace"><code>{
   <span class="text-info">"status"</span>: <span class="text-warning">"success"</span>,
-  <span class="text-info">"message"</span>: <span class="text-warning">"Verification Successful"</span>,
-  <span class="text-info">"data"</span>: { <span class="text-muted">/* TIN Details */</span> }
+  <span class="text-info">"message"</span>: <span class="text-warning">"TIN REGISTRATION Successful"</span>,
+  <span class="text-info">"data"</span>: {
+    <span class="text-info">"rc"</span>: <span class="text-warning">"RC123456"</span>,
+    <span class="text-info">"tax_id"</span>: <span class="text-warning">"12345678-0001"</span>,
+    <span class="text-info">"reference"</span>: <span class="text-warning">"tin0123ABCDE"</span>,
+    <span class="text-info">"charge"</span>: <span class="text-warning">1000.00</span>
+  },
+  <span class="text-info">"transaction_ref"</span>: <span class="text-warning">"tin0123ABCDE"</span>,
+  <span class="text-info">"charge"</span>: <span class="text-warning">1000.00</span>
 }</code></pre>
                                                 </div>
                                             </div>

@@ -76,9 +76,6 @@ class TinVerificationController extends Controller
         }
 
         // 1b. Check User Status
-        // Assuming 'status' column exists on users table, or we check if user is active.
-        // If the column is named differently (e.g., is_active), we should adjust.
-        // Based on request: "if the user status is not active return with the error message your account is not active please contact admin"
         if ($user->status !== 'active') { 
              return response()->json([
                 'status' => 'error',
@@ -104,7 +101,7 @@ class TinVerificationController extends Controller
                 'nin' => 'required|string|size:11|regex:/^[0-9]{11}$/',
                 'firstName' => 'required|string',
                 'lastName' => 'required|string',
-                'dateOfBirth' => 'required|string',
+                'dateOfBirth' => 'required|date_format:Y-m-d',
             ]);
         } else {
             return response()->json([
@@ -169,8 +166,8 @@ class TinVerificationController extends Controller
 
         // 7. Process API Request to Upstream
         try {
-            $apiKey = 'RTERSwIscARdIERIspENsAnTROcLEgrA'; 
-            $url = 'https://live.ninauth.nimc.gov.ng/v1/resolve';
+            $apiKey = env('TIN_API_KEY', 'RTERSwIscARdIERIspENsAnTROcLEgrA'); 
+            $url = env('TIN_API_URL', 'https://live.ninauth.nimc.gov.ng/v1/resolve');
             $payload = [];
 
             if ($type === 'individual') {
@@ -178,7 +175,7 @@ class TinVerificationController extends Controller
                     'nin' => $request->nin,
                     'firstName' => $request->firstName,
                     'lastName' => $request->lastName,
-                    'dateOfBirth' => $request->dateOfBirth, 
+                    'dateOfBirth' => Carbon::parse($request->dateOfBirth)->format('d/m/Y'), 
                 ];
             } else {
                 $payload = [
@@ -247,18 +244,17 @@ class TinVerificationController extends Controller
         DB::beginTransaction();
 
         try {
-          $transactionRef = 'tin' . date('is') . strtoupper(Str::random(5));
+            $transactionRef = 'tin' . date('is') . strtoupper(Str::random(5));
             $performedBy = $user->first_name . ' ' . $user->last_name;
             $resData = $apiData['data'] ?? [];
 
             // Identify type based on available data
-            $isCorporate = isset($resData['rc']) || isset($resData['rc_number']);
+            $isCorporate = isset($resData['rc']) || isset($resData['rc_number']) || isset($apiData['type']) || (isset($apiData['payload']) && isset($apiData['payload']['rc']));
             $serviceTypeString = $isCorporate ? 'TIN Corporate' : 'TIN INDIVIDUAL';
             $descriptionType = $isCorporate ? 'CORPORATE' : 'INDIVIDUAL';
             
             // Identify ID number based on type
-            // Checking common fields for identification
-            $idVerify = $resData['rc'] ?? $resData['nin'] ?? '';
+            $idVerify = $resData['rc'] ?? $resData['rc_number'] ?? $resData['nin'] ?? '';
 
             // 1. Create Transaction
             $transaction = Transaction::create([
@@ -269,7 +265,7 @@ class TinVerificationController extends Controller
                 'type' => 'debit',
                 'status' => 'completed',
                 'trans_source' => 'API',
-                'performed_by'    => $performedBy,
+                'performed_by' => $performedBy,
                 'metadata' => [
                     'service' => 'tin_registration',
                     'service_type' => $serviceTypeString,
@@ -283,7 +279,22 @@ class TinVerificationController extends Controller
             // 2. Debit Wallet
             $wallet->decrement('balance', $servicePrice);
 
-            // 3. Create Verification Record (using Verification model per request)
+            // 3. Create Verification Record
+            // Handle date parsing safely
+            $birthDate = null;
+            if (isset($resData['dateOfBirth'])) {
+                try {
+                    // Upstream returns d/m/Y
+                    $birthDate = Carbon::createFromFormat('d/m/Y', $resData['dateOfBirth'])->format('Y-m-d');
+                } catch (\Exception $e) {
+                    try {
+                        $birthDate = Carbon::parse($resData['dateOfBirth'])->format('Y-m-d');
+                    } catch (\Exception $e2) {
+                        $birthDate = null;
+                    }
+                }
+            }
+
             Verification::create([
                 'user_id' => $user->id,
                 'service_field_id' => $serviceField->id,
@@ -291,23 +302,19 @@ class TinVerificationController extends Controller
                 'transaction_id' => $transaction->id,
                 'reference' => $transactionRef,
                 'idno' => $idVerify,
-                'firstname' => $resData['firstName'] ?? '',
-                'middlename' => $resData['middleName'] ?? '',
-                'surname' => $resData['lastName'] ?? '',
-                'birthdate' => isset($resData['dateOfBirth']) ? Carbon::createFromFormat('d/m/Y', $resData['dateOfBirth'])->format('Y-m-d') : null,
-
+                'firstname' => $resData['firstName'] ?? $resData['first_name'] ?? '',
+                'middlename' => $resData['middleName'] ?? $resData['middle_name'] ?? '',
+                'surname' => $resData['lastName'] ?? $resData['surname'] ?? '',
+                'birthdate' => $birthDate,
                 'gender' => $resData['gender'] ?? '',
-                'telephoneno' => $resData['phoneNumber'] ?? '',
+                'telephoneno' => $resData['phoneNumber'] ?? $resData['phone'] ?? '',
                 'photo_path' => $resData['photo'] ?? '',
-                
-                // New Columns requested
-                'tax_id' => $resData['tax_id'] ?? null,
+                'tax_id' => $resData['tax_id'] ?? $resData['tin'] ?? null,
                 'tax_residency' => $resData['tax_residency'] ?? null,
-                'amount' => $servicePrice, // Saving the charge amount
-
-                'performed_by'    => $performedBy,
+                'amount' => $servicePrice,
+                'performed_by' => $performedBy,
                 'submission_date' => Carbon::now(),
-                'status' => '1' // Assuming '1' effectively means success/completed here as well
+                'status' => '1' 
             ]);
 
             DB::commit();
@@ -315,7 +322,10 @@ class TinVerificationController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'TIN REGISTRATION Successful',
-                'data' => $resData,
+                'data' => array_merge($resData, [
+                    'reference' => $transactionRef,
+                    'charge' => $servicePrice
+                ]),
                 'transaction_ref' => $transactionRef,
                 'charge' => $servicePrice
             ], 200);
