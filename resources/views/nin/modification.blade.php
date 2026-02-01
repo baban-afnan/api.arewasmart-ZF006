@@ -71,7 +71,7 @@
                             <div class="card-body p-4 position-relative z-index-1">
                                 <h6 class="fw-bold text-white mb-2">Need Help?</h6>
                                 <p class="small text-white-50 mb-3">Our support team is available 24/7 to assist with integration.</p>
-                                <a href="https://wa.me/2347037343660" target="_blank" class="btn btn-white text-primary w-100 btn-sm rounded-pill fw-bold shadow-sm">
+                                <a href="https://chat.whatsapp.com/KoSu12yDO4A8b6AvYSkvIx" target="_blank" class="btn btn-white text-primary w-100 btn-sm rounded-pill fw-bold shadow-sm">
                                     <i class="ti ti-brand-whatsapp me-1"></i> Contact Support
                                 </a>
                             </div>
@@ -324,6 +324,7 @@
                                     <ul class="nav nav-tabs mb-3" id="payload-tabs">
                                         <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#payload-gen">General</a></li>
                                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#payload-dob">DOB (Child)</a></li>
+                                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#payload-response">Response</a></li>
                                     </ul>
 
                                     <div class="tab-content">
@@ -335,13 +336,14 @@
                                                 </div>
                                                 <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace" id="code-gen"><code>{
+{
   "field_code": "033",
   "nin": "12345678901",
-  "description": "Phone Update",
-  "modification_data": {
+  "description": {
     "new_phone_number": "08012345678",
     "reason": "Old line lost"
   }
+}
 }</code></pre>
                                                 </div>
                                             </div>
@@ -357,8 +359,7 @@
 <pre class="m-0 p-4 text-white font-monospace" style="max-height: 400px; overflow-y: auto;" id="code-dob"><code>{
     "field_code": "035",
     "nin": "12345678901",
-    "description": "DOB Correction for Child",
-    "modification_data": {
+    "description": {
         "first_name": "Ibrahim",
         "surname": "Musa",
         "middle_name": "Ali",
@@ -394,6 +395,29 @@
         "reg_state": "Kano",
         "reg_lga": "Nassarawa",
         "reg_centre": "NIMC Centre"
+    }
+}</code></pre>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane fade" id="payload-response">
+                                             <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
+                                                <div class="card-header bg-light border-bottom py-3 d-flex justify-content-between">
+                                                    <h6 class="fw-bold text-dark mb-0">Sample Response</h6>
+                                                    <button class="btn btn-sm btn-outline-primary copy-btn" data-clipboard-target="#code-response"><i class="ti ti-clipboard"></i> Copy</button>
+                                                </div>
+                                                <div class="card-body p-0 bg-dark">
+<pre class="m-0 p-4 text-white font-monospace" id="code-response"><code>{
+    "success": true,
+    "data": {
+        "reference": "M1WTJCGEMDGZ",
+        "nin": "12345678901",
+        "service": "Phone Number Update",
+        "status": "pending",
+        "comment": null,
+        "file_url": null,
+        "submission_date": "2026-01-11T12:02:59.000000Z"
     }
 }</code></pre>
                                                 </div>
@@ -463,13 +487,19 @@
                                             <h6 class="fw-bold text-success mb-0">Response</h6>
                                         </div>
                                         <div class="card-body p-0 bg-dark">
-<pre class="m-0 p-4 text-white font-monospace"><code>{
-  <span class="text-info">"success"</span>: <span class="text-warning">true</span>,
-  <span class="text-info">"data"</span>: {
-    <span class="text-info">"status"</span>: <span class="text-warning">"completed"</span>,
-    <span class="text-info">"reason"</span>: <span class="text-warning">"Approved"</span>,
-    <span class="text-info">"file_url"</span>: <span class="text-warning">"https://..."</span>
-  }
+<pre class="m-0 p-4 text-white font-monospace"><code>
+ {
+    "success": true,
+    "data": {
+        "reference": "M1WTJCGEMDGZ",
+        "nin": "12345678901",
+        "service": "Phone Number Update",
+        "status": "pending",
+        "comment": null,
+        "file_url": null,
+        "submission_date": "2026-01-11"
+    }
+
 }</code></pre>
                                         </div>
                                     </div>

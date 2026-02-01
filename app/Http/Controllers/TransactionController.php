@@ -13,8 +13,8 @@ class TransactionController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Transaction::where('user_id', Auth::id())
-            ->where('trans_source', 'api');
+        $query = Transaction::where('user_id', Auth::id());
+    
 
         // Date Filtering Logic (Default to this month)
         if ($request->filled('start_date') && $request->filled('end_date')) {
@@ -40,6 +40,7 @@ class TransactionController extends Controller
         $totalCredit = $query->clone()->where('type', 'credit')->sum('amount');
         $totalDebit = $query->clone()->where('type', 'debit')->sum('amount');
         $totalRefund = $query->clone()->where('type', 'refund')->sum('amount');
+        $totalBonus = $query->clone()->where('type', 'bonus')->sum('amount');
 
         $transactions = $query->orderBy('created_at', 'desc')->paginate(15);
 
@@ -48,6 +49,7 @@ class TransactionController extends Controller
             'totalCredit',
             'totalDebit',
             'totalRefund',
+            'totalBonus',
             'startDate',
             'endDate'
         ));

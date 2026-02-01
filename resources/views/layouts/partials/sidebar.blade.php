@@ -156,7 +156,8 @@
                         <span class="menu-arrow"></span>
                     </a>
                     <ul>
-                        <li><a href="{{ route('developer.nin.validation.docs') }}" class="{{ request()->routeIs('developer.nin.validation.docs') ? 'active' : '' }}">Validation & IPE API Docs</a></li>
+                        <li><a href="{{ route('developer.nin.validation.docs') }}" class="{{ request()->routeIs('developer.nin.validation.docs') ? 'active' : '' }}">Validation API Docs</a></li>
+                        <li><a href="{{ route('developer.nin.ipe.docs') }}" class="{{ request()->routeIs('developer.nin.ipe.docs') ? 'active' : '' }}">IPE Clearance API Docs</a></li>
                         <li><a href="{{ route('developer.nin.modification.docs') }}" class="{{ request()->routeIs('developer.nin.modification.docs') ? 'active' : '' }}">Modification</a></li>
                     </ul>
                 </li>
@@ -173,6 +174,8 @@
                         <li><a href="{{ route('developer.bvn.docs') }}" class="{{ request()->routeIs('developer.bvn.docs') ? 'active' : '' }}">BVN API Docs</a></li>
                         <li><a href="{{ route('developer.nin.docs') }}" class="{{ request()->routeIs('developer.nin.docs') ? 'active' : '' }}">NIN API Docs</a></li>
                         <li><a href="{{ route('developer.tin.docs') }}" class="{{ request()->routeIs('developer.tin.docs') ? 'active' : '' }}">TIN API Docs</a></li>
+                        <li><a href="{{ route('developer.nin.demo.docs') }}" class="{{ request()->routeIs('developer.nin.demo.docs') ? 'active' : '' }}">NIN DEMO Docs</a></li>
+                        <li><a href="{{ route('developer.nin.phone.docs') }}" class="{{ request()->routeIs('developer.nin.phone.docs') ? 'active' : '' }}">NIN Phone No Docs</a></li>
                     </ul>
                 </li>
                 <!-- /Verification -->

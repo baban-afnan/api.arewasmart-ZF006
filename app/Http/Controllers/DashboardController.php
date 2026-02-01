@@ -66,8 +66,7 @@ class DashboardController extends Controller
         // 5. Recent 10 Transactions
         $recentTransactions = Transaction::where('user_id', $user->id)
             ->latest()
-            ->where('trans_source', 'api')
-            ->take(10)
+            ->take(12)
             ->get();
 
 
@@ -78,17 +77,23 @@ class DashboardController extends Controller
             ->selectRaw("count(case when status = 'completed' then 1 end) as completed")
             ->selectRaw("count(case when status = 'pending' then 1 end) as pending")
             ->selectRaw("count(case when status = 'failed' then 1 end) as failed")
+            ->selectRaw("count(case when type = 'refund' then 1 end) as refund")
+            ->selectRaw("count(case when type = 'bonus' then 1 end) as bonus")
             ->first();
 
         $totalTransactions = $transactionStats->total ?? 0;
         $completedTransactions = $transactionStats->completed ?? 0;
         $pendingTransactions = $transactionStats->pending ?? 0;
         $failedTransactions = $transactionStats->failed ?? 0;
+        $refundTransactions = $transactionStats->refund ?? 0;
+        $bonusTransactions = $transactionStats->bonus ?? 0;
 
         // Calculate percentages
         $completedPercentage = $totalTransactions > 0 ? round(($completedTransactions / $totalTransactions) * 100) : 0;
         $pendingPercentage = $totalTransactions > 0 ? round(($pendingTransactions / $totalTransactions) * 100) : 0;
         $failedPercentage = $totalTransactions > 0 ? round(($failedTransactions / $totalTransactions) * 100) : 0;
+        $refundPercentage = $totalTransactions > 0 ? round(($refundTransactions / $totalTransactions) * 100) : 0;
+        $bonusPercentage = $totalTransactions > 0 ? round(($bonusTransactions / $totalTransactions) * 100) : 0;
 
         // --- NEW: API User Statistics ---
         $statusCounts = [];
@@ -116,10 +121,11 @@ class DashboardController extends Controller
             $startOfMonth = Carbon::now()->startOfMonth();
             $endOfMonth = Carbon::now()->endOfMonth();
 
-            $monthlyVerifications = \App\Models\Verification::where('user_id', $user->id)
-                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-                ->selectRaw("count(case when type like 'NIN%' then 1 end) as nin")
-                ->selectRaw("count(case when type like 'BVN%' then 1 end) as bvn")
+            $monthlyVerifications = \App\Models\Verification::join('service_fields', 'verifications.service_field_id', '=', 'service_fields.id')
+                ->where('verifications.user_id', $user->id)
+                ->whereBetween('verifications.created_at', [$startOfMonth, $endOfMonth])
+                ->selectRaw("count(case when service_fields.field_name like '%NIN%' then 1 end) as nin")
+                ->selectRaw("count(case when service_fields.field_name like '%BVN%' then 1 end) as bvn")
                 ->first();
 
             $tinCount = AgentService::where('user_id', $user->id)
@@ -180,6 +186,8 @@ class DashboardController extends Controller
             'completedPercentage',
             'pendingPercentage',
             'failedPercentage',
+            'refundPercentage',
+            'bonusPercentage',
             'statusCounts',
             'monthlyStats',
             'application',

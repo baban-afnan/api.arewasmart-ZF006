@@ -27,13 +27,18 @@ Route::prefix('v1')->group(function () {
     
     // NIN Verification
     Route::post('/nin/verify', [NinVerificationController::class, 'verify']);
+    Route::post('/nin/demo', [\App\Http\Controllers\Api\NinDemoController::class, 'store']);
+    Route::post('/nin/phone', [\App\Http\Controllers\Api\NinPhoneController::class, 'store']);
 
     // TIN Verification
     Route::post('/tin/verify', [\App\Http\Controllers\Api\TinVerificationController::class, 'verify']);
 
-    // NIN Validation & IPE Status Check
+    // NIN Validation & IPE
     Route::post('/nin/validation', [\App\Http\Controllers\Agency\NinValidationController::class, 'store']);
     Route::get('/nin/validation', [\App\Http\Controllers\Agency\NinValidationController::class, 'checkStatus']);
+
+    Route::post('/nin/ipe', [\App\Http\Controllers\Agency\NinIpeController::class, 'store']);
+    Route::get('/nin/ipe', [\App\Http\Controllers\Agency\NinIpeController::class, 'checkStatus']);
 
     // NIN Modification
     Route::post('/nin/modification', [\App\Http\Controllers\Agency\NinModificationController::class, 'store']);
@@ -41,7 +46,7 @@ Route::prefix('v1')->group(function () {
 
     // BVN Modification
     Route::post('/bvn/modification', [\App\Http\Controllers\Agency\BvnModificationController::class, 'store'])->name('bvn.modification.store');
-    Route::get('/bvn/modification', [\App\Http\Controllers\Agency\BvnModificationController::class, 'checkStatus']);
+    Route::get('/bvn/modification', [\App\Http\Controllers\Agency\BvnModificationController::class, 'checkStatus'])->name('bvn.modification.status');
 
 
     // Airtime Purchase

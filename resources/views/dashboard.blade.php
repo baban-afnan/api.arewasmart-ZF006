@@ -117,13 +117,13 @@
         @if($isApiUser)
         <div class="row g-3 mb-4">
             <div class="col-12">
-                <h5 class="fw-bold mb-0">Monthly Service Overview</h5>
+                <h5 class="fw-bold mb-0 text-primary">Monthly Service Overview</h5>
                 <p class="text-muted small">Your transaction counts for this month.</p>
             </div>
             
             <!-- verification Card -->
             <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.1s;">
-                <div class="financial-card shadow-sm h-100 p-4" style="background: var(--primary-gradient);">
+                <div class="financial-card shadow-sm h-80 p-4" style="background: var(--primary-gradient);">
                     <div class="d-flex justify-content-between align-items-start position-relative z-1">
                         <div>
                             <p class="stats-label mb-1" style="color: white;">Verification</p>
@@ -139,7 +139,7 @@
 
             <!-- validation and ipe Card -->
             <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.2s;">
-                <div class="financial-card shadow-sm h-100 p-4" style="background: var(--success-gradient);">
+                <div class="financial-card shadow-sm h-80 p-4" style="background: var(--success-gradient);">
                     <div class="d-flex justify-content-between align-items-start position-relative z-1">
                         <div>
                             <p class="stats-label mb-1" style="color: white;">Validation and IPE</p>
@@ -155,12 +155,12 @@
 
             <!-- modifications Card -->
             <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.3s;">
-                <div class="financial-card shadow-sm h-100 p-4" style="background: var(--info-gradient);">
+                <div class="financial-card shadow-sm h-80 p-4" style="background: var(--info-gradient);">
                     <div class="d-flex justify-content-between align-items-start position-relative z-1">
                         <div>
-                            <p class="stats-label mb-1" style="color: white;">NIN & BVN Modifications</p>
+                            <p class="stats-label mb-1" style="color: white;">NIN & BVN Mod</p>
                             <h3 class="stats-value mb-0">{{ number_format(($monthlyStats['nin_modification'] ?? 0) + ($monthlyStats['nin modification'] ?? 0) + ($monthlyStats['bvn_modification'] ?? 0)) + ($monthlyStats['bvn modification'] ?? 0) }}</h3>
-                            <small class="text-white-50 fs-12 fw-medium">Total NIN & BVN Modifications</small>
+                            <small class="text-white-50 fs-12 fw-medium">Total Midifications</small>
                         </div>
                         <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-3">
                             <i class="fas fa-user-edit fs-24 text-white"></i>
@@ -171,7 +171,7 @@
 
             <!-- Commission/Bonus card -->
             <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.4s;">
-                 <div class="financial-card shadow-sm h-100 p-4" style="background: var(--warning-gradient);">
+                 <div class="financial-card shadow-sm h-80 p-4" style="background: var(--warning-gradient);">
                     <div class="d-flex justify-content-between align-items-start position-relative z-1">
                         <div>
                             <p class="stats-label mb-1" style="color: white;">Commissions Earned</p>
@@ -274,7 +274,7 @@
                             </div>
                         </div>
 
-                        <div class="row g-2 mb-4">
+                        <div class="row g-2 mb-4 justify-content-center">
                             <div class="col-4">
                                 <div class="p-3 rounded-3 text-center h-100" style="background-color: #d1fae5;">
                                     <h6 class="fw-bold text-dark mb-1">{{ $completedPercentage }}%</h6>
@@ -291,6 +291,18 @@
                                 <div class="p-3 rounded-3 text-center h-100" style="background-color: #fee2e2;">
                                     <h6 class="fw-bold text-dark mb-1">{{ $failedPercentage }}%</h6>
                                     <span class="fs-10 text-muted text-uppercase fw-semibold" style="font-size: 10px;">FAILED</span>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3 rounded-3 text-center h-100" style="background-color: #e0f2fe;">
+                                    <h6 class="fw-bold text-dark mb-1">{{ $refundPercentage }}%</h6>
+                                    <span class="fs-10 text-muted text-uppercase fw-semibold" style="font-size: 10px;">REFUND</span>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3 rounded-3 text-center h-100" style="background-color: #f3e8ff;">
+                                    <h6 class="fw-bold text-dark mb-1">{{ $bonusPercentage }}%</h6>
+                                    <span class="fs-10 text-muted text-uppercase fw-semibold" style="font-size: 10px;">BONUS</span>
                                 </div>
                             </div>
                         </div>

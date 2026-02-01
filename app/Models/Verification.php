@@ -32,7 +32,7 @@ class Verification extends Model
     'employmentstatus',
     'educationallevel',
     'profession',
-    'heigth',
+    // 'heigth',
     'title',
     'nin',
     'number_nin',

@@ -168,11 +168,19 @@
                                 <button class="btn btn-outline-danger rounded-pill py-2 fw-semibold shadow-sm d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#pinModal">
                                 <i class="ti ti-key me-2"></i> Reset Transaction PIN
                                </button>
-                                @if($user->apiApplication && $user->apiApplication->status === 'approved')
+                               @if($user->apiApplication && $user->apiApplication->status === 'approved')
                                <button class="btn btn-outline-info rounded-pill py-2 fw-semibold shadow-sm d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#apiTokenModal">
                                <i class="ti ti-code me-2"></i> Show API Token
                                </button>
-                             @endif
+                               @endif
+                               
+                               <button class="btn btn-outline-warning rounded-pill py-2 fw-semibold shadow-sm d-flex align-items-center justify-content-center" onclick="confirmTwoFactorToggle()">
+                                   @if(!$user->two_factor_enabled)
+                                        <i class="ti ti-lock-off me-2"></i> Disable 2FA
+                                   @else
+                                        <i class="ti ti-lock me-2"></i> Enable 2FA
+                                   @endif
+                               </button>
                         </div>
                     </div>
                 </div>
@@ -433,7 +441,50 @@
                 }
             })
         }
+
+        function confirmTwoFactorToggle() {
+            // Inverted Logic: 0 (false) = Active, 1 (true) = Inactive
+            // So if `two_factor_enabled` is false, it is ACTIVE.
+            const is2faActive = @json(!$user->two_factor_enabled);
+            
+            if (is2faActive) {
+                // Logic for Disabling
+                Swal.fire({
+                    title: 'Disable 2FA?',
+                    text: "Are you sure you want to disable Two-Factor Authentication? Your account will be less secure.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, Disable it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('twoFactorToggleForm').submit();
+                    }
+                });
+            } else {
+                // Logic for Enabling
+                Swal.fire({
+                    title: 'Enable 2FA',
+                    text: "Add an extra layer of security to your account by requiring a code when logging in.",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#198754', // Success color
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Enable 2FA!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('twoFactorToggleForm').submit();
+                    }
+                });
+            }
+        }
     </script>
+    
+    {{-- Hidden Form for 2FA Toggling --}}
+    <form id="twoFactorToggleForm" method="POST" action="{{ route('profile.two-factor.toggle') }}" style="display: none;">
+        @csrf
+    </form>
 
 
 </x-app-layout>

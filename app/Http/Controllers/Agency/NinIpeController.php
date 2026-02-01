@@ -3,23 +3,23 @@
 namespace App\Http\Controllers\Agency;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\AgentService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use App\Models\Service;
 use App\Models\ServiceField;
 use App\Models\Transaction;
 use App\Models\Wallet;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Validator;
+use App\Models\AgentService;
 
-class NinValidationController extends Controller
+class NinIpeController extends Controller
 {
     /**
-     * Display the NIN Validation API Documentation.
+     * Display the IPE API Documentation.
      */
     public function index()
     {
@@ -29,38 +29,39 @@ class NinValidationController extends Controller
         }
 
         $role = $user->role ?? 'user';
-        $validationService = Service::where('name', 'Validation')->first();
-        $validationFields = $validationService ? $validationService->fields : collect();
+        $ipeService = Service::where('name', 'IPE')->first();
+        $ipeFields = $ipeService ? $ipeService->fields : collect();
         $services = collect();
 
-        foreach ($validationFields as $field) {
-            if (stripos($field->field_code, '015') === false) continue;
+        foreach ($ipeFields as $field) {
+            // IPE specific filter if needed, e.g. '002'
+            if (stripos($field->field_code, '002') === false) continue;
             
             $price = method_exists($field, 'getPriceForUserType') 
                 ? $field->getPriceForUserType($role) 
                 : ($field->prices()->where('user_type', $role)->value('price') ?? $field->base_price);
-
+            
             $services->push((object)[
                 'id' => $field->id, 
                 'name' => $field->field_name, 
                 'code' => $field->field_code, 
                 'price' => $price, 
-                'type' => 'Validation'
+                'type' => 'IPE'
             ]);
         }
 
-        return view('nin.nin_validation', compact('user', 'services'));
+        return view('nin.ipe', compact('user', 'services'));
     }
 
     /**
-     * Process NIN Validation Request.
+     * Process IPE Request.
      */
     public function store(Request $request)
     {
         // 1. Validation
         $validator = Validator::make($request->all(), [
             'field_code' => 'required',
-            'nin' => 'required|digits:11',
+            'tracking_id' => 'required|string|min:15',
         ]);
 
         if ($validator->fails()) {
@@ -80,8 +81,8 @@ class NinValidationController extends Controller
             return response()->json(['success' => false, 'message' => 'Service is not active'], 503);
         }
 
-        if ($service->name !== 'Validation') {
-             return response()->json(['success' => false, 'message' => 'Invalid Service Type for Validation.'], 400);
+        if ($service->name !== 'IPE') {
+             return response()->json(['success' => false, 'message' => 'Invalid Service Type for IPE Endpoint.'], 400);
         }
 
         // 3. User Authentication
@@ -91,10 +92,10 @@ class NinValidationController extends Controller
         }
 
         if ($user->status !== 'active') { 
-             return response()->json(['success' => false, 'message' => 'Your account is not active please contact admin'], 403);
+             return response()->json(['success' => false, 'message' => 'Your account is not active.'], 403);
         }
 
-        // 4. Wallet Check
+        // 4. Wallet Check & Price
         $role = $user->role ?? 'user';
         $servicePrice = method_exists($serviceField, 'getPriceForUserType') 
             ? $serviceField->getPriceForUserType($role) 
@@ -107,42 +108,42 @@ class NinValidationController extends Controller
 
         // 5. DEBIT FIRST FLOW
         $performedBy = $user->first_name . ' ' . $user->last_name;
-        $transactionRef = 'val' . date('is') . strtoupper(Str::random(5));
-
+        $transactionRef = 'ipe' . date('is') . strtoupper(Str::random(5));
+        
         DB::beginTransaction();
         try {
             // Charge the wallet
             $wallet->decrement('balance', $servicePrice);
             
-            // Create Transaction (Status: Completed as user is charged)
+            // Create Completed Transaction
             $transaction = Transaction::create([
                 'transaction_ref' => $transactionRef,
                 'user_id' => $user->id,
                 'amount' => $servicePrice,
-                'description' => "NIN Agent service for {$serviceField->field_name}",
+                'description' => "NIN Agent service for {$serviceField->field_name} (IPE)",
                 'type' => 'debit',
-                'status' => 'completed',
+                'status' => 'completed', // Money taken
                 'trans_source' => 'API',
                 'performed_by' => $performedBy,
                 'metadata' => [
                     'service' => $serviceField->service->name,
                     'service_field' => $serviceField->field_name,
                     'field_code' => $serviceField->field_code,
-                    'nin' => $request->nin,
+                    'tracking_id' => $request->tracking_id,
                 ],
             ]);
-
+            
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Validation Transaction Create Error: ' . $e->getMessage());
+            Log::error('IPE Transaction Create Error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'System Error: Failed to process payment.'], 500);
         }
 
         // 6. External API Call
         $apiKey = env('NIN_API_KEY');
-        $url = 'https://s8v.ng/api/validation';
-        $payload = ['nin' => $request->nin, 'error' => $serviceField->field_name, 'api' => $apiKey];
+        $url = 'https://www.s8v.ng/api/clearance';
+        $payload = ['tracking_id' => $request->tracking_id, 'token' => $apiKey];
 
         $agentServiceStatus = 'processing';
         $comment = 'Request submitted, processing...';
@@ -153,22 +154,21 @@ class NinValidationController extends Controller
             $response = Http::timeout(30)->post($url, $payload);
             $apiResponseData = $response->json();
 
-            // Check for success status
             if ($response->successful() && isset($apiResponseData['status']) && 
                ($apiResponseData['status'] == 'success' || $apiResponseData['status'] == 'successful')) {
                 $isSuccess = true;
                 $agentServiceStatus = 'successful';
-                $comment = 'NIN validation is created successful';
+                $comment = 'IPE created successful';
             } else {
-                 $comment = $apiResponseData['message'] ?? 'API Error';
+                // API handled error or non-success status
+                $comment = $apiResponseData['message'] ?? 'API Error';
             }
-
         } catch (\Exception $e) {
-            Log::error('Validation API Error: ' . $e->getMessage());
-             $comment = 'Connection Error: Provider unreachable. queued for retry.';
+            Log::error('IPE API Error: ' . $e->getMessage());
+            $comment = 'Connection Error: Provider unreachable. queued for retry.';
         }
 
-        // 7. Create AgentService Record
+        // 7. Create Agent Service Record
         try {
             $agentService = AgentService::create([
                 'reference' => $transactionRef,
@@ -177,8 +177,8 @@ class NinValidationController extends Controller
                 'service_field_id' => $serviceField->id,
                 'field_code' => $serviceField->field_code,
                 'transaction_id' => $transaction->id,
-                'service_type' => 'NIN_VALIDATION', // Or 'validation'
-                'nin' => $request->nin,
+                'service_type' => 'IPE',
+                'tracking_id' => $request->tracking_id,
                 'amount' => $servicePrice,
                 'status' => $agentServiceStatus,
                 'submission_date' => now(),
@@ -188,21 +188,22 @@ class NinValidationController extends Controller
                 'performed_by' => $performedBy,
             ]);
 
-             return response()->json([
+            return response()->json([
                 'success' => true,
                 'message' => $isSuccess ? 'Request submitted successfully' : 'Request submitted, pending processing',
                 'data' => [
                     'reference' => $agentService->reference,
                     'trx_ref' => $transactionRef,
                     'status' => $agentServiceStatus,
-                    'nin' => $request->nin,
-                    'response' => $comment // Or clean response if needed? User asked: "generate message... and save it to the comment cullum"
+                    'response' => $comment
                 ]
             ], 200);
 
         } catch (\Exception $e) {
-            Log::error('Validation Agent Service Save Error: ' . $e->getMessage());
-             return response()->json(['success' => true, 'message' => 'Request submitted but encountered a saving error. Contact support with Ref: ' . $transactionRef], 200);
+            Log::error('IPE Agent Service Save Error: ' . $e->getMessage());
+            // Critical: User charged but service record failed. Should probably log highly or alert admin.
+            // For API response:
+            return response()->json(['success' => true, 'message' => 'Request submitted but encountered a saving error. Contact support with Ref: ' . $transactionRef], 200);
         }
     }
 
@@ -221,14 +222,13 @@ class NinValidationController extends Controller
                 $agentService = AgentService::where('id', $id)->first();
             } else {
                 $validator = Validator::make($request->all(), [
-                    'nin' => 'required|string',
+                    'tracking_id' => 'required|string',
                 ]);
                 if ($validator->fails()) {
                      return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
                 }
                 
-                $agentService = AgentService::where('nin', $request->nin)
-                    ->where('service_type', 'NIN_VALIDATION') 
+                $agentService = AgentService::where('tracking_id', $request->tracking_id)
                     ->orderBy('created_at', 'desc')
                     ->first();
             }
@@ -239,12 +239,17 @@ class NinValidationController extends Controller
 
             // Call Upstream Status API
             $apiKey = env('NIN_API_KEY');
-            $url = 'https://s8v.ng/api/validation/status';
-            $payload = ['nin' => $agentService->nin, 'token' => $apiKey];
+            $url = 'https://www.s8v.ng/api/clearance/status';
+            $payload = ['tracking_id' => $agentService->tracking_id, 'token' => $apiKey];
 
             $response = Http::post($url, $payload);
             $apiResponse = $response->json();
-            $cleanResponse = $this->cleanApiResponse($apiResponse);
+            
+            // Clean Response logic
+            $jsonString = is_array($apiResponse) ? json_encode($apiResponse, JSON_PRETTY_PRINT) : (string) $apiResponse;
+            $cleanResponse = str_replace(['{', '}', '"', "'"], '', $jsonString);
+            $cleanResponse = preg_replace('/\s+/', ' ', $cleanResponse);
+            $cleanResponse = trim($cleanResponse);
 
             $updateData = ['comment' => $cleanResponse];
             $newStatus = null;
@@ -267,86 +272,59 @@ class NinValidationController extends Controller
 
             $agentService->update($updateData);
 
-            // NO REFUND FOR VALIDATION as per request ("refund attempt on validation since validation have no refund")
+            $refundMsg = '';
+            if ($newStatus === 'failed') {
+                $refundResult = $this->processRefund($agentService);
+                 if ($refundResult === 'already_refunded') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'the request was failed and already refunded',
+                        'data' => [
+                            'tracking_id' => $agentService->tracking_id,
+                            'status' => $agentService->status,
+                            'response' => $apiResponse
+                        ]
+                    ], 400); 
+                } elseif ($refundResult === 'refunded') {
+                     $refundMsg = ' Refund has been processed.';
+                }
+            }
 
             return response()->json([
                 'success' => true,
-                'nin' => $agentService->nin,
+                'tracking_id' => $agentService->tracking_id,
                 'status' => $agentService->status,
+                'response' => $apiResponse,
                 'comment' => $cleanResponse,
-                'message' => 'Status checked.'
+                'message' => 'Status checked.' . $refundMsg
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Validation Status Check Error: ' . $e->getMessage());
+            Log::error('IPE Status Check Error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Failed to check status'], 400);
         }
     }
 
-    /**
-     * Webhook Handler.
-     */
-    public function webhook(Request $request)
+    // Reuse helper methods
+    private function processRefund(AgentService $agentService)
     {
-        $data = $request->all();
-        Log::info('NIN Validation Webhook Received', $data);
+        // Refund logic for IPE
+        if (strtoupper($agentService->service_type) !== 'IPE') return 'not_eligible';
+        
+        $refundExists = Transaction::where('type', 'refund')
+            ->where(function ($q) use ($agentService) {
+                $q->where('description', 'LIKE', "%Request ID #{$agentService->id}%")
+                  ->orWhere('metadata->original_request_id', $agentService->id);
+            })->exists();
 
-        $identifier = $data['nin'] ?? $data['tracking_id'] ?? null;
+        if ($refundExists || $agentService->is_refunded) return 'already_refunded';
 
-        if ($identifier) {
-            $submission = AgentService::where(function($q) use ($identifier) {
-                    $q->where('nin', $identifier)->orWhere('tracking_id', $identifier);
-                })
-                ->orderBy('created_at', 'desc')
-                ->first();
+        $user = \App\Models\User::find($agentService->user_id);
+        if (!$user) return 'error';
 
-            if ($submission) {
-                $cleanResponse = $this->cleanApiResponse($data);
-                $updateData = ['comment' => $cleanResponse];
-                $newStatus = null;
-                $statusRaw = null;
-
-                if (isset($data['status']) && is_string($data['status'])) {
-                    $statusRaw = $data['status'];
-                } elseif (isset($data['response'])) {
-                    if (is_array($data['response']) && isset($data['response']['status'])) {
-                         $statusRaw = $data['response']['status'];
-                    } elseif (is_string($data['response'])) {
-                         $statusRaw = $data['response'];
-                    }
-                }
-
-                if ($statusRaw) {
-                    $newStatus = $this->normalizeStatus($statusRaw);
-                    $updateData['status'] = $newStatus;
-                }
-
-                $submission->update($updateData);
-
-                // Handle Refund logic via IPE Controller method if IPE
-                if ($newStatus === 'failed' && strtoupper($submission->service_type) === 'IPE') {
-                     // Since we split controllers, we can instantiate IPE controller or just copy logic?
-                     // Safer to duplicate simple logic or create shared service. 
-                     // For now, I'll embed the IPE refund check here since webhook is shared.
-                     $this->processIpeRefund($submission);
-                }
-            }
-        }
-        return response()->json(['success' => true, 'message' => 'Webhook received successfully']);
-    }
-
-    // --- Helpers ---
-
-    private function processIpeRefund(AgentService $agentService)
-    {
-        if (strtoupper($agentService->service_type) !== 'IPE') return;
-        if ($agentService->is_refunded) return;
-
-         try {
-            $user = \App\Models\User::find($agentService->user_id);
-            if (!$user) return;
-
-            DB::beginTransaction();
+        $status = 'error';
+        DB::beginTransaction();
+        try {
             $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
             if ($wallet) {
                 $wallet->balance += $agentService->amount;
@@ -355,7 +333,7 @@ class NinValidationController extends Controller
                 Transaction::create([
                     'transaction_ref' => strtoupper(Str::random(12)),
                     'user_id' => $user->id,
-                    'performed_by' => 'System (Webhook)', 
+                    'performed_by' => 'System (Auto)', 
                     'amount' => $agentService->amount,
                     'type' => 'refund',
                     'status' => 'completed',
@@ -364,12 +342,14 @@ class NinValidationController extends Controller
                 ]);
 
                 $agentService->update(['is_refunded' => true]); 
+                $status = 'refunded';
             }
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Webhook Refund Error: ' . $e->getMessage());
+            $status = 'error';
         }
+        return $status;
     }
 
     private function authenticateUser(Request $request)
@@ -378,14 +358,6 @@ class NinValidationController extends Controller
         if (!$apiToken) $apiToken = $request->input('api_token');
         else if (str_starts_with($apiToken, 'Bearer ')) $apiToken = substr($apiToken, 7);
         return \App\Models\User::where('api_token', $apiToken)->first();
-    }
-
-    private function cleanApiResponse($response): string
-    {
-        $jsonString = is_array($response) ? json_encode($response, JSON_PRETTY_PRINT) : (string) $response;
-        $cleanResponse = str_replace(['{', '}', '"', "'"], '', $jsonString);
-        $cleanResponse = preg_replace('/\s+/', ' ', $cleanResponse);
-        return trim($cleanResponse);
     }
 
     private function normalizeStatus($status): string

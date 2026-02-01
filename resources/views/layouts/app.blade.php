@@ -121,16 +121,16 @@
       <!-- Right Side: Social & Quick Links -->
       <div class="col-md-6 text-center text-md-end">
         <div class="d-inline-flex align-items-center gap-3">
-          <a href="#" target="_blank" class="text-light text-decoration-none footer-social">
+          <a href="https://www.facebook.com/arewasmartidea" target="_blank" class="text-light text-decoration-none footer-social">
             <i class="ti ti-brand-facebook fs-18"></i>
           </a>
-          <a href="#" target="_blank" class="text-light text-decoration-none footer-social">
+          <a href="https://x.com/arewasmartidea" target="_blank" class="text-light text-decoration-none footer-social">
             <i class="ti ti-brand-twitter fs-18"></i>
           </a>
-          <a href="#" target="_blank" class="text-light text-decoration-none footer-social">
+          <a href="https://chat.whatsapp.com/KoSu12yDO4A8b6AvYSkvIx" target="_blank" class="text-light text-decoration-none footer-social">
             <i class="ti ti-brand-whatsapp fs-18"></i>
           </a>
-          <a href="#" class="text-light text-decoration-none footer-social">
+          <a href="mailto:arewasmart001@gmail.com" class="text-light text-decoration-none footer-social">
             <i class="ti ti-mail fs-18"></i>
           </a>
         </div>
@@ -141,8 +141,14 @@
 </footer>
 <!-- ===== Footer End ===== -->
 
-<div class="row">
+        <div class="row">
             @include('pages.dashboard.kyc')
+        </div>
+
+         <div class="row">
+        @if(!auth()->user()->two_factor_enabled && !session('two_factor_verified'))
+            @include('auth.two-factor')
+        @endif
         </div>
 
 <!-- ===== Footer Style ===== -->
