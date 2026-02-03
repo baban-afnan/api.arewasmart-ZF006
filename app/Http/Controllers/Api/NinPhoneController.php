@@ -214,7 +214,7 @@ class NinPhoneController extends Controller
                     'educationallevel' => $apiData['educationallevel'] ?? $apiData['educationalLevel'] ?? '',
                     'profession' => $apiData['profession'] ?? '',
                     'title' => $apiData['title'] ?? '',
-                    'nin' => $apiData['nin'] ?? $apiData['NIN'] ?? '',
+                    'idno' => $apiData['nin'] ?? $apiData['NIN'] ?? '',
                     'photo_path' => $apiData['photo'] ?? $apiData['photo_path'] ?? '',
                     'signature_path' => $apiData['signature'] ?? $apiData['signature_path'] ?? '',
                     'trackingId' => $apiData['trackingId'] ?? '',
