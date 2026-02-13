@@ -119,6 +119,7 @@
                     <ul>
                         <li><a href="{{ route('developer.airtime.docs') }}" class="{{ request()->routeIs('developer.airtime.docs') ? 'active' : '' }}">Airtime</a></li>
                         <li><a href="{{ route('developer.data.docs') }}" class="{{ request()->routeIs('developer.data.docs') ? 'active' : '' }}">Data</a></li>
+                        <li><a href="{{ route('developer.sme-data.docs') }}">SME Data</a></li>
                         <li><a href="{{ route('developer.electricity.docs') }}" class="{{ request()->routeIs('developer.electricity.docs') ? 'active' : '' }}">Electricity</a></li>
                         <li><a href="#">TV</a></li>
                         <li><a href="#">Education Pin</a></li>
@@ -182,6 +183,12 @@
               
                 <!-- Account Section -->
                 <li class="menu-title"><span>Account</span></li>
+
+                  <li>
+                    <a href="{{ route('prices.index') }}" class="{{ request()->routeIs('prices.index') ? 'active' : '' }}">
+                        <i class="ti ti-shopping-bag"></i><span>Prices</span>
+                    </a>
+                </li>
                 
                 <li>
                     <a href="{{ route('profile.edit') }}" class="{{ request()->routeIs('profile.edit') ? 'active' : '' }}">

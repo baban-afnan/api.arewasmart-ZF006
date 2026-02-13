@@ -60,6 +60,10 @@ Route::prefix('v1')->group(function () {
     Route::get('/electricity/variations', [\App\Http\Controllers\Billpayment\ElectricityController::class, 'getVariations'])->name('api.electricity.variations');
     Route::post('/electricity/verify', [\App\Http\Controllers\Billpayment\ElectricityController::class, 'verifyMeter'])->name('api.electricity.verify');
     Route::post('/electricity/purchase', [\App\Http\Controllers\Billpayment\ElectricityController::class, 'purchase'])->name('api.electricity.purchase');
+
+    // SME Data API
+    Route::get('/sme-data/variations', [\App\Http\Controllers\Billpayment\SmeDataController::class, 'getVariations'])->name('api.sme-data.variations');
+    Route::post('/sme-data/purchase', [\App\Http\Controllers\Billpayment\SmeDataController::class, 'purchase'])->name('api.sme-data.purchase');
 });
 
 // Webhooks

@@ -41,6 +41,8 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureApiUser::class
     // NIN Verification
     Route::get('/verification/nin', [App\Http\Controllers\Api\NinVerificationController::class, 'index'])->name('nin.verification.index');
     Route::post('/verification/nin', [App\Http\Controllers\Api\NinVerificationController::class, 'verify'])->name('nin.verification.store');
+    // Service Prices
+    Route::get('/prices', [\App\Http\Controllers\PriceController::class, 'index'])->name('prices.index');
 });
 
 // API Routes are now in routes/api.php
@@ -76,6 +78,10 @@ Route::group(['prefix' => 'developer', 'as' => 'developer.', 'middleware' => ['a
 
     // NIN Phone
     Route::get('/nin-phone', [\App\Http\Controllers\Api\NinPhoneController::class, 'index'])->name('nin.phone.docs');
+
+    // SME Data API Docs
+    Route::get('/sme-data', [\App\Http\Controllers\Billpayment\SmeDataController::class, 'index'])->name('sme-data.docs');
+
 
 
 });
