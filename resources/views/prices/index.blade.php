@@ -1,25 +1,23 @@
 <x-app-layout>
-    <div class="container-fluid py-4">
+    <div class="container py-4">
         <!-- Header Section -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+                <div class="card border-0 shadow-sm rounded-4 bg-white">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                             <div class="d-flex align-items-center">
-                                <div class="bg-primary bg-opacity-10 p-3 rounded-4 me-3 text-primary">
-                                    <i class="ti ti-report-money fs-1"></i>
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-4 me-3">
+                                    <i class="ti ti-report-money fs-1 text-primary"></i>
                                 </div>
                                 <div>
-                                    <h3 class="fw-bold text-dark mb-1">Service Prices & Rates</h3>
-                                    <p class="text-muted mb-0">Transparent pricing for <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill fw-bold">{{ strtoupper($user->role ?? 'user') }}</span> account</p>
+                                    <h4 class="fw-bold mb-1">Service Prices & Rates</h4>
+                                    <p class="text-muted mb-0">Transparent pricing for <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">{{ strtoupper($user->role ?? 'user') }}</span> account</p>
                                 </div>
                             </div>
-                            <div class="d-none d-md-block">
-                                <div class="text-end">
-                                    <p class="text-muted small mb-1">Last Updated</p>
-                                    <h6 class="fw-bold mb-0 text-dark">{{ date('F d, Y') }}</h6>
-                                </div>
+                            <div class="text-end d-none d-md-block">
+                                <small class="text-muted d-block">Last Updated</small>
+                                <span class="fw-semibold">{{ date('F d, Y') }}</span>
                             </div>
                         </div>
                     </div>
@@ -27,316 +25,415 @@
             </div>
         </div>
 
-        <!-- Navigation Tabs -->
+        <!-- Navigation Tabs - Centered -->
         <div class="row mb-4">
-            <div class="col-12">
-                <div class="card border-0 shadow-sm rounded-pill bg-white overflow-hidden p-1">
-                    <ul class="nav nav-pills nav-justified" id="priceTabs" role="tablist">
-                        <li class="nav-item">
-                            <button class="nav-link active rounded-pill py-3" id="basic-tab" data-bs-toggle="pill" data-bs-target="#basic" type="button" role="tab">
-                                <i class="ti ti-wifi-2 me-2"></i> Airtime & Data
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link rounded-pill py-3" id="sme-tab" data-bs-toggle="pill" data-bs-target="#sme" type="button" role="tab">
-                                <i class="ti ti-database me-2"></i> SME Data
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link rounded-pill py-3" id="verify-tab" data-bs-toggle="pill" data-bs-target="#verify" type="button" role="tab">
-                                <i class="ti ti-id-badge me-2"></i> Verification & Validation
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link rounded-pill py-3" id="modify-tab" data-bs-toggle="pill" data-bs-target="#modify" type="button" role="tab">
-                                <i class="ti ti-edit-circle me-2"></i> Modifications
-                            </button>
-                        </li>
-                    </ul>
+            <div class="col-lg-10 mx-auto">
+                <div class="card border-0 shadow-sm rounded-4 bg-white">
+                    <div class="card-body p-2">
+                        <ul class="nav nav-pills nav-fill gap-2" id="priceTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active py-3" id="airtime-tab" data-bs-toggle="pill" data-bs-target="#airtime" type="button" role="tab">
+                                    <i class="ti ti-phone-call me-2"></i>
+                                    <span class="d-none d-sm-inline">Airtime</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link py-3" id="data-tab" data-bs-toggle="pill" data-bs-target="#data" type="button" role="tab">
+                                    <i class="ti ti-wifi me-2"></i>
+                                    <span class="d-none d-sm-inline">Data Bundles</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link py-3" id="sme-tab" data-bs-toggle="pill" data-bs-target="#sme" type="button" role="tab">
+                                    <i class="ti ti-database me-2"></i>
+                                    <span class="d-none d-sm-inline">SME Data</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link py-3" id="verify-tab" data-bs-toggle="pill" data-bs-target="#verify" type="button" role="tab">
+                                    <i class="ti ti-id me-2"></i>
+                                    <span class="d-none d-sm-inline">Verification</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link py-3" id="modify-tab" data-bs-toggle="pill" data-bs-target="#modify" type="button" role="tab">
+                                    <i class="ti ti-edit me-2"></i>
+                                    <span class="d-none d-sm-inline">Modifications</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tab Content -->
-        <div class="tab-content" id="priceTabsContent">
-            
-            <!-- Basic Services (Airtime/Data) -->
-            <div class="tab-pane fade show active" id="basic" role="tabpanel">
-                <!-- Airtime Cards Row -->
-                <div class="row mb-4 g-3">
-                    @foreach($airtimePrices as $price)
-                    <div class="col-6 col-md-3">
-                        <div class="card border-0 shadow-sm rounded-4 h-100 highlight-on-hover">
-                            <div class="card-body p-3 p-md-4 text-center">
-                                <div class="avatar avatar-md bg-light p-1 rounded-circle mb-3 mx-auto border overflow-hidden">
-                                     <img src="{{ asset('assets/img/networks/'.strtolower($price['network']).'.png') }}" 
-                                         onerror="this.src='https://ui-avatars.com/api/?name={{ $price['network'] }}&background=6366f1&color=fff'" 
-                                         class="img-fluid rounded-circle">
-                                </div>
-                                <h6 class="fw-bold text-dark mb-1">{{ $price['network'] }}</h6>
-                                <p class="text-muted small mb-3">Airtime Reward</p>
-                                <div class="bg-success bg-opacity-10 text-success rounded-pill py-2 px-3 d-inline-block fw-bold fs-12">
-                                    {{ $price['commission'] }}%
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-
-                <!-- Data Bundles Table -->
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                    <div class="card-header bg-white py-3 border-bottom border-light">
-                        <h5 class="fw-bold text-dark mb-0">General Data Bundles</h5>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="bg-light">
-                                <tr class="small fw-bold text-secondary text-uppercase border-bottom-0">
-                                    <th class="ps-4">NETWORK & SERVICE</th>
-                                    <th>CASHBACK</th>
-                                    <th>PLAN CODE</th>
-                                    <th class="text-end pe-4">UNIT PRICE</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($dataGroups as $group)
-                                    @foreach($group['plans'] as $plan)
-                                    <tr class="border-bottom-light">
-                                        <td class="ps-4 py-3">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle bg-primary bg-opacity-10 p-1 me-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                                    <span class="text-primary small fw-bold">{{ substr($group['network'], 0, 1) }}</span>
-                                                </div>
-                                                <div>
-                                                    <h6 class="fw-bold mb-0 text-dark">{{ $plan->name }}</h6>
-                                                    <small class="text-muted opacity-75">{{ $group['network'] }} {{ $plan->service_name }}</small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-lg bg-soft-success text-success rounded-pill px-3">{{ $group['commission'] }}%</span>
-                                        </td>
-                                        <td><code>{{ $plan->variation_code }}</code></td>
-                                        <td class="text-end pe-4">
-                                            <span class="fw-bold text-dark fs-15">₦{{ number_format($plan->variation_amount, 2) }}</span>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SME Data Section -->
-            <div class="tab-pane fade" id="sme" role="tabpanel">
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="bg-light">
-                                <tr class="small fw-bold text-secondary text-uppercase">
-                                    <th class="ps-4 py-3">PLAN SIZE</th>
-                                    <th>NETWORK</th>
-                                    <th>PLAN TYPE</th>
-                                    <th>VALIDITY</th>
-                                    <th class="text-end pe-4">TOTAL PRICE</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($smeGroups as $group)
-                                    @foreach($group['plans'] as $plan)
-                                    <tr class="border-bottom-light">
-                                        <td class="ps-4 py-3">
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar avatar-xs bg-indigo-600 rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm">
-                                                    <i class="ti ti-database fs-12 text-white"></i>
-                                                </div>
-                                                <h6 class="fw-bold text-dark mb-0">{{ $plan->size }}</h6>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="fw-semibold text-dark">{{ $group['network'] }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="text-muted small text-uppercase">{{ $plan->plan_type }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-soft-warning text-warning rounded-pill px-3">{{ $plan->validity }}</span>
-                                        </td>
-                                        <td class="text-end pe-4">
-                                            <div class="d-flex flex-column align-items-end">
-                                                <span class="fw-bold text-primary fs-15">₦{{ number_format($plan->total_price, 2) }}</span>
-                                                @if($plan->total_price < $plan->amount)
-                                                <small class="text-muted text-decoration-line-through opacity-75">₦{{ number_format($plan->amount, 2) }}</small>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Verification & Validation Section -->
-            <div class="tab-pane fade" id="verify" role="tabpanel">
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="bg-light">
-                                <tr class="small fw-bold text-secondary text-uppercase">
-                                    <th class="ps-4 py-3">SERVICE NAME</th>
-                                    <th>SERVICE TYPE</th>
-                                    <th>STATUS</th>
-                                    <th class="text-end pe-4">SERVICE FEE</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($verificationPrices as $vprice)
-                                <tr class="border-bottom-light">
-                                    <td class="ps-4 py-4">
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar avatar-sm bg-soft-primary text-primary rounded-circle me-3 d-flex align-items-center justify-content-center border border-primary border-opacity-10">
-                                                <i class="ti {{ $vprice['type'] == 'Verification' ? 'ti-circle-check-filled' : 'ti-shield-check' }} fs-12"></i>
-                                            </div>
-                                            <div>
-                                                <h6 class="fw-bold text-dark mb-1">{{ $vprice['name'] }}</h6>
-                                                <small class="text-muted">Code: {{ $vprice['code'] }}</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="text-muted fw-medium fs-13">{{ $vprice['type'] }}</span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-success rounded-circle me-2 animate-pulse" style="width: 8px; height: 8px;"></div>
-                                            <span class="text-success small fw-bold">Live</span>
-                                        </div>
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <span class="fw-bold text-dark fs-16">₦{{ number_format($vprice['price'], 2) }}</span>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modifications Section -->
-            <div class="tab-pane fade" id="modify" role="tabpanel">
-                <div class="row g-4">
-                    @foreach($modificationGroups as $group)
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                            <div class="card-header bg-white py-3 border-bottom border-light d-flex align-items-center justify-content-between">
-                                <h6 class="fw-bold text-dark mb-0 d-flex align-items-center">
-                                    <span class="bg-primary bg-opacity-10 p-2 rounded-3 me-2 text-primary">
-                                        <i class="ti ti-briefcase fs-12"></i>
-                                    </span>
-                                    {{ $group['category'] }}
-                                </h6>
-                                <span class="badge bg-light text-secondary rounded-pill fw-normal px-3">{{ count($group['plans']) }} Services</span>
-                            </div>
+        <!-- Tab Content - Centered -->
+        <div class="row">
+            <div class="col-12">
+                <div class="tab-content" id="priceTabsContent">
+                    
+                    <!-- Airtime Services -->
+                    <div class="tab-pane fade show active" id="airtime" role="tabpanel" tabindex="0">
+                        <div class="card border-0 shadow-sm rounded-4">
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="bg-light">
-                                        <tr class="small fw-bold text-secondary text-uppercase">
-                                            <th class="ps-4 py-2">SPECIFIC SERVICE</th>
-                                            <th>SERVICE CODE</th>
-                                            <th class="text-end pe-4">RATE</th>
+                                        <tr>
+                                            <th class="ps-4 py-3">S/N</th>
+                                            <th class="py-3">Network</th>
+                                            <th class="py-3">Status</th>
+                                            <th class="py-3">Category</th>
+                                            <th class="text-end pe-4 py-3">Cashback</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($group['plans'] as $plan)
-                                        <tr class="border-bottom-light">
-                                            <td class="ps-4 py-3">
-                                                <span class="fw-semibold text-dark">{{ $plan->name }}</span>
+                                        @forelse($airtimePaginator as $price)
+                                        <tr>
+                                            <td class="ps-4 py-3 fw-bold text-muted">{{ $loop->iteration + ($airtimePaginator->firstItem() - 1) }}</td>
+                                            <td class="py-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-sm bg-light rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                                        <span class="fw-bold text-primary">{{ substr($price['network'], 0, 2) }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="fw-semibold mb-0">{{ $price['network'] }}</h6>
+                                                        <small class="text-muted">VTU Airtime</small>
+                                                    </div>
+                                                </div>
                                             </td>
-                                            <td>
-                                                <span class="badge bg-light text-dark font-monospace fw-normal">{{ $plan->code }}</span>
+                                            <td class="py-3">
+                                                @if($price['status'])
+                                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                                                    <span class="dot bg-success me-1"></span> Live
+                                                </span>
+                                                @else
+                                                <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">
+                                                    <span class="dot bg-warning me-1"></span> Maintenance
+                                                </span>
+                                                @endif
                                             </td>
-                                            <td class="text-end pe-4">
-                                                <span class="fw-bold text-indigo-600 fs-15">₦{{ number_format($plan->price, 2) }}</span>
+                                            <td class="py-3">
+                                                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">Airtime</span>
+                                            </td>
+                                            <td class="text-end pe-4 py-3">
+                                                <span class="fw-bold text-success">{{ number_format($price['commission'], 1) }}%</span>
                                             </td>
                                         </tr>
-                                        @endforeach
+                                        @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center py-5 text-muted">No airtime services available</td>
+                                        </tr>
+                                        @endforelse
                                     </tbody>
                                 </table>
                             </div>
+                            @if($airtimePaginator->hasPages())
+                                    <div class="card-footer bg-white border-top py-3">
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                            <small class="text-muted">
+                                                Showing {{ $airtimePaginator->firstItem() }} to {{ $airtimePaginator->lastItem() }} of {{ $airtimePaginator->total() }} entries
+                                            </small>
+                                            {{ $airtimePaginator->appends(request()->except('airtime_page'))->links('vendor.pagination.custom') }}
+                                        </div>
+                                    </div>
+                            @endif
                         </div>
                     </div>
-                    @endforeach
+
+                    <!-- Data Bundles -->
+                    <div class="tab-pane fade" id="data" role="tabpanel" tabindex="0">
+                        <div class="card border-0 shadow-sm rounded-4">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="ps-4 py-3">S/N</th>
+                                            <th class="py-3">Network</th>
+                                            <th class="py-3">Status</th>
+                                            <th class="py-3">Plan</th>
+                                            <th class="py-3">Cashback</th>
+                                            <th class="text-end pe-4 py-3">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($dataPaginator as $plan)
+                                        <tr>
+                                            <td class="ps-4 py-3 fw-bold text-muted">{{ $loop->iteration + ($dataPaginator->firstItem() - 1) }}</td>
+                                            <td class="py-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-sm bg-primary bg-opacity-10 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                                        <span class="fw-bold text-primary">{{ substr($plan->network_name, 0, 2) }}</span>
+                                                    </div>
+                                                    <span class="fw-semibold">{{ $plan->network_name }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3">
+                                                @if($plan->network_status)
+                                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                                                    <span class="dot bg-success me-1"></span> Live
+                                                </span>
+                                                @else
+                                                <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">
+                                                    <span class="dot bg-warning me-1"></span> Offline
+                                                </span>
+                                                @endif
+                                            </td>
+                                            <td class="py-3">
+                                                <div class="fw-semibold">{{ $plan->name }}</div>
+                                                <small class="text-muted">Code: {{ $plan->variation_code }}</small>
+                                            </td>
+                                            <td class="py-3">
+                                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">{{ $plan->network_commission }}%</span>
+                                            </td>
+                                            <td class="text-end pe-4 py-3">
+                                                <span class="fw-bold text-primary fs-15">₦{{ number_format($plan->variation_amount, 2) }}</span>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center py-5 text-muted">No data bundles available</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                            @if($dataPaginator->hasPages())
+                                    <div class="card-footer bg-white border-top py-3">
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                            <small class="text-muted">
+                                                Showing {{ $dataPaginator->firstItem() }} to {{ $dataPaginator->lastItem() }} of {{ $dataPaginator->total() }} entries
+                                            </small>
+                                            {{ $dataPaginator->appends(request()->except('data_page'))->links('vendor.pagination.custom') }}
+                                        </div>
+                                    </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- SME Data -->
+                    <div class="tab-pane fade" id="sme" role="tabpanel" tabindex="0">
+                        <div class="card border-0 shadow-sm rounded-4">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="ps-4 py-3">S/N</th>
+                                            <th class="py-3">Plan Size</th>
+                                            <th class="py-3">Status</th>
+                                            <th class="py-3">Network</th>
+                                            <th class="py-3">Type</th>
+                                            <th class="py-3">Validity</th>
+                                            <th class="text-end pe-4 py-3">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($smePaginator as $plan)
+                                        <tr>
+                                            <td class="ps-4 py-3 fw-bold text-muted">{{ $loop->iteration + ($smePaginator->firstItem() - 1) }}</td>
+                                            <td class="py-3">
+                                                <span class="fw-semibold">{{ $plan->size }}</span>
+                                            </td>
+                                            <td class="py-3">
+                                                @if($plan->status == 'enabled')
+                                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                                                    <span class="dot bg-success me-1"></span> Live
+                                                </span>
+                                                @else
+                                                <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">
+                                                    <span class="dot bg-warning me-1"></span> Offline
+                                                </span>
+                                                @endif
+                                            </td>
+                                            <td class="py-3">{{ $plan->network_name }}</td>
+                                            <td class="py-3">
+                                                <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill text-uppercase">{{ $plan->plan_type }}</span>
+                                            </td>
+                                            <td class="py-3">
+                                                <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">{{ $plan->validity }}</span>
+                                            </td>
+                                            <td class="text-end pe-4 py-3">
+                                                <span class="fw-bold text-primary fs-12">₦{{ number_format($plan->total_price, 2) }}</span>
+                                                @if($plan->total_price < $plan->amount)
+                                                <br><small class="text-muted text-decoration-line-through">₦{{ number_format($plan->amount, 2) }}</small>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="6" class="text-center py-5 text-muted">No SME data plans available</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                            @if($smePaginator->hasPages())
+                                    <div class="card-footer bg-white border-top py-3">
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                            <small class="text-muted">
+                                                Showing {{ $smePaginator->firstItem() }} to {{ $smePaginator->lastItem() }} of {{ $smePaginator->total() }} entries
+                                            </small>
+                                            {{ $smePaginator->appends(request()->except('sme_page'))->links('vendor.pagination.custom') }}
+                                        </div>
+                                    </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Verification & Validation -->
+                    <div class="tab-pane fade" id="verify" role="tabpanel" tabindex="0">
+                        <div class="card border-0 shadow-sm rounded-4">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="ps-4 py-3">S/N</th>
+                                            <th class="py-3">Service</th>
+                                            <th class="py-3">Type</th>
+                                            <th class="py-3">Status</th>
+                                            <th class="text-end pe-4 py-3">Fee</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($verifyPaginator as $vprice)
+                                        <tr>
+                                            <td class="ps-4 py-3 fw-bold text-muted">{{ $loop->iteration + ($verifyPaginator->firstItem() - 1) }}</td>
+                                            <td class="py-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-sm bg-primary bg-opacity-10 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                                        <i class="ti ti-shield-check text-primary"></i>
+                                                    </div>
+                                                    <div>
+                                                        <span class="fw-semibold">{{ $vprice['name'] }}</span>
+                                                        <br><small class="text-muted">Code: {{ $vprice['code'] }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-3">
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill">{{ $vprice['type'] }}</span>
+                                            </td>
+                                            <td class="py-3">
+                                                @if($vprice['status'])
+                                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                                                    <span class="dot bg-success me-1"></span> Live
+                                                </span>
+                                                @else
+                                                <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">
+                                                    <span class="dot bg-warning me-1"></span> Offline
+                                                </span>
+                                                @endif
+                                            </td>
+                                            <td class="text-end pe-4 py-3">
+                                                <span class="fw-bold text-primary fs-12">₦{{ number_format($vprice['price'], 2) }}</span>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center py-5 text-muted">No verification services available</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                            @if($verifyPaginator->hasPages())
+                                    <div class="card-footer bg-white border-top py-3">
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                            <small class="text-muted">
+                                                Showing {{ $verifyPaginator->firstItem() }} to {{ $verifyPaginator->lastItem() }} of {{ $verifyPaginator->total() }} entries
+                                            </small>
+                                            {{ $verifyPaginator->appends(request()->except('verify_page'))->links('vendor.pagination.custom') }}
+                                        </div>
+                                    </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Modifications -->
+                    <div class="tab-pane fade" id="modify" role="tabpanel" tabindex="0">
+                        <div class="card border-0 shadow-sm rounded-4">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="ps-4 py-3">S/N</th>
+                                            <th class="py-3">Service</th>
+                                            <th class="py-3">Status</th>
+                                            <th class="py-3">Code</th>
+                                            <th class="text-end pe-4 py-3">Rate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($modifyPaginator as $plan)
+                                        <tr>
+                                            <td class="ps-4 py-3 fw-bold text-muted">{{ $loop->iteration + ($modifyPaginator->firstItem() - 1) }}</td>
+                                            <td class="py-3">
+                                                <div class="fw-semibold">{{ $plan->name }}</div>
+                                                <small class="text-muted">{{ $plan->category_name }}</small>
+                                            </td>
+                                            <td class="py-3">
+                                                @if($plan->status)
+                                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                                                    <span class="dot bg-success me-1"></span> Live
+                                                </span>
+                                                @else
+                                                <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">
+                                                    <span class="dot bg-warning me-1"></span> Maintenance
+                                                </span>
+                                                @endif
+                                            </td>
+                                            <td class="py-3">
+                                                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill font-monospace">{{ $plan->code }}</span>
+                                            </td>
+                                            <td class="text-end pe-4 py-3">
+                                                <span class="fw-bold text-primary fs-12">₦{{ number_format($plan->price, 2) }}</span>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center py-5 text-muted">No modification services available</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                            @if($modifyPaginator->hasPages())
+                                    <div class="card-footer bg-white border-top py-3">
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                            <small class="text-muted">
+                                                Showing {{ $modifyPaginator->firstItem() }} to {{ $modifyPaginator->lastItem() }} of {{ $modifyPaginator->total() }} entries
+                                            </small>
+                                            {{ $modifyPaginator->appends(request()->except('modify_page'))->links('vendor.pagination.custom') }}
+                                        </div>
+                                    </div>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    @push('styles')
-    <style>
-        :root {
-            --primary: #6366f1;
-            --indigo-600: #4f46e5;
-        }
-        .bg-soft-primary { background-color: rgba(99, 102, 241, 0.1); }
-        .bg-soft-success { background-color: rgba(34, 197, 94, 0.1); }
-        .bg-soft-warning { background-color: rgba(245, 158, 11, 0.1); }
-        .bg-indigo-600 { background-color: var(--indigo-600); }
-        .text-indigo-600 { color: var(--indigo-600); }
-        
-        .card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .highlight-on-hover:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 1rem 3rem rgba(0,0,0,0.08) !important;
-        }
-        
-        .nav-pills .nav-link { 
-            color: #64748b; 
-            font-weight: 600;
-            font-size: 0.9rem;
-            border: 1px solid transparent;
-            transition: all 0.2s ease;
-        }
-        .nav-pills .nav-link i { font-size: 1.1rem; }
-        .nav-pills .nav-link.active {
-            background-color: #f8fafc;
-            color: var(--primary);
-            border-color: #e2e8f0;
-            box-shadow: none;
-        }
-        
-        .table > thead { background-color: #f9fafb !important; }
-        .table > :not(caption) > * > * { 
-            border-bottom: 0.8px solid #f1f5f9;
-        }
-        .border-bottom-light { border-bottom: 0.8px solid #f8fafc; }
-        
-        .fs-12 { font-size: 12px; }
-        .fs-13 { font-size: 13px; }
-        .fs-15 { font-size: 15px; }
-        .fs-16 { font-size: 16px; }
-        
-        .animate-pulse {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .5; }
-        }
-        
-        code {
-            padding: 0.2rem 0.4rem;
-            font-size: 0.85rem;
-            color: var(--primary);
-            background-color: rgba(99, 102, 241, 0.05);
-            border-radius: 0.25rem;
-        }
-    </style>
-    @endpush
+   
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab persistence from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get('tab') || 'airtime';
+            
+            const tabElement = document.querySelector(`#${activeTab}-tab`);
+            if (tabElement) {
+                bootstrap.Tab.getOrCreateInstance(tabElement).show();
+            }
+
+            // Update URL when tab changes
+            document.querySelectorAll('button[data-bs-toggle="pill"]').forEach(button => {
+                button.addEventListener('shown.bs.tab', function(event) {
+                    const tabId = event.target.id.replace('-tab', '');
+                    const url = new URL(window.location);
+                    url.searchParams.set('tab', tabId);
+                    window.history.replaceState({}, '', url);
+                });
+            });
+        });
+    </script>
 </x-app-layout>

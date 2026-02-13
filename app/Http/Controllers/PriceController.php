@@ -6,6 +6,8 @@ use App\Models\Service;
 use App\Models\ServiceField;
 use App\Models\SmeData;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -14,56 +16,115 @@ class PriceController extends Controller
     /**
      * Display a unified table of service prices and commissions.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $role = $user->role ?? 'user';
 
-        // 1. Airtime & Data Bundles (Commissions)
-        $airtimePrices = $this->getAirtimeCommissions($role);
-        $dataGroups = $this->getDataCommissions($role);
+        // 1. Airtime
+        $airtimePrices = collect($this->getAirtimeCommissions($role));
+        $airtimePaginator = $this->paginate($airtimePrices, 10, 'airtime_page');
 
-        // 2. SME Data (Fixed Prices)
-        $smeGroups = $this->getSmePrices($role);
+        // 2. Data Bundles (Flattening nested plans for pagination)
+        $dataPlans = collect();
+        foreach ($this->getDataCommissions($role) as $group) {
+            foreach ($group['plans'] as $plan) {
+                // Attach group context to each row
+                $plan->network_name = $group['network'];
+                $plan->network_status = $group['status'];
+                $plan->network_commission = $group['commission'] ?? 0;
+                $dataPlans->push($plan);
+            }
+        }
+        $dataPaginator = $this->paginate($dataPlans, 10, 'data_page');
 
-        // 3. Verification & Validation (Fixed Prices)
-        $verificationPrices = $this->getVerificationPrices($role);
+        // 3. SME Data (Flattening nested plans)
+        $smePlans = collect();
+        foreach ($this->getSmePrices($role) as $group) {
+            foreach ($group['plans'] as $plan) {
+                $plan->network_name = $group['network'];
+                $smePlans->push($plan);
+            }
+        }
+        $smePaginator = $this->paginate($smePlans, 10, 'sme_page');
 
-        // 4. Modification Services (Fixed Prices)
-        $modificationGroups = $this->getModificationPrices($role);
+        // 4. Verification
+        $verificationPrices = collect($this->getVerificationPrices($role));
+        $verifyPaginator = $this->paginate($verificationPrices, 10, 'verify_page');
+
+        // 5. Modifications (Flattening nested category plans)
+        $modPlans = collect();
+        foreach ($this->getModificationPrices($role) as $group) {
+            foreach ($group['plans'] as $plan) {
+                $plan->category_name = $group['category'];
+                $modPlans->push($plan);
+            }
+        }
+        $modifyPaginator = $this->paginate($modPlans, 10, 'modify_page');
 
         return view('prices.index', compact(
             'user',
-            'airtimePrices',
-            'dataGroups',
-            'smeGroups',
-            'verificationPrices',
-            'modificationGroups'
+            'airtimePaginator',
+            'dataPaginator',
+            'smePaginator',
+            'verifyPaginator',
+            'modifyPaginator'
         ));
+    }
+
+    /**
+     * Helper to create LengthAwarePaginator from Collection
+     */
+    private function paginate(Collection $items, $perPage = 10, $pageName = 'page')
+    {
+        $page = request()->get($pageName, 1);
+        return new LengthAwarePaginator(
+            $items->forPage($page, $perPage),
+            $items->count(),
+            $perPage,
+            $page,
+            [
+                'path' => request()->url(),
+                'query' => request()->query(),
+                'pageName' => $pageName
+            ]
+        );
     }
 
     private function getAirtimeCommissions($role)
     {
-        $networks = ['MTN', 'AIRTEL', 'GLO', '9MOBILE'];
+        $service = Service::where('name', 'Airtime')->first();
         $prices = [];
 
-        foreach ($networks as $network) {
-            $service = Service::where('name', $network . ' Airtime')->first();
-            $commission = 0;
-
-            if ($service) {
-                // Assuming airtime commission is stored in a service price or field
-                // Based on standard implementation, we look for cashback/commission
-                $commission = DB::table('service_prices')
-                    ->where('service_id', $service->id)
-                    ->where('user_type', $role)
-                    ->value('commission') ?? 0;
-            }
-
-            $prices[] = [
-                'network' => $network,
-                'commission' => $commission,
+        if ($service) {
+            $networks = [
+                '101' => 'MTN',
+                '100' => 'Airtel',
+                '102' => 'Glo',
+                '103' => '9mobile'
             ];
+
+            foreach ($networks as $code => $network) {
+                $field = $service->fields()->where('field_code', $code)->first();
+                $commission = 0;
+                $status = 0;
+
+                if ($field) {
+                    $priceObj = DB::table('service_prices')
+                        ->where('service_fields_id', $field->id)
+                        ->where('user_type', $role)
+                        ->first();
+                    
+                    $commission = $priceObj ? $priceObj->price : ($field->base_price ?? 0);
+                    $status = $field->is_active;
+                }
+
+                $prices[] = [
+                    'network' => $network,
+                    'commission' => $commission,
+                    'status' => $status
+                ];
+            }
         }
 
         return $prices;
@@ -71,29 +132,44 @@ class PriceController extends Controller
 
     private function getDataCommissions($role)
     {
-        $networks = ['MTN', 'AIRTEL', 'GLO', '9MOBILE'];
+        $service = Service::where('name', 'Data')->first();
         $groups = [];
 
-        foreach ($networks as $network) {
-            $service = Service::where('name', $network . ' Data')->first();
-            if (!$service) continue;
+        if ($service) {
+            $networks = [
+                '104' => 'MTN',
+                '105' => 'Airtel',
+                '106' => 'Glo',
+                '107' => '9mobile'
+            ];
 
-            $commission = DB::table('service_prices')
-                ->where('service_id', $service->id)
-                ->where('user_type', $role)
-                ->value('commission') ?? 0;
+            foreach ($networks as $code => $network) {
+                $field = $service->fields()->where('field_code', $code)->first();
+                if (!$field) continue;
 
-            $plans = DB::table('data_variations')
-                ->where('service_id', $service->id)
-                ->where('is_active', 1)
-                ->get();
+                $priceObj = DB::table('service_prices')
+                    ->where('service_fields_id', $field->id)
+                    ->where('user_type', $role)
+                    ->first();
+                
+                $commission = $priceObj ? $priceObj->price : ($field->base_price ?? 0);
 
-            if ($plans->isNotEmpty()) {
-                $groups[] = [
-                    'network' => $network,
-                    'commission' => $commission,
-                    'plans' => $plans
-                ];
+                // Map standard database network codes to variation network codes if different
+                $variationServiceId = strtolower($network) . '-data';
+                if ($network === '9mobile') $variationServiceId = 'etisalat-data';
+
+                $plans = DB::table('data_variations')
+                    ->where('service_id', $variationServiceId)
+                    ->get();
+
+                if ($plans->isNotEmpty()) {
+                    $groups[] = [
+                        'network' => $network,
+                        'commission' => $commission,
+                        'status' => $field->is_active,
+                        'plans' => $plans
+                    ];
+                }
             }
         }
 
@@ -106,9 +182,7 @@ class PriceController extends Controller
         $groups = [];
 
         foreach ($networks as $network) {
-            $plans = SmeData::where('network', $network)
-                ->where('status', 'enabled')
-                ->get();
+            $plans = SmeData::where('network', $network)->get();
 
             if ($plans->isNotEmpty()) {
                 foreach ($plans as $plan) {
@@ -134,23 +208,25 @@ class PriceController extends Controller
         $ninService = Service::where('name', 'Verification')->first();
         if ($ninService) {
             $field = $ninService->fields()->where('field_code', '610')->first();
-            if ($field && $field->is_active) {
+            if ($field) {
                 $services[] = [
                     'name' => 'NIN Verification',
                     'code' => '610',
                     'price' => $field->getPriceForUserType($role),
-                    'type' => 'Verification'
+                    'type' => 'Verification',
+                    'status' => $field->is_active
                 ];
             }
             
             // BVN Verification (600)
             $field = $ninService->fields()->where('field_code', '600')->first();
-            if ($field && $field->is_active) {
+            if ($field) {
                 $services[] = [
                     'name' => 'BVN Verification',
                     'code' => '600',
                     'price' => $field->getPriceForUserType($role),
-                    'type' => 'Verification'
+                    'type' => 'Verification',
+                    'status' => $field->is_active
                 ];
             }
         }
@@ -159,12 +235,13 @@ class PriceController extends Controller
         $validationService = Service::where('name', 'Validation')->first();
         if ($validationService) {
             $field = $validationService->fields()->where('field_code', '015')->first();
-            if ($field && $field->is_active) {
+            if ($field) {
                 $services[] = [
                     'name' => 'NIN Validation',
                     'code' => '015',
                     'price' => $field->getPriceForUserType($role),
-                    'type' => 'Validation'
+                    'type' => 'Validation',
+                    'status' => $field->is_active
                 ];
             }
         }
@@ -173,12 +250,13 @@ class PriceController extends Controller
         $ipeService = Service::where('name', 'IPE')->first();
         if ($ipeService) {
             $field = $ipeService->fields()->where('field_code', '002')->first();
-            if ($field && $field->is_active) {
+            if ($field) {
                 $services[] = [
                     'name' => 'IPE Tracking',
                     'code' => '002',
                     'price' => $field->getPriceForUserType($role),
-                    'type' => 'IPE'
+                    'type' => 'IPE',
+                    'status' => $field->is_active
                 ];
             }
         }
@@ -196,7 +274,6 @@ class PriceController extends Controller
             $targetCodes = ['032', '033', '034', '035', '037'];
             $fields = $ninModService->fields()
                 ->whereIn('field_code', $targetCodes)
-                ->where('is_active', 1)
                 ->get();
 
             if ($fields->isNotEmpty()) {
@@ -205,7 +282,8 @@ class PriceController extends Controller
                     $plans[] = (object)[
                         'name' => $field->field_name,
                         'code' => $field->field_code,
-                        'price' => $field->getPriceForUserType($role)
+                        'price' => $field->getPriceForUserType($role),
+                        'status' => $field->is_active
                     ];
                 }
                 $groups[] = [
@@ -223,9 +301,7 @@ class PriceController extends Controller
         ];
 
         foreach ($bvnModCodes as $bank => $codes) {
-            $fields = ServiceField::whereIn('field_code', $codes)
-                ->where('is_active', 1)
-                ->get();
+            $fields = ServiceField::whereIn('field_code', $codes)->get();
 
             if ($fields->isNotEmpty()) {
                 $plans = [];
@@ -233,7 +309,8 @@ class PriceController extends Controller
                     $plans[] = (object)[
                         'name' => $field->field_name,
                         'code' => $field->field_code,
-                        'price' => $field->getPriceForUserType($role)
+                        'price' => $field->getPriceForUserType($role),
+                        'status' => $field->is_active
                     ];
                 }
                 $groups[] = [
