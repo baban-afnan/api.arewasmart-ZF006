@@ -158,7 +158,7 @@ class NinDemoController extends Controller
 
                     return response()->json([
                         'status' => false,
-                        'message' => 'Upstream Provider Error: ' . $errorMsg,
+                        'message' => 'The provided information does not exist, your wallet was not debited.',
                         'details' => $data
                     ], 400);
                 }
