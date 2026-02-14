@@ -81,7 +81,7 @@ class NinDemoController extends Controller
             $validator = Validator::make($request->all(), [
                 'firstName' => 'required|string',
                 'lastName' => 'required|string',
-                'gender' => 'required|string|in:M,F,m,f', // Made generic to handle case
+                'gender' => 'required|string|in:M,F,m,f', 
                 'dateOfBirth' => 'required|string', // format: 22-02-2002
                 'ref' => 'nullable|string',
             ]);
@@ -118,61 +118,41 @@ class NinDemoController extends Controller
                 ], 402);
             }
 
-            // 5. Initialize Transaction
+            // 5. Generate Reference
             $transactionRef = 'NIND' . date('is') . strtoupper(Str::random(5));
             $performedBy = $user->first_name . ' ' . $user->last_name;
 
-            // Start Database Transaction
-            DB::beginTransaction();
-            
+            // 6. External API Call (RAUDA API)
+            $endpoint = env('RAUDA_API_POST');
+            $accessToken = env('RAUDA_API_TOKEN');
+
+            if (!$endpoint || !$accessToken) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'System configuration error: Missing API credentials.'
+                ], 500);
+            }
+
+            $payload = [
+                'category' => 'NIN',
+                'planId' => '3',
+                'firstName' => $request->firstName,
+                'lastName' => $request->lastName,
+                'gender' => strtoupper($request->gender),
+                'dateOfBirth' => $request->dateOfBirth,
+                'ref' => $request->ref ?? $transactionRef,
+            ];
+
             try {
-                $transaction = Transaction::create([
-                    'transaction_ref' => $transactionRef,
-                    'user_id' => $user->id,
-                    'amount' => $price,
-                    'description' => "NIN Demo Verification for {$request->firstName} {$request->lastName}",
-                    'type' => 'debit',
-                    'status' => 'pending',
-                    'trans_source' => 'API', // Changed to API since this is an API controller
-                    'performed_by' => $performedBy,
-                    'metadata' => [
-                        'request' => $request->all(),
-                        'service_field' => $field->field_name,
-                        'service_code' => '604'
-                    ],
-                ]);
-
-                // 6. External API Call (RAUDA API)
-                $endpoint = env('RAUDA_API_POST');
-                $accessToken = env('RAUDA_API_TOKEN');
-
-                if (!$endpoint || !$accessToken) {
-                    throw new \Exception('System configuration error: Missing API credentials.');
-                }
-
-                $payload = [
-                    'category' => 'NIN',
-                    'planId' => '3',
-                    'firstName' => $request->firstName,
-                    'lastName' => $request->lastName,
-                    'gender' => strtoupper($request->gender),
-                    'dateOfBirth' => $request->dateOfBirth,
-                    'ref' => $request->ref ?? $transactionRef,
-                ];
-
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
                     'Authorization' => "Token " . $accessToken,
-                ])->timeout(30)->post($endpoint, $payload); // Added timeout
+                ])->timeout(30)->post($endpoint, $payload);
 
                 $data = $response->json();
 
-                // 7. Check Response
-                // Note: Logic allows for handling "fail" status from API differently than "network error"
+                // 7. Check Response - ONLY CHARGE ON SUCCESS
                 if (!$response->successful() || !($data['status'] ?? false)) {
-                    $transaction->update(['status' => 'failed']);
-                    DB::commit(); 
-                    
                     $rawError = $data['message'] ?? ($data['data']['message'] ?? 'API Submission Failed');
                     $errorMsg = is_array($rawError) ? json_encode($rawError) : $rawError;
 
@@ -183,75 +163,91 @@ class NinDemoController extends Controller
                     ], 400);
                 }
 
-                // 8. Process Success
-                $wallet->decrement('balance', $price);
-                $transaction->update(['status' => 'completed']);
+                // 8. Process Success and Charge in a DB Transaction
+                return DB::transaction(function () use ($wallet, $price, $user, $field, $transactionRef, $performedBy, $data, $request) {
+                    
+                    // Debit Wallet
+                    $wallet->decrement('balance', $price);
 
-                // Extract nested data from response - Handle multiple nesting levels
-                $apiData = $data['data']['data'] ?? $data['data'] ?? $data ?? [];
+                    // Create Completed Transaction Record
+                    $transaction = Transaction::create([
+                        'transaction_ref' => $transactionRef,
+                        'user_id' => $user->id,
+                        'amount' => $price,
+                        'description' => "NIN Demo Verification for {$request->firstName} {$request->lastName}",
+                        'type' => 'debit',
+                        'status' => 'completed',
+                        'trans_source' => 'API',
+                        'performed_by' => $performedBy,
+                        'metadata' => [
+                            'request' => $request->all(),
+                            'service_field' => $field->field_name,
+                            'service_code' => '604'
+                        ],
+                    ]);
 
-                // 9. Save to Verification Table
-                $verification = Verification::create([
-                    'reference' => $transactionRef,
-                    'user_id' => $user->id,
-                    'service_field_id' => $field->id,
-                    'service_id' => $field->service_id,
-                    'transaction_id' => $transaction->id,
-                    'firstname' => $apiData['firstname'] ?? $apiData['firstName'] ?? $request->firstName,
-                    'middlename' => $apiData['middlename'] ?? $apiData['middleName'] ?? '',
-                    'surname' => $apiData['surname'] ?? $apiData['lastName'] ?? $request->lastName,
-                    'gender' => strtolower($apiData['gender'] ?? $request->gender),
-                    'birthdate' => $apiData['birthdate'] ?? $apiData['birthDate'] ?? $request->dateOfBirth,
-                    'birthstate' => $apiData['birthstate'] ?? $apiData['birthState'] ?? '',
-                    'birthlga' => $apiData['birthlga'] ?? $apiData['birthLga'] ?? '',
-                    'birthcountry' => $apiData['birthcountry'] ?? $apiData['birthCountry'] ?? '',
-                    'maritalstatus' => $apiData['maritalstatus'] ?? $apiData['maritalStatus'] ?? '',
-                    'email' => $apiData['email'] ?? '',
-                    'telephoneno' => $apiData['telephoneno'] ?? $apiData['phone'] ?? $apiData['phoneNumber'] ?? '',
-                    'residence_address' => $apiData['residence_AdressLine1'] ?? $apiData['residence_address'] ?? '',
-                    'residence_state' => $apiData['residence_state'] ?? $apiData['residence_State'] ?? '',
-                    'residence_lga' => $apiData['residence_lga'] ?? $apiData['residence_Lga'] ?? '',
-                    'residence_town' => $apiData['residence_Town'] ?? $apiData['residence_town'] ?? '',
-                    'religion' => $apiData['religion'] ?? '',
-                    'employmentstatus' => $apiData['emplymentstatus'] ?? $apiData['employmentStatus'] ?? '',
-                    'educationallevel' => $apiData['educationallevel'] ?? $apiData['educationalLevel'] ?? '',
-                    'profession' => $apiData['profession'] ?? '',
-                    'title' => $apiData['title'] ?? '',
-                    'idno' => $apiData['nin'] ?? $apiData['NIN'] ?? '',
-                    'photo_path' => $apiData['photo'] ?? $apiData['photo_path'] ?? '',
-                    'signature_path' => $apiData['signature'] ?? $apiData['signature_path'] ?? '',
-                    'trackingId' => $apiData['trackingId'] ?? '',
-                    'performed_by' => $performedBy,
-                    'submission_date' => Carbon::now(),
-                    'status' => 'successful',
-                    'amount' => $price,
-                ]);
+                    // Extract nested data from response
+                    $apiData = $data['data']['data'] ?? $data['data'] ?? $data ?? [];
 
-                DB::commit();
+                    // 9. Save to Verification Table
+                    Verification::create([
+                        'reference' => $transactionRef,
+                        'user_id' => $user->id,
+                        'service_field_id' => $field->id,
+                        'service_id' => $field->service_id,
+                        'transaction_id' => $transaction->id,
+                        'firstname' => $apiData['firstname'] ?? $apiData['firstName'] ?? $request->firstName,
+                        'middlename' => $apiData['middlename'] ?? $apiData['middleName'] ?? '',
+                        'surname' => $apiData['surname'] ?? $apiData['lastName'] ?? $request->lastName,
+                        'gender' => strtolower($apiData['gender'] ?? $request->gender),
+                        'birthdate' => $apiData['birthdate'] ?? $apiData['birthDate'] ?? $request->dateOfBirth,
+                        'birthstate' => $apiData['birthstate'] ?? $apiData['birthState'] ?? '',
+                        'birthlga' => $apiData['birthlga'] ?? $apiData['birthLga'] ?? '',
+                        'birthcountry' => $apiData['birthcountry'] ?? $apiData['birthCountry'] ?? '',
+                        'maritalstatus' => $apiData['maritalstatus'] ?? $apiData['maritalStatus'] ?? '',
+                        'email' => $apiData['email'] ?? '',
+                        'telephoneno' => $apiData['telephoneno'] ?? $apiData['phone'] ?? $apiData['phoneNumber'] ?? '',
+                        'residence_address' => $apiData['residence_AdressLine1'] ?? $apiData['residence_address'] ?? '',
+                        'residence_state' => $apiData['residence_state'] ?? $apiData['residence_State'] ?? '',
+                        'residence_lga' => $apiData['residence_lga'] ?? $apiData['residence_Lga'] ?? '',
+                        'residence_town' => $apiData['residence_Town'] ?? $apiData['residence_town'] ?? '',
+                        'religion' => $apiData['religion'] ?? '',
+                        'employmentstatus' => $apiData['emplymentstatus'] ?? $apiData['employmentStatus'] ?? '',
+                        'educationallevel' => $apiData['educationallevel'] ?? $apiData['educationalLevel'] ?? '',
+                        'profession' => $apiData['profession'] ?? '',
+                        'title' => $apiData['title'] ?? '',
+                        'idno' => $apiData['nin'] ?? $apiData['NIN'] ?? '',
+                        'photo_path' => $apiData['photo'] ?? $apiData['photo_path'] ?? '',
+                        'signature_path' => $apiData['signature'] ?? $apiData['signature_path'] ?? '',
+                        'trackingId' => $apiData['trackingId'] ?? '',
+                        'performed_by' => $performedBy,
+                        'submission_date' => Carbon::now(),
+                        'status' => 'successful',
+                        'amount' => $price,
+                    ]);
 
-                return response()->json([
-                    'status' => true,
-                    'message' => 'NIN Verification Successful',
-                    'api_response' => $data,
-                ], 200);
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'NIN Verification Successful',
+                        'api_response' => $data,
+                    ], 200);
+                });
 
             } catch (\Exception $e) {
-                DB::rollBack();
-                Log::error('NIN Demo Transaction Error: ' . $e->getMessage());
-                throw $e; // Re-throw to be caught by outer catch block
+                Log::error('NIN Demo API/Transaction Error: ' . $e->getMessage());
+                throw $e;
             }
 
         } catch (\Throwable $e) {
-            // Outer catch block ensures we ALWAYS return JSON, never HTML error page
             Log::error('NIN Demo Critical Error: ' . $e->getMessage());
             
             return response()->json([
                 'status' => false,
                 'message' => 'System error occurred while processing verification.',
-                'debug_message' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }
+
 
     /**
      * Authenticate User via Bearer Token manually
