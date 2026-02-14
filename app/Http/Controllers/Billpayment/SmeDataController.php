@@ -84,6 +84,9 @@ class SmeDataController extends Controller
     public function getVariations(Request $request)
     {
         try {
+            $user = $this->authenticateApiUser($request);
+            $role = $user->role ?? 'user';
+
             $query = SmeData::where('status', 'enabled');
 
             if ($request->has('network')) {
@@ -95,7 +98,11 @@ class SmeDataController extends Controller
                 $query->where('plan_type', $request->type);
             }
 
-            $variations = $query->get();
+            $variations = $query->get()->map(function ($plan) use ($role) {
+                // Calculate final price: amount + service_field (fee + markup)
+                $plan->amount = $plan->calculatePriceForRole($role);
+                return $plan;
+            });
 
             return response()->json([
                 'status' => 'success',
@@ -142,9 +149,8 @@ class SmeDataController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Invalid plan or network mismatch.'], 422);
             }
 
-            // 4. Calculate Final Price
-            $pricing = $this->calculatePrice($plan, $user);
-            $totalAmount = $pricing['total'];
+            // 4. Calculate Final Price (SmeData Amount + Service Field Fees)
+            $totalAmount = $plan->calculatePriceForRole($user->role ?? 'user');
 
             // 5. Balance Check
             $wallet = Wallet::where('user_id', $user->id)->first();
@@ -209,38 +215,6 @@ class SmeDataController extends Controller
         }
     }
 
-    /**
-     * Helper to calculate total price
-     */
-    private function calculatePrice($plan, $user)
-    {
-        $service = Service::where('name', 'SME Data')->first();
-        if (!$service) return ['total' => (float)$plan->amount, 'fee' => 0, 'markup' => 0];
-
-        $networkMap = [
-            'MTN' => 'SME01',
-            'AIRTEL' => 'SME02',
-            'GLO' => 'SME03',
-            '9MOBILE' => 'SME04'
-        ];
-
-        $fieldCode = $networkMap[strtoupper($plan->network)] ?? null;
-        $field = $service->fields()->where('field_code', $fieldCode)->first();
-        
-        $fee = $field ? (float)$field->base_price : 0;
-        $markup = 0;
-
-        if ($field) {
-            $priceObj = $field->prices()->where('user_type', $user->role ?? 'user')->first();
-            $markup = $priceObj ? (float)$priceObj->price : 0;
-        }
-
-        return [
-            'total' => (float)$plan->amount + $fee + $markup,
-            'fee' => $fee,
-            'markup' => $markup
-        ];
-    }
 
     /**
      * Call DataStation API
