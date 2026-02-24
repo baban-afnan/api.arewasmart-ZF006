@@ -237,22 +237,32 @@
                                             <span class="fw-medium text-dark">#{{ substr($transaction->transaction_ref, 0, 10) }}...</span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-{{ match($transaction->type) {
-                                                'credit' => 'success-subtle text-success',
-                                                'bonus' => 'success-subtle text-success',
-                                                'debit' => 'danger-subtle text-danger',
-                                                'refund' => 'info-subtle text-info',
-                                                'chargeback' => 'warning-subtle text-warning',
-                                                default => 'secondary-subtle text-secondary'
-                                                 } }} border-0 rounded-pill px-2 py-1">
-                                                <i class="ti ti-{{ $transaction->type == 'credit' ? 'arrow-down-left' : 'arrow-up-right' }} me-1"></i>
-                                                {{ ucfirst($transaction->type) }}
+                                            @php
+                                                $tColor = match($transaction->type) {
+                                                    'credit', 'manual_credit'           => 'success-subtle text-success',
+                                                    'bonus'                             => 'success-subtle text-success',
+                                                    'debit', 'manual_debit'             => 'danger-subtle text-danger',
+                                                    'refund'                            => 'info-subtle text-info',
+                                                    'chargeback'                        => 'warning-subtle text-warning',
+                                                    default                             => 'secondary-subtle text-secondary',
+                                                };
+                                                $tIcon  = in_array($transaction->type, ['credit', 'manual_credit', 'bonus', 'refund'])
+                                                            ? 'arrow-down-left' : 'arrow-up-right';
+                                                $tLabel = match($transaction->type) {
+                                                    'manual_credit' => 'Credit',
+                                                    'manual_debit'  => 'Debit',
+                                                    default         => ucfirst($transaction->type),
+                                                };
+                                            @endphp
+                                            <span class="badge bg-{{ $tColor }} border-0 rounded-pill px-2 py-1">
+                                                <i class="ti ti-{{ $tIcon }} me-1"></i>
+                                                {{ $tLabel }}
                                             </span>
                                         </td>
                                     
                                         <td>
-                                           <span class="fw-bold {{ in_array($transaction->type, ['credit', 'bonus', 'refund']) ? 'text-success' : 'text-danger' }}">
-                                              {{ in_array($transaction->type, ['credit', 'bonus', 'refund']) ? '+' : '-' }}₦{{ number_format($transaction->amount, 2) }}
+                                           <span class="fw-bold {{ in_array($transaction->type, ['credit', 'manual_credit', 'bonus', 'refund']) ? 'text-success' : 'text-danger' }}">
+                                              {{ in_array($transaction->type, ['credit', 'manual_credit', 'bonus', 'refund']) ? '+' : '-' }}₦{{ number_format($transaction->amount, 2) }}
                                             </span>
                                         </td>
                                         <td>

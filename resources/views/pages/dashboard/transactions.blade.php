@@ -71,7 +71,9 @@
                     <select class="form-select form-select-sm" id="type" name="type">
                         <option value="">All Types</option>
                         <option value="credit" {{ request('type') == 'credit' ? 'selected' : '' }}>Credit</option>
+                        <option value="manual_credit" {{ request('type') == 'manual_credit' ? 'selected' : '' }}>Manual Credit</option>
                         <option value="debit" {{ request('type') == 'debit' ? 'selected' : '' }}>Debit</option>
+                        <option value="manual_debit" {{ request('type') == 'manual_debit' ? 'selected' : '' }}>Manual Debit</option>
                         <option value="refund" {{ request('type') == 'refund' ? 'selected' : '' }}>Refund</option>
                         <option value="chargeback" {{ request('type') == 'chargeback' ? 'selected' : '' }}>Chargeback</option>
                         <option value="api" {{ request('type') == 'api' ? 'selected' : '' }}>API</option>
@@ -111,20 +113,28 @@
                                         <td>{{ ($transactions->currentPage() - 1) * $transactions->perPage() + $loop->iteration }}</td>
                                         <td>{{ $transaction->transaction_ref }}</td>
                                         <td>
-                                            <span class="badge bg-{{ match($transaction->type) {
-                                                'credit' => 'success',
-                                                'bonus' => 'success',
-                                                'debit' => 'danger',
-                                                'refund' => 'info',
-                                                'chargeback' => 'warning',
-                                                'api' => 'primary',
-                                                default => 'secondary'
-                                            } }}">
-                                                {{ ucfirst($transaction->type) }}
+                                            @php
+                                                $typeColor = match($transaction->type) {
+                                                    'credit', 'manual_credit'          => 'success',
+                                                    'bonus'                            => 'success',
+                                                    'debit', 'manual_debit'            => 'danger',
+                                                    'refund'                           => 'info',
+                                                    'chargeback'                       => 'warning',
+                                                    'api'                              => 'primary',
+                                                    default                            => 'secondary',
+                                                };
+                                                $typeLabel = match($transaction->type) {
+                                                    'manual_credit' => 'Credit',
+                                                    'manual_debit'  => 'Debit',
+                                                    default         => ucfirst($transaction->type),
+                                                };
+                                            @endphp
+                                            <span class="badge bg-{{ $typeColor }}">
+                                                {{ $typeLabel }}
                                             </span>
                                         </td>
-                                        <td class="fw-bold {{ in_array($transaction->type, ['credit', 'bonus', 'refund']) ? 'text-success' : 'text-danger' }}">
-                                            {{ in_array($transaction->type, ['credit', 'bonus', 'refund']) ? '+' : '-' }}₦{{ number_format($transaction->amount, 2) }}
+                                        <td class="fw-bold {{ in_array($transaction->type, ['credit', 'manual_credit', 'bonus', 'refund']) ? 'text-success' : 'text-danger' }}">
+                                            {{ in_array($transaction->type, ['credit', 'manual_credit', 'bonus', 'refund']) ? '+' : '-' }}₦{{ number_format($transaction->amount, 2) }}
                                         </td>
                                         <td>
                                             <span class="badge bg-{{ $transaction->status === 'completed' ? 'success' : ($transaction->status === 'pending' ? 'warning' : 'danger') }}">
