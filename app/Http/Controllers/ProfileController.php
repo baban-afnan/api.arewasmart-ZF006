@@ -19,7 +19,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
+        return view('settings.services', [
             'user' => $request->user(),
         ]);
     }
@@ -51,12 +51,11 @@ class ProfileController extends Controller
             'first_name' => 'required|string|max:255|min:2',
             'last_name' => 'required|string|max:255|min:2',
             'middle_name' => 'nullable|string|max:255',
-            'phone_no' => 'required|string|max:15|min:10|regex:/^[0-9+\-\s()]+$/',
+            'phone_no' => 'required|string|max:15|min:10|regex:/^[0-9+\-\s()]+$/|unique:users,phone_no,' . $user->id,
             'lga' => 'required|string|max:255',
             'state' => 'required|string|max:255',
             'address' => 'required|string|max:500',
             'bvn' => 'required|digits:11|unique:users,bvn,' . $user->id,
-            'nin' => 'required|digits:11|unique:users,nin,' . $user->id,
             'pin' => 'required|digits:5',
             'termsCheck' => 'required|string|max:500', 
         ], [
@@ -74,14 +73,19 @@ class ProfileController extends Controller
                 'state' => $validated['state'],
                 'address' => $validated['address'],
                 'bvn' => $validated['bvn'],
-                'nin' => $validated['nin'],
                 'pin' => bcrypt($validated['pin']), 
                 'profile_completed' => true, 
             ]);
 
             return redirect()->route('dashboard')->with('success', 'Account successfully! Welcome aboard! 🎉');
+        } catch (\Illuminate\Database\QueryException $e) {
+            $errorCode = $e->errorInfo[1] ?? null;
+            if ($errorCode == 1062) {
+                return redirect()->back()->with('error', 'The provided data (phone number or BVN) is already registered to another account.');
+            }
+            return redirect()->back()->with('error', 'Failed to update profile due to a database error. Please try again later.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to update profile: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An unexpected error occurred. Please try again later.');
         }
     }
 
@@ -167,7 +171,7 @@ class ProfileController extends Controller
         // Define required fields that must be filled
         $requiredFields = [
             'first_name', 'last_name', 'phone_no', 'lga', 
-            'state', 'address', 'bvn', 'nin'
+            'state', 'address', 'bvn'
         ];
 
         foreach ($requiredFields as $field) {
@@ -257,18 +261,5 @@ class ProfileController extends Controller
         ]);
 
         return back()->with('status', 'pin-updated');
-    }
-    /**
-     * Regenerate the user's API Token.
-     */
-    public function regenerateApiToken(Request $request): RedirectResponse
-    {
-        $token = Str::random(60);
-        
-        $request->user()->forceFill([
-            'api_token' => $token,
-        ])->save();
-
-        return back()->with('status', 'API Token regenerating successfully! New Token: ' . $token);
     }
 }

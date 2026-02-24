@@ -64,6 +64,9 @@ Route::group(['prefix' => 'developer', 'as' => 'developer.', 'middleware' => ['a
 
     Route::get('/bvn-modification/fields/{serviceId}', [\App\Http\Controllers\Agency\BvnModificationController::class, 'getServiceFields'])->name('bvn.modification.fields');
 
+    // BVN CRM Docs
+    Route::get('/bvn-crm', [\App\Http\Controllers\Agency\BvnCrmController::class, 'index'])->name('bvn.crm.docs');
+
     // Airtime API Docs
     Route::get('/airtime', [\App\Http\Controllers\Billpayment\AirtimeController::class, 'index'])->name('airtime.docs');
 

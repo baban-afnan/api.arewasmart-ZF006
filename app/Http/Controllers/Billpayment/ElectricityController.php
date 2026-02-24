@@ -184,13 +184,13 @@ class ElectricityController extends Controller
     public function purchase(Request $request)
     {
         try {
-            // 1. Authentication
+            // 1. Authenticate user
             $user = $this->authenticateApiUser($request);
             if (!$user || $user->status !== 'active') {
                 return response()->json(['status' => 'error', 'message' => 'Unauthorized or account restricted.'], 401);
             }
 
-            // 2. Validation
+            // 2. Validate request
             $validator = Validator::make($request->all(), [
                 'serviceID'   => 'required|string', // e.g., ikeja-electric
                 'billersCode' => 'required|string', // Meter Number
@@ -201,14 +201,11 @@ class ElectricityController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['status' => 'error', 'message' => $validator->errors()->first(), 'errors' => $validator->errors()], 422);
+                return response()->json(['status' => 'error', 'message' => $validator->errors()->first()], 422);
             }
 
-            // 3. Setup
-            $requestId = $request->request_id ?? RequestIdHelper::generateRequestId();
+            // 3. Check service active & 4. Calculate price
             $serviceID = $request->serviceID;
-            
-            // 4. Service & Commission Lookup
             $serviceData = $this->getServiceAndCommission($serviceID, $user);
             if (!$serviceData['success']) {
                 return response()->json(['status' => 'error', 'message' => $serviceData['message']], 503);
@@ -218,64 +215,84 @@ class ElectricityController extends Controller
             $discountPercentage = $serviceData['commission'];
             $discountAmount = ($amount * $discountPercentage) / 100;
 
-            // 5. Balance Check
-            $wallet = Wallet::where('user_id', $user->id)->first();
-            if (!$wallet || $wallet->balance < $amount) {
-                return response()->json(['status' => 'error', 'message' => 'Insufficient wallet balance. You need ₦' . number_format($amount, 2)], 402);
-            }
+            $requestId = $request->request_id ?? RequestIdHelper::generateRequestId();
+            $transactionRef = $this->generateTransactionRef();
+            $performedBy = $user->first_name . ' ' . $user->last_name;
 
             // Normalize variation_code for VTpass (it expects 'prepaid' or 'postpaid')
             $vtVariationCode = str_contains($request->variation_code, 'postpaid') ? 'postpaid' : 'prepaid';
 
-            // 6. Upstream Request
-            $response = $this->callUpstreamApi($requestId, $serviceID, $vtVariationCode, $request->billersCode, $amount, $request->phone);
-            
-            if (!$response['success']) {
-                $transactionRef = $this->generateTransactionRef();
-                
-                if (isset($response['data'])) {
-                    $this->logTransaction($user, $transactionRef, $amount, 'refund', "Failed Electricity Payment: {$serviceID} - {$request->billersCode}", [
+            DB::beginTransaction();
+
+            try {
+                // 5. Lock wallet row
+                $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
+
+                // 6. Check wallet active
+                if (!$wallet || $wallet->status !== 'active') {
+                    DB::rollBack();
+                    return response()->json(['status' => 'error', 'message' => 'Wallet inactive.'], 400);
+                }
+
+                // 7. Check balance
+                if ($wallet->balance < $amount) {
+                    DB::rollBack();
+                    return response()->json(['status' => 'error', 'message' => 'Insufficient wallet balance.'], 402);
+                }
+
+                // 8. Create transaction (pending or success)
+                $transaction = Transaction::create([
+                    'transaction_ref' => $transactionRef,
+                    'user_id' => $user->id,
+                    'amount' => $amount,
+                    'description' => "Electricity Payment: {$serviceID} - {$request->billersCode}",
+                    'type' => 'debit',
+                    'status' => 'completed',
+                    'trans_source' => 'api',
+                    'performed_by' => $performedBy,
+                    'metadata' => [
                         'service_id' => $serviceID, 
                         'meter_number' => $request->billersCode,
-                        'status' => 'failed',
-                        'error_message' => $response['message'] ?? 'Transaction Failed',
-                        'upstream_response' => $response['data'],
+                        'phone' => $request->phone,
                         'external_ref' => $requestId
-                    ], 'failed');
-                }
-
-                return response()->json([
-                    'status' => 'error', 
-                    'message' => $response['message'] ?? 'Electricity payment failed.', 
-                    'upstream_response' => $response['data'] ?? null
-                ], 400); 
-            }
-
-            // 7. Transaction Processing
-            return DB::transaction(function () use ($user, $wallet, $request, $requestId, $serviceID, $response, $amount, $discountAmount, $discountPercentage) {
-                $transactionRef = $this->generateTransactionRef();
-
-                // Debit balance
-                $wallet->decrement('balance', $amount);
-                
-                $this->logTransaction($user, $transactionRef, $amount, 'debit', "Electricity Payment: {$serviceID} - {$request->billersCode}", [
-                    'service_id' => $serviceID, 
-                    'meter_number' => $request->billersCode,
-                    'phone' => $request->phone,
-                    'external_ref' => $requestId,
-                    'token' => $response['data']['purchased_code'] ?? ($response['data']['mainToken'] ?? null)
+                    ]
                 ]);
 
-                // Commission / Cashback
+                // 9. Debit wallet
+                $wallet->decrement('balance', $amount);
+
+                // Handle Commission (Cashback)
                 if ($discountAmount > 0) {
                     $wallet->increment('available_balance', $discountAmount);
-                    
-                    $commissionRef = $this->generateTransactionRef();
-                    $this->logTransaction($user, $commissionRef, $discountAmount, 'bonus', "Electricity Cashback ({$discountPercentage}%)", [
-                        'related_transaction_ref' => $transactionRef,
-                        'external_ref' => $requestId
+                    Transaction::create([
+                        'transaction_ref' => $this->generateTransactionRef(),
+                        'user_id' => $user->id,
+                        'amount' => $discountAmount,
+                        'description' => "Electricity Cashback ({$discountPercentage}%)",
+                        'type' => 'bonus',
+                        'status' => 'completed',
+                        'trans_source' => 'api',
+                        'performed_by' => $performedBy,
+                        'metadata' => [
+                            'related_transaction_ref' => $transactionRef,
+                            'external_ref' => $requestId
+                        ]
                     ]);
                 }
+
+                // 10. Create service record and send to api if the service required api
+                $response = $this->callUpstreamApi($requestId, $serviceID, $vtVariationCode, $request->billersCode, $amount, $request->phone);
+                
+                if (!$response['success']) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'error', 
+                        'message' => $response['message'] ?? 'Electricity payment failed.', 
+                        'upstream_response' => $response['data'] ?? null
+                    ], 400); 
+                }
+
+                DB::commit();
 
                 return response()->json([
                     'status' => 'success',
@@ -289,13 +306,19 @@ class ElectricityController extends Controller
                         'status' => 'completed'
                     ])
                 ], 200);
-            });
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
 
         } catch (\Throwable $e) {
-            Log::critical('Electricity System Error: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'System Error: An unexpected error occurred.'], 500);
+            Log::critical('Electricity System Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json(['status' => 'error', 'message' => 'System Error: ' . $e->getMessage()], 500);
         }
     }
+
+
 
     // --- Private Helpers ---
 

@@ -68,12 +68,18 @@ class NinModificationController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validation
+        // 1. Authenticate user
+        $user = $this->authenticateUser($request);
+        if (!$user) {
+             return response()->json(['success' => false, 'message' => 'Unauthorized. Invalid API Token.'], 401);
+        }
+
+        // 2. Validate request
         $rules = [
             'field_code' => 'required',
             'nin' => 'required|digits:11',
             'modification_data' => 'nullable|array',
-            'description' => 'nullable|string|max:500'
+            'description' => 'required|string|max:500' // Required as per standardization
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -82,7 +88,7 @@ class NinModificationController extends Controller
              return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
         }
 
-        // 2. Identify Service
+        // 3. Check service active
         $fieldCode = $request->field_code;
         $serviceField = ServiceField::with('service')->where('field_code', $fieldCode)->first();
         
@@ -92,32 +98,19 @@ class NinModificationController extends Controller
 
         $service = $serviceField->service;
         
-        // Check if main service is active
-        if (!$service || !$service->is_active) {
+        if (!$service || !$service->is_active || !$serviceField->is_active) {
             return response()->json([
-                'status' => 'error',
-                'message' => 'Service is not active'
+                'success' => false,
+                'message' => 'Service or Field is not active'
             ], 503);
         }
 
-        // Additional Validation based on Field Code
+        // Additional Modification Validation
         $modData = $request->modification_data ?? [];
-        
-        // Date of birth update below 5 year (035) logic could be similar to standard DOB if fields overlap, 
-        // but typically 035 might need less or specific proofs. 
-        // Based on user "DOB Modification Wizard" which seems generic for DOB changes:
         if (in_array($fieldCode, ['035'])) { 
-            // The user provided a wizard for DOB, assuming '035' (or general DOB update) uses those fields.
-            // Note: The user mentioned "Date of birth update below 5 year" is 035. 
-            // If there's an adult DOB update, it might be a different code not listed or implies 035 is the main one used here.
-            // Let's validate the key fields from the wizard if the code matches a DOB update.
-            
             $requiredDobFields = [
-                'first_name', 'surname', 'gender', 'marital_status', 
-                'new_dob', 'nationality', 'state_of_origin', 'lga_of_origin', 'town_of_origin',
-                'residence_state', 'residence_lga', 'residence_town', 'residence_address', 'phone_number',
-                'place_of_birth', 'state_of_birth', 'lga_of_birth',
-                'father_surname', 'father_firstname', 'mother_surname', 'mother_firstname'
+                'first_name', 'surname', 'gender', 'new_dob', 'nationality', 'state_of_origin', 
+                'residence_state', 'phone_number', 'place_of_birth'
             ];
 
             foreach ($requiredDobFields as $field) {
@@ -127,71 +120,43 @@ class NinModificationController extends Controller
             }
         }
         
-        // For other fields like Name Correction (032), Phone (033), ensure at least some description or data is present.
         if (empty($modData) && empty($request->description)) {
              return response()->json(['success' => false, 'message' => 'Please provide modification details or description.'], 400);
         }
 
-        // 3. User Authentication
-        $user = $this->authenticateUser($request);
-        if (!$user) {
-             return response()->json(['success' => false, 'message' => 'Unauthorized. Invalid API Token.'], 401);
-        }
-
-        // 3b. Check User Status 
-        // Commenting out as default status is null for new users, blocking requests.
-        /* if ($user->status !== 'active') { 
-             return response()->json([
-                'success' => false,
-                'message' => 'Your account is not active please contact admin'
-            ], 403);
-        } */
-
-        $service = $serviceField->service;
-        // Check if main service or specific field is active
-        // User requested: "allow... only if the service_fields is_active that 1"
-        if (!$service || !$service->is_active || !$serviceField->is_active) {
-            return response()->json([
-                'success' => false, // Maintaining existing JSON structure for this controller? User snippet had 'status' => 'error'.
-                // User snippet: 'status' => 'error'. But existing controller uses 'success' => false. 
-                // I will use user's snippet structure for 503.
-                'status' => 'error',
-                'message' => 'Service is not active'
-            ], 503);
-        }
-
-        // 4. Wallet Check
+        // 4. Calculate price
         $role = $user->role ?? 'user';
-        
         $servicePrice = method_exists($serviceField, 'getPriceForUserType') 
             ? $serviceField->getPriceForUserType($role) 
             : ($serviceField->prices()->where('user_type', $role)->value('price') ?? $serviceField->base_price);
 
-        // Safety check for price
         if ($servicePrice === null) {
-             return response()->json(['success' => false, 'message' => 'Service price not configured for your user type.'], 400);
+             return response()->json(['success' => false, 'message' => 'Service price not configured.'], 400);
         }
 
-        $wallet = Wallet::where('user_id', $user->id)->first();
-
-        // Check wallet status and balance
-        if (!$wallet || $wallet->status !== 'active') {
-             return response()->json(['success' => false, 'message' => 'Wallet inactive or not found.'], 400);
-        }
-
-        if ($wallet->balance < $servicePrice) {
-            return response()->json(['success' => false, 'message' => 'Insufficient wallet balance.'], 400);
-        }
-
-        // 5. Create Transaction & Service Record
         DB::beginTransaction();
 
         try {
+            // 5. Lock wallet row
+            $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
+
+            // 6. Check wallet active
+            if (!$wallet || $wallet->status !== 'active') {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Wallet inactive.'], 400);
+            }
+
+            // 7. Check balance
+            if ($wallet->balance < $servicePrice) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Insufficient wallet balance.'], 400);
+            }
+
             // Generate Reference
             $transactionRef = 'M1' . strtoupper(Str::random(10));
             $performedBy = trim($user->first_name . ' ' . $user->last_name);
 
-            // Create Transaction
+            // 8. Create transaction (pending or success)
             $transaction = Transaction::create([
                 'transaction_ref' => $transactionRef,
                 'user_id'        => $user->id,
@@ -210,10 +175,12 @@ class NinModificationController extends Controller
                 ],
             ]);
 
-            // Determine description
+            // 9. Debit wallet
+            $wallet->decrement('balance', $servicePrice);
+
+            // 10. Create service record and send to api if the service required api
             $description = $request->description ?? "NIN Modification Request ({$serviceField->field_name})";
 
-            // Create NIN Modification record
             $agentService = AgentService::create([
                 'reference'          => $transactionRef,
                 'user_id'            => $user->id,
@@ -225,23 +192,16 @@ class NinModificationController extends Controller
                 'service_field_name' => $serviceField->field_name,
                 'nin'                => $request->nin,
                 'description'        => $description,
-                'modification_data'  => $request->modification_data, // Stores JSON if cast in model, or text
+                'modification_data'  => $request->modification_data,
                 'performed_by'       => $performedBy,
                 'transaction_id'     => $transaction->id,
                 'submission_date'    => now(),
                 'status'             => 'pending',
-                'service_type'       => 'NIN MODIFICATION', // Consistent type
+                'service_type'       => 'NIN MODIFICATION',
+                'comment'            => 'Request submitted, pending processing',
             ]);
-
-            // Debit Wallet
-            $wallet->decrement('balance', $servicePrice);
 
             DB::commit();
-
-            Log::info('NIN Modification API submitted successfully', [
-                'user_id' => $user->id,
-                'transaction_ref' => $transactionRef,
-            ]);
 
             return response()->json([
                 'success' => true,
@@ -257,12 +217,8 @@ class NinModificationController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('NIN Modification API failed', [
-                'user_id' => $user->id,
-                'error'   => $e->getMessage(),
-            ]);
-
-            return response()->json(['success' => false, 'message' => 'Submission failed. Please try again.'], 400);
+            Log::error('NIN Modification API failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Submission failed: ' . $e->getMessage()], 500);
         }
     }
 

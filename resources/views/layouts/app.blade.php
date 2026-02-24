@@ -211,7 +211,7 @@
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('assets/js/sweetalert.js') }}"></script>
 
-    @if(!Auth::user()->bvn || !Auth::user()->phone_no || !Auth::user()->nin || !Auth::user()->lga || !Auth::user()->pin)
+    @if(!Auth::user()->bvn || !Auth::user()->phone_no || !Auth::user()->lga || !Auth::user()->pin)
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 var myModal = new bootstrap.Modal(document.getElementById('forceProfileModal'), {

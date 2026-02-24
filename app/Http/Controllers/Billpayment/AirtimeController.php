@@ -73,13 +73,13 @@ class AirtimeController extends Controller
     public function purchase(Request $request)
     {
         try {
-            // 1. Authentication & Authorization
+            // 1. Authenticate user
             $user = $this->authenticateApiUser($request);
             if (!$user || $user->status !== 'active') {
                 return response()->json(['status' => 'error', 'message' => 'Unauthorized or account restricted.'], 401);
             }
 
-            // 2. Validation
+            // 2. Validate request
             $validator = Validator::make($request->all(), [
                 'network'   => ['required', 'string'],
                 'mobileno'  => 'required|numeric|digits:11',
@@ -88,78 +88,78 @@ class AirtimeController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['status' => 'error', 'message' => $validator->errors()->first(), 'errors' => $validator->errors()], 422);
+                return response()->json(['status' => 'error', 'message' => $validator->errors()->first()], 422);
             }
 
-            // 3. Setup & Normalization
-            $requestId = $request->request_id ?? RequestIdHelper::generateRequestId();
+            // 3. Check service active & 4. Calculate price
             $networkData = $this->normalizeNetwork($request->network);
-            
             if (!$networkData) {
-                return response()->json([
-                    'status' => 'error', 
-                    'message' => 'Invalid Network. Allowed: 101/mtn, 100/airtel, 102/glo, 103/etisalat.'
-                ], 422);
+                return response()->json(['status' => 'error', 'message' => 'Invalid Network.'], 422);
             }
 
-            $networkCode = $networkData['code'];
-            $networkName = $networkData['name'];
-
-            // 4. Service & Commission Lookup
-            $serviceData = $this->getServiceAndCommission($networkCode, $networkName, $user);
+            $serviceData = $this->getServiceAndCommission($networkData['code'], $networkData['name'], $user);
             if (!$serviceData['success']) {
                 return response()->json(['status' => 'error', 'message' => $serviceData['message']], 503);
             }
 
-            // 5. Balance Check
-            $wallet = Wallet::where('user_id', $user->id)->first();
-            if (!$wallet || $wallet->balance < $request->amount) {
-                return response()->json(['status' => 'error', 'message' => 'Insufficient wallet balance.'], 402);
-            }
+            $requestId = $request->request_id ?? RequestIdHelper::generateRequestId();
+            $transactionRef = $this->generateTransactionRef();
+            $performedBy = $user->first_name . ' ' . $user->last_name;
 
-            // 6. Upstream Request
-            $response = $this->callUpstreamApi($requestId, $networkName, $request->amount, $request->mobileno);
-            
-            if (!$response['success']) {
-                 return response()->json([
-                     'status' => 'error', 
-                     'message' => $response['message'] ?? 'Airtime purchase failed.', 
-                     'upstream_response' => $response['data']
-                 ], 400); 
-            }
+            DB::beginTransaction();
 
-            // 7. Transaction Processing
-            return DB::transaction(function () use ($user, $wallet, $request, $requestId, $networkCode, $networkName, $response, $serviceData) {
-                // Generate Internal References (15 digits)
-                $transactionRef = $this->generateTransactionRef();
+            try {
+                // 5. Lock wallet row
+                $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
 
-                // Debit
-                $wallet->decrement('balance', $request->amount);
-                
-                $this->logTransaction($user, $transactionRef, $request->amount, 'debit', "Airtime Purchase - {$request->mobileno}", [
-                    'network_code' => $networkCode, 
-                    'network_name' => $networkName, 
-                    'phone' => $request->mobileno,
-                    'external_ref' => $requestId // Save original request_id here
+                // 6. Check wallet active
+                if (!$wallet || $wallet->status !== 'active') {
+                    DB::rollBack();
+                    return response()->json(['status' => 'error', 'message' => 'Wallet inactive.'], 400);
+                }
+
+                // 7. Check balance
+                if ($wallet->balance < $request->amount) {
+                    DB::rollBack();
+                    return response()->json(['status' => 'error', 'message' => 'Insufficient wallet balance.'], 402);
+                }
+
+                // 8. Create transaction (pending or success)
+                $transaction = Transaction::create([
+                    'transaction_ref' => $transactionRef,
+                    'user_id' => $user->id,
+                    'amount' => $request->amount,
+                    'description' => "Airtime Purchase - {$request->mobileno}",
+                    'type' => 'debit',
+                    'status' => 'completed',
+                    'trans_source' => 'api',
+                    'performed_by' => $performedBy,
+                    'metadata' => [
+                        'network_code' => $networkData['code'], 
+                        'network_name' => $networkData['name'], 
+                        'phone' => $request->mobileno,
+                        'external_ref' => $requestId
+                    ]
                 ]);
 
-                // Commission
+                // 9. Debit wallet
+                $wallet->decrement('balance', $request->amount);
+
+                // Handle Commission (Cashback)
                 $commissionAmount = 0;
                 if ($serviceData['commission'] > 0) {
                     $commissionAmount = ($request->amount * $serviceData['commission']) / 100;
                     $wallet->increment('available_balance', $commissionAmount);
                     
-                    $commissionRef = $this->generateTransactionRef();
-
                     Transaction::create([
-                        'transaction_ref' => $commissionRef,
+                        'transaction_ref' => $this->generateTransactionRef(),
                         'user_id' => $user->id,
                         'amount' => $commissionAmount,
                         'description' => "Airtime Cashback ({$serviceData['commission']}%)",
                         'type' => 'bonus',
                         'status' => 'completed',
                         'trans_source' => 'api',
-                        'performed_by' => $user->first_name . ' ' . $user->last_name,
+                        'performed_by' => $performedBy,
                         'metadata' => [
                             'related_transaction_ref' => $transactionRef,
                             'external_ref' => $requestId
@@ -167,31 +167,49 @@ class AirtimeController extends Controller
                     ]);
                 }
 
+                // 10. Create service record and send to api if the service required api
+                $response = $this->callUpstreamApi($requestId, $networkData['name'], $request->amount, $request->mobileno);
+                
+                if (!$response['success']) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'error', 
+                        'message' => $response['message'] ?? 'Airtime purchase failed.', 
+                        'upstream_response' => $response['data']
+                    ], 400); 
+                }
+
+                DB::commit();
+
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Airtime purchase successful',
                     'data' => [
                         'transaction_ref' => $transactionRef,
                         'request_id' => $requestId,
-                        'network' => $networkCode,
-                        'network_name' => $networkName,
+                        'network' => $networkData['code'],
+                        'network_name' => $networkData['name'],
                         'amount' => $request->amount,
                         'phone' => $request->mobileno,
                         'type' => "Airtime Recharge",
                         'email' => $user->email,
                         'commission_earned' => $commissionAmount,
                         'new_balance' => $wallet->balance,
-                        'trans_source' => 'api',
                         'status' => 'completed'
                     ]
                 ], 200);
-            });
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
 
         } catch (\Throwable $e) {
-            Log::critical('Airtime System Error: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'System Error: An unexpected error occurred.'], 500);
+            Log::critical('Airtime System Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json(['status' => 'error', 'message' => 'System Error: ' . $e->getMessage()], 500);
         }
     }
+
 
     // --- Private Helper Methods ---
 

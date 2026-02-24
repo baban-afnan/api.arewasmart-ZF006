@@ -17,9 +17,26 @@
                     <!-- Welcome Message -->
                     <div class="me-auto">
                         <h4 class="fw-semibold text-dark mb-1 welcome-text">
-                            Welcome back, {{ Auth::user()->first_name . ' ' . Auth::user()->surname ?? 'User' }} 👋
+                            Welcome back, {{ Auth::user()->first_name . ' ' . (Auth::user()->last_name ?? '') }} 👋
                         </h4>
-                        <small class="text-danger">Your Wallet Id is {{ $wallet->wallet_number ?? 'N/A' }}</small>
+                        <div class="d-flex align-items-center gap-2 flex-wrap funding-info mt-1">
+                            @if(!empty($virtualAccount))
+                                <small class="d-flex align-items-center gap-1">
+                                    <i class="fas fa-university text-success"></i>
+                                    <span class="text-muted">{{ $virtualAccount->bankName }}:</span>
+                                    <strong class="text-dark">{{ $virtualAccount->accountNo }}</strong>
+                                    <span class="badge bg-success-subtle text-success border-0 ms-1" 
+                                          style="cursor: pointer;" 
+                                          title="Click to copy account number"
+                                          id="copyAcctBtn"
+                                          onclick="navigator.clipboard.writeText('{{ $virtualAccount->accountNo }}').then(() => { this.innerHTML='<i class=\'fas fa-check\'></i> Copied!'; setTimeout(() => { this.innerHTML='<i class=\'far fa-copy\'></i> Copy'; }, 2000); })">
+                                        <i class="far fa-copy"></i> Copy
+                                    </span>
+                                </small>
+                            @else
+                                <small class="text-muted"><i class="fas fa-info-circle me-1"></i>No virtual account yet</small>
+                            @endif
+                        </div>
                     </div>
 
                     <!-- Wallet Info -->

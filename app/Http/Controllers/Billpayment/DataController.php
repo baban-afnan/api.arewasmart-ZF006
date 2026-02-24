@@ -112,13 +112,13 @@ class DataController extends Controller
     public function purchase(Request $request)
     {
         try {
-            // 1. Authentication
+            // 1. Authenticate user
             $user = $this->authenticateApiUser($request);
             if (!$user || $user->status !== 'active') {
                 return response()->json(['status' => 'error', 'message' => 'Unauthorized or account restricted.'], 401);
             }
 
-            // 2. Validation
+            // 2. Validate request
             $validator = Validator::make($request->all(), [
                 'network'    => ['required', 'string'],
                 'mobileno'   => 'required|numeric|digits:11',
@@ -127,110 +127,109 @@ class DataController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['status' => 'error', 'message' => $validator->errors()->first(), 'errors' => $validator->errors()], 422);
+                return response()->json(['status' => 'error', 'message' => $validator->errors()->first()], 422);
             }
 
-            // 3. Setup
-            $requestId = $request->request_id ?? RequestIdHelper::generateRequestId();
+            // 3. Check service active & 4. Calculate price
             $networkData = $this->normalizeNetwork($request->network);
-            
             if (!$networkData) {
-                return response()->json([
-                    'status' => 'error', 
-                    'message' => 'Invalid Network. Allowed: mtn-data, airtel-data, glo-data, etisalat-data.'
-                ], 422);
+                return response()->json(['status' => 'error', 'message' => 'Invalid Network.'], 422);
             }
 
-            $networkCode = $networkData['code'];
-            $networkName = $networkData['name'];
-
-            // 4. Bundle Details (Validate against database)
             $variation = DB::table('data_variations')
                 ->where('variation_code', $request->bundle)
-                ->where('service_id', $networkCode)
+                ->where('service_id', $networkData['code'])
                 ->first();
 
-            if (!$variation) {
-                return response()->json([
-                    'status' => 'error', 
-                    'message' => "The data plan with code '{$request->bundle}' was not found for the selected network in our database."
-                ], 422);
+            if (!$variation || $variation->status !== 'enabled') {
+                return response()->json(['status' => 'error', 'message' => 'Data plan not found or disabled.'], 422);
             }
 
-            $amount = $variation->variation_amount;
-            $description = $variation->name;
-
-            // 5. Service & Commission Lookup
-            $serviceData = $this->getServiceAndCommission($networkCode, $networkName, $user);
+            $serviceData = $this->getServiceAndCommission($networkData['code'], $networkData['name'], $user);
             if (!$serviceData['success']) {
                 return response()->json(['status' => 'error', 'message' => $serviceData['message']], 503);
             }
 
-            // Calculate payable amount (Discount method)
+            $amount = $variation->variation_amount;
             $discountPercentage = $serviceData['commission'];
             $discountAmount = ($amount * $discountPercentage) / 100;
-            $payableAmount = $amount - $discountAmount;
 
-            // 6. Balance Check (Check against Full Amount since we debit full and then credit cashback)
-            $wallet = Wallet::where('user_id', $user->id)->first();
-            if (!$wallet || $wallet->balance < $amount) {
-                return response()->json(['status' => 'error', 'message' => 'Insufficient wallet balance. You need ₦' . number_format($amount, 2)], 402);
-            }
+            $requestId = $request->request_id ?? RequestIdHelper::generateRequestId();
+            $transactionRef = $this->generateTransactionRef();
+            $performedBy = $user->first_name . ' ' . $user->last_name;
 
-            // 7. Upstream Request
-            $response = $this->callUpstreamApi($requestId, $networkCode, $request->bundle, $request->mobileno);
-            
-            if (!$response['success']) {
-                $transactionRef = $this->generateTransactionRef();
-                
-                // Log failed transaction if we have response data
-                if (isset($response['data'])) {
-                    $this->logTransaction($user, $transactionRef, $amount, 'refund', "Failed Data Purchase: {$description} - {$request->mobileno}", [
-                        'network_code' => $networkCode, 
-                        'network_name' => $networkName, 
+            DB::beginTransaction();
+
+            try {
+                // 5. Lock wallet row
+                $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
+
+                // 6. Check wallet active
+                if (!$wallet || $wallet->status !== 'active') {
+                    DB::rollBack();
+                    return response()->json(['status' => 'error', 'message' => 'Wallet inactive.'], 400);
+                }
+
+                // 7. Check balance
+                if ($wallet->balance < $amount) {
+                    DB::rollBack();
+                    return response()->json(['status' => 'error', 'message' => 'Insufficient wallet balance.'], 402);
+                }
+
+                // 8. Create transaction (pending or success)
+                $transaction = Transaction::create([
+                    'transaction_ref' => $transactionRef,
+                    'user_id' => $user->id,
+                    'amount' => $amount,
+                    'description' => "Data Purchase: {$variation->name} - {$request->mobileno}",
+                    'type' => 'debit',
+                    'status' => 'completed',
+                    'trans_source' => 'api',
+                    'performed_by' => $performedBy,
+                    'metadata' => [
+                        'network_code' => $networkData['code'], 
+                        'network_name' => $networkData['name'], 
                         'phone' => $request->mobileno,
                         'bundle' => $request->bundle,
-                        'status' => 'failed',
-                        'error_message' => $response['message'] ?? 'Transaction Failed',
-                        'upstream_response' => $response['data'],
                         'external_ref' => $requestId
-                    ], 'failed');
-                }
-
-                return response()->json([
-                    'status' => 'error', 
-                    'message' => $response['message'] ?? 'Data purchase failed.', 
-                    'upstream_response' => $response['data'] ?? null
-                ], 400); 
-            }
-
-            // 8. Transaction Processing
-            return DB::transaction(function () use ($user, $wallet, $request, $requestId, $networkCode, $networkName, $response, $amount, $payableAmount, $discountAmount, $discountPercentage, $description) {
-                $transactionRef = $this->generateTransactionRef();
-
-                // Debit the FULL amount 
-                $wallet->decrement('balance', $amount);
-                
-                $this->logTransaction($user, $transactionRef, $amount, 'debit', "Data Purchase: {$description} - {$request->mobileno}", [
-                    'network_code' => $networkCode, 
-                    'network_name' => $networkName, 
-                    'phone' => $request->mobileno,
-                    'bundle' => $request->bundle,
-                    'original_amount' => $amount,
-                    'discount' => 0, 
-                    'external_ref' => $requestId
+                    ]
                 ]);
 
-                // Commission / Cashback Incentive
+                // 9. Debit wallet
+                $wallet->decrement('balance', $amount);
+
+                // Handle Commission (Cashback)
                 if ($discountAmount > 0) {
                     $wallet->increment('available_balance', $discountAmount);
-                    
-                    $commissionRef = $this->generateTransactionRef();
-                    $this->logTransaction($user, $commissionRef, $discountAmount, 'bonus', "Data Cashback ({$discountPercentage}%)", [
-                        'related_transaction_ref' => $transactionRef,
-                        'external_ref' => $requestId
+                    Transaction::create([
+                        'transaction_ref' => $this->generateTransactionRef(),
+                        'user_id' => $user->id,
+                        'amount' => $discountAmount,
+                        'description' => "Data Cashback ({$discountPercentage}%)",
+                        'type' => 'bonus',
+                        'status' => 'completed',
+                        'trans_source' => 'api',
+                        'performed_by' => $performedBy,
+                        'metadata' => [
+                            'related_transaction_ref' => $transactionRef,
+                            'external_ref' => $requestId
+                        ]
                     ]);
                 }
+
+                // 10. Create service record and send to api if the service required api
+                $response = $this->callUpstreamApi($requestId, $networkData['code'], $request->bundle, $request->mobileno);
+                
+                if (!$response['success']) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'error', 
+                        'message' => $response['message'] ?? 'Data purchase failed.', 
+                        'upstream_response' => $response['data'] ?? null
+                    ], 400); 
+                }
+
+                DB::commit();
 
                 return response()->json([
                     'status' => 'success',
@@ -238,12 +237,11 @@ class DataController extends Controller
                     'data' => [
                         'transaction_ref' => $transactionRef,
                         'request_id' => $requestId,
-                        'network' => $networkCode,
-                        'network_name' => $networkName,
+                        'network' => $networkData['code'],
+                        'network_name' => $networkData['name'],
                         'bundle' => $request->bundle,
-                        'plan_name' => $description,
+                        'plan_name' => $variation->name,
                         'amount' => $amount,
-                        'paid_amount' => $amount,
                         'phone' => $request->mobileno,
                         'type' => "Data Purchase",
                         'commission_earned' => $discountAmount,
@@ -251,13 +249,18 @@ class DataController extends Controller
                         'status' => 'completed'
                     ]
                 ], 200);
-            });
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
 
         } catch (\Throwable $e) {
-            Log::critical('Data System Error: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'System Error: An unexpected error occurred.'], 500);
+            Log::critical('Data System Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json(['status' => 'error', 'message' => 'System Error: ' . $e->getMessage()], 500);
         }
     }
+
 
     // --- Private Helpers ---
 

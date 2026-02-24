@@ -141,8 +141,8 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#">
-                                BVN Search Docs
+                            <a href="{{ route('developer.bvn.crm.docs') }}" class="{{ request()->routeIs('developer.bvn.crm.docs') ? 'active' : '' }}">
+                                BVN CRM Docs
                             </a>
                         </li>
                     </ul>

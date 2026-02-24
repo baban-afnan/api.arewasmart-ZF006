@@ -58,7 +58,17 @@ class NinIpeController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validation
+        // 1. Authenticate user
+        $user = $this->authenticateUser($request);
+        if (!$user) {
+             return response()->json(['success' => false, 'message' => 'Unauthorized. Invalid API Token.'], 401);
+        }
+
+        if ($user->status !== 'active') { 
+             return response()->json(['success' => false, 'message' => 'Your account is not active.'], 403);
+        }
+
+        // 2. Validate request
         $validator = Validator::make($request->all(), [
             'field_code' => 'required',
             'tracking_id' => 'required|string|min:15',
@@ -68,7 +78,7 @@ class NinIpeController extends Controller
              return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
         }
 
-        // 2. Identify Service
+        // 3. Check service active
         $fieldCode = $request->field_code;
         $serviceField = ServiceField::with('service')->where('field_code', $fieldCode)->first();
         
@@ -85,44 +95,41 @@ class NinIpeController extends Controller
              return response()->json(['success' => false, 'message' => 'Invalid Service Type for IPE Endpoint.'], 400);
         }
 
-        // 3. User Authentication
-        $user = $this->authenticateUser($request);
-        if (!$user) {
-             return response()->json(['success' => false, 'message' => 'Unauthorized. Invalid API Token.'], 401);
-        }
-
-        if ($user->status !== 'active') { 
-             return response()->json(['success' => false, 'message' => 'Your account is not active.'], 403);
-        }
-
-        // 4. Wallet Check & Price
+        // 4. Calculate price
         $role = $user->role ?? 'user';
         $servicePrice = method_exists($serviceField, 'getPriceForUserType') 
             ? $serviceField->getPriceForUserType($role) 
             : ($serviceField->prices()->where('user_type', $role)->value('price') ?? $serviceField->base_price);
 
-        $wallet = Wallet::where('user_id', $user->id)->first();
-        if (!$wallet || $wallet->balance < $servicePrice) {
-            return response()->json(['success' => false, 'message' => 'Insufficient wallet balance.'], 400);
-        }
-
-        // 5. DEBIT FIRST FLOW
-        $performedBy = $user->first_name . ' ' . $user->last_name;
-        $transactionRef = 'ipe' . date('is') . strtoupper(Str::random(5));
-        
         DB::beginTransaction();
         try {
-            // Charge the wallet
-            $wallet->decrement('balance', $servicePrice);
+            // 5. Lock wallet row
+            $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
+
+            // 6. Check wallet active
+            if (!$wallet || $wallet->status !== 'active') {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Wallet inactive.'], 400);
+            }
+
+            // 7. Check balance
+            if ($wallet->balance < $servicePrice) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Insufficient wallet balance.'], 400);
+            }
+
+            // Generate Reference
+            $performedBy = $user->first_name . ' ' . $user->last_name;
+            $transactionRef = 'ipe' . date('is') . strtoupper(Str::random(5));
             
-            // Create Completed Transaction
+            // 8. Create transaction (pending or success)
             $transaction = Transaction::create([
                 'transaction_ref' => $transactionRef,
                 'user_id' => $user->id,
                 'amount' => $servicePrice,
                 'description' => "NIN Agent service for {$serviceField->field_name} (IPE)",
                 'type' => 'debit',
-                'status' => 'completed', // Money taken
+                'status' => 'completed',
                 'trans_source' => 'API',
                 'performed_by' => $performedBy,
                 'metadata' => [
@@ -132,44 +139,38 @@ class NinIpeController extends Controller
                     'tracking_id' => $request->tracking_id,
                 ],
             ]);
+
+            // 9. Debit wallet
+            $wallet->decrement('balance', $servicePrice);
+
+            // 10. Create service record and send to api if the service required api
             
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('IPE Transaction Create Error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'System Error: Failed to process payment.'], 500);
-        }
+            // API Integration (Post method)
+            $apiKey = env('NIN_API_KEY');
+            $url = 'https://www.s8v.ng/api/clearance';
+            $payload = ['tracking_id' => $request->tracking_id, 'token' => $apiKey];
 
-        // 6. External API Call
-        $apiKey = env('NIN_API_KEY');
-        $url = 'https://www.s8v.ng/api/clearance';
-        $payload = ['tracking_id' => $request->tracking_id, 'token' => $apiKey];
+            $agentServiceStatus = 'processing';
+            $comment = 'Request submitted, processing...';
+            $isSuccess = false;
 
-        $agentServiceStatus = 'processing';
-        $comment = 'Request submitted, processing...';
-        $apiResponseData = null;
-        $isSuccess = false;
+            try {
+                $response = Http::timeout(30)->post($url, $payload);
+                $apiResponseData = $response->json();
 
-        try {
-            $response = Http::timeout(30)->post($url, $payload);
-            $apiResponseData = $response->json();
-
-            if ($response->successful() && isset($apiResponseData['status']) && 
-               ($apiResponseData['status'] == 'success' || $apiResponseData['status'] == 'successful')) {
-                $isSuccess = true;
-                $agentServiceStatus = 'successful';
-                $comment = 'IPE created successful';
-            } else {
-                // API handled error or non-success status
-                $comment = $apiResponseData['message'] ?? 'API Error';
+                if ($response->successful() && isset($apiResponseData['status']) && 
+                   ($apiResponseData['status'] == 'success' || $apiResponseData['status'] == 'successful')) {
+                    $isSuccess = true;
+                    $agentServiceStatus = 'successful';
+                    $comment = 'IPE created successful';
+                } else {
+                    $comment = $apiResponseData['message'] ?? 'API Error';
+                }
+            } catch (\Exception $e) {
+                Log::error('IPE API Error: ' . $e->getMessage());
+                $comment = 'Connection Error: Provider unreachable. queued for retry.';
             }
-        } catch (\Exception $e) {
-            Log::error('IPE API Error: ' . $e->getMessage());
-            $comment = 'Connection Error: Provider unreachable. queued for retry.';
-        }
 
-        // 7. Create Agent Service Record
-        try {
             $agentService = AgentService::create([
                 'reference' => $transactionRef,
                 'user_id' => $user->id,
@@ -184,9 +185,11 @@ class NinIpeController extends Controller
                 'submission_date' => now(),
                 'service_field_name' => $serviceField->field_name,
                 'description' => $request->description ?? $serviceField->field_name,
-                'comment' => $comment, // "generate message that NIN validation is created successful [OR failure msg]"
+                'comment' => $comment,
                 'performed_by' => $performedBy,
             ]);
+
+            DB::commit();
 
             return response()->json([
                 'success' => true,
@@ -200,10 +203,9 @@ class NinIpeController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            Log::error('IPE Agent Service Save Error: ' . $e->getMessage());
-            // Critical: User charged but service record failed. Should probably log highly or alert admin.
-            // For API response:
-            return response()->json(['success' => true, 'message' => 'Request submitted but encountered a saving error. Contact support with Ref: ' . $transactionRef], 200);
+            DB::rollBack();
+            Log::error('IPE Store Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'System Error: ' . $e->getMessage()], 500);
         }
     }
 

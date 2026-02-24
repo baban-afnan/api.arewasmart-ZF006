@@ -48,6 +48,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/bvn/modification', [\App\Http\Controllers\Agency\BvnModificationController::class, 'store'])->name('bvn.modification.store');
     Route::get('/bvn/modification', [\App\Http\Controllers\Agency\BvnModificationController::class, 'checkStatus'])->name('bvn.modification.status');
 
+    // BVN CRM
+    Route::post('/bvn/crm', [\App\Http\Controllers\Agency\BvnCrmController::class, 'store'])->name('bvn.crm.store');
+    Route::get('/bvn/crm', [\App\Http\Controllers\Agency\BvnCrmController::class, 'checkStatus'])->name('bvn.crm.status');
+
 
     // Airtime Purchase
     Route::post('/airtime/purchase', [\App\Http\Controllers\Billpayment\AirtimeController::class, 'purchase'])->name('api.airtime.purchase');

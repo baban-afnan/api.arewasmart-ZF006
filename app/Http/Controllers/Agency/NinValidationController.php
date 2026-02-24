@@ -57,7 +57,17 @@ class NinValidationController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validation
+        // 1. Authenticate user
+        $user = $this->authenticateUser($request);
+        if (!$user) {
+             return response()->json(['success' => false, 'message' => 'Unauthorized. Invalid API Token.'], 401);
+        }
+
+        if ($user->status !== 'active') { 
+             return response()->json(['success' => false, 'message' => 'Your account is not active.'], 403);
+        }
+
+        // 2. Validate request
         $validator = Validator::make($request->all(), [
             'field_code' => 'required',
             'nin' => 'required|digits:11',
@@ -67,7 +77,7 @@ class NinValidationController extends Controller
              return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
         }
 
-        // 2. Identify Service
+        // 3. Check service active
         $fieldCode = $request->field_code;
         $serviceField = ServiceField::with('service')->where('field_code', $fieldCode)->first();
         
@@ -84,37 +94,39 @@ class NinValidationController extends Controller
              return response()->json(['success' => false, 'message' => 'Invalid Service Type for Validation.'], 400);
         }
 
-        // 3. User Authentication
-        $user = $this->authenticateUser($request);
-        if (!$user) {
-             return response()->json(['success' => false, 'message' => 'Unauthorized. Invalid API Token.'], 401);
-        }
-
-        if ($user->status !== 'active') { 
-             return response()->json(['success' => false, 'message' => 'Your account is not active please contact admin'], 403);
-        }
-
-        // 4. Wallet Check
+        // 4. Calculate price
         $role = $user->role ?? 'user';
         $servicePrice = method_exists($serviceField, 'getPriceForUserType') 
             ? $serviceField->getPriceForUserType($role) 
             : ($serviceField->prices()->where('user_type', $role)->value('price') ?? $serviceField->base_price);
 
-        $wallet = Wallet::where('user_id', $user->id)->first();
-        if (!$wallet || $wallet->balance < $servicePrice) {
-            return response()->json(['success' => false, 'message' => 'Insufficient wallet balance.'], 400);
+        if ($servicePrice === null) {
+            return response()->json(['success' => false, 'message' => 'Service price not configured.'], 400);
         }
 
-        // 5. DEBIT FIRST FLOW
-        $performedBy = $user->first_name . ' ' . $user->last_name;
-        $transactionRef = 'val' . date('is') . strtoupper(Str::random(5));
-
         DB::beginTransaction();
+
         try {
-            // Charge the wallet
-            $wallet->decrement('balance', $servicePrice);
-            
-            // Create Transaction (Status: Completed as user is charged)
+            // 5. Lock wallet row
+            $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
+
+            // 6. Check wallet active
+            if (!$wallet || $wallet->status !== 'active') {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Wallet inactive.'], 400);
+            }
+
+            // 7. Check balance
+            if ($wallet->balance < $servicePrice) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Insufficient wallet balance.'], 400);
+            }
+
+            // Generate Reference
+            $performedBy = $user->first_name . ' ' . $user->last_name;
+            $transactionRef = 'val' . date('is') . strtoupper(Str::random(5));
+
+            // 8. Create transaction (pending or success)
             $transaction = Transaction::create([
                 'transaction_ref' => $transactionRef,
                 'user_id' => $user->id,
@@ -132,44 +144,37 @@ class NinValidationController extends Controller
                 ],
             ]);
 
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Validation Transaction Create Error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'System Error: Failed to process payment.'], 500);
-        }
+            // 9. Debit wallet
+            $wallet->decrement('balance', $servicePrice);
 
-        // 6. External API Call
-        $apiKey = env('NIN_API_KEY');
-        $url = 'https://s8v.ng/api/validation';
-        $payload = ['nin' => $request->nin, 'error' => $serviceField->field_name, 'api' => $apiKey];
+            // 10. Create service record and send to api if the service required api
+            
+            // API Integration (Post method)
+            $apiKey = env('NIN_API_KEY');
+            $url = 'https://s8v.ng/api/validation';
+            $payload = ['nin' => $request->nin, 'error' => $serviceField->field_name, 'api' => $apiKey];
 
-        $agentServiceStatus = 'processing';
-        $comment = 'Request submitted, processing...';
-        $apiResponseData = null;
-        $isSuccess = false;
+            $agentServiceStatus = 'processing';
+            $comment = 'Request submitted, processing...';
+            $isSuccess = false;
 
-        try {
-            $response = Http::timeout(30)->post($url, $payload);
-            $apiResponseData = $response->json();
+            try {
+                $response = Http::timeout(30)->post($url, $payload);
+                $apiResponseData = $response->json();
 
-            // Check for success status
-            if ($response->successful() && isset($apiResponseData['status']) && 
-               ($apiResponseData['status'] == 'success' || $apiResponseData['status'] == 'successful')) {
-                $isSuccess = true;
-                $agentServiceStatus = 'successful';
-                $comment = 'NIN validation is created successful';
-            } else {
-                 $comment = $apiResponseData['message'] ?? 'API Error';
+                if ($response->successful() && isset($apiResponseData['status']) && 
+                   ($apiResponseData['status'] == 'success' || $apiResponseData['status'] == 'successful')) {
+                    $isSuccess = true;
+                    $agentServiceStatus = 'successful';
+                    $comment = 'NIN validation is created successful';
+                } else {
+                     $comment = $apiResponseData['message'] ?? 'API Error';
+                }
+            } catch (\Exception $e) {
+                Log::error('Validation API Error: ' . $e->getMessage());
+                $comment = 'Connection Error: Provider unreachable. queued for retry.';
             }
 
-        } catch (\Exception $e) {
-            Log::error('Validation API Error: ' . $e->getMessage());
-             $comment = 'Connection Error: Provider unreachable. queued for retry.';
-        }
-
-        // 7. Create AgentService Record
-        try {
             $agentService = AgentService::create([
                 'reference' => $transactionRef,
                 'user_id' => $user->id,
@@ -177,18 +182,20 @@ class NinValidationController extends Controller
                 'service_field_id' => $serviceField->id,
                 'field_code' => $serviceField->field_code,
                 'transaction_id' => $transaction->id,
-                'service_type' => 'NIN_VALIDATION', // Or 'validation'
+                'service_type' => 'NIN_VALIDATION',
                 'nin' => $request->nin,
                 'amount' => $servicePrice,
                 'status' => $agentServiceStatus,
                 'submission_date' => now(),
                 'service_field_name' => $serviceField->field_name,
                 'description' => $request->description ?? $serviceField->field_name,
-                'comment' => $comment, // "generate message that NIN validation is created successful [OR failure msg]"
+                'comment' => $comment,
                 'performed_by' => $performedBy,
             ]);
 
-             return response()->json([
+            DB::commit();
+
+            return response()->json([
                 'success' => true,
                 'message' => $isSuccess ? 'Request submitted successfully' : 'Request submitted, pending processing',
                 'data' => [
@@ -196,13 +203,14 @@ class NinValidationController extends Controller
                     'trx_ref' => $transactionRef,
                     'status' => $agentServiceStatus,
                     'nin' => $request->nin,
-                    'response' => $comment // Or clean response if needed? User asked: "generate message... and save it to the comment cullum"
+                    'response' => $comment
                 ]
             ], 200);
 
         } catch (\Exception $e) {
-            Log::error('Validation Agent Service Save Error: ' . $e->getMessage());
-             return response()->json(['success' => true, 'message' => 'Request submitted but encountered a saving error. Contact support with Ref: ' . $transactionRef], 200);
+            DB::rollBack();
+            Log::error('Validation Store Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'System Error: ' . $e->getMessage()], 500);
         }
     }
 
@@ -392,8 +400,8 @@ class NinValidationController extends Controller
     {
         $s = strtolower(trim((string) $status));
         return match ($s) {
-            'successful', 'success', 'resolved', 'approved', 'completed' => 'successful',
-            'processing', 'in_progress', 'pending', 'submitted', 'new' => 'processing',
+            'successful', 'success', 'resolved', 'approved', 'in_progress', 'completed' => 'successful',
+            'processing', 'pending', 'submitted', 'new' => 'processing',
             'failed', 'rejected', 'error', 'declined', 'invalid' => 'failed',
             default => 'pending',
         };

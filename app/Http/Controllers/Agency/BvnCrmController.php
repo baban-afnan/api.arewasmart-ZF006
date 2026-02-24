@@ -15,15 +15,13 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 
-class BvnModificationController extends Controller
+class BvnCrmController extends Controller
 {
     // Defined Service Codes
-    private const KEYSTONE_CODES = ['67', '68', '69', '70', '71', '72', '73'];
-    private const FIRST_BANK_CODES = ['003', '004', '005', '006', '007', '008', '009', '010', '060', '050', '3', '4', '5', '6', '7', '8', '9', '10', '60', '50'];
-    private const AGENCY_CODES = ['022', '023', '024', '025', '026', '027', '028', '66'];
+    private const CRM_CODES = ['021'];
 
     /**
-     * Display the BVN Modification API Documentation.
+     * Display the BVN CRM API Documentation.
      * Only accessible to logged-in users.
      */
     public function index()
@@ -35,12 +33,9 @@ class BvnModificationController extends Controller
 
         $role = $user->role ?? 'user';
 
-        // Merge all allowed codes
-        $allowedCodes = array_merge(self::KEYSTONE_CODES, self::FIRST_BANK_CODES, self::AGENCY_CODES);
-
-        // Fetch active fields matching codes, with their parent service
+        // Fetch active fields matching CRM codes
         $fields = ServiceField::with(['service', 'prices'])
-            ->whereIn('field_code', $allowedCodes)
+            ->whereIn('field_code', self::CRM_CODES)
             ->where('is_active', 1)
             ->whereHas('service', function($q) {
                 $q->where('is_active', 1);
@@ -51,7 +46,6 @@ class BvnModificationController extends Controller
 
         foreach ($fields as $field) {
             $price = $this->calculateServicePrice($field, $role);
-            $category = $this->getCategoryByCode($field->field_code);
 
             $availableServices->push((object)[
                 'id' => $field->id, 
@@ -59,16 +53,16 @@ class BvnModificationController extends Controller
                 'code' => $field->field_code, 
                 'price' => $price, 
                 'bank' => $field->service->name,
-                'category' => $category,
-                'type' => 'Modification'
+                'category' => 'crm',
+                'type' => 'CRM'
             ]);
         }
 
-        return view('bvn.modification', compact('user', 'availableServices'));
+        return view('bvn.crm', compact('user', 'availableServices'));
     }
 
     /**
-     * Process BVN Modification Request (API Only).
+     * Process BVN CRM Request (API Only).
      */
     public function store(Request $request)
     {
@@ -81,13 +75,8 @@ class BvnModificationController extends Controller
         // 2. Validate request
         $validator = Validator::make($request->all(), [
             'field_code'        => 'required',
-            'bvn'               => 'required|digits:11',
-            'nin'               => 'required|digits:11',
-            'modification_data' => 'nullable|array',
-            'description'       => 'required', // Required as per user request
-            'surname'           => 'nullable|string',
-            'firstname'         => 'nullable|string',
-            'middlename'        => 'nullable|string',
+            'ticket_id'         => 'required|digits:8',
+            'batch_id'          => 'required|digits:7',
         ]);
 
         if ($validator->fails()) {
@@ -134,36 +123,15 @@ class BvnModificationController extends Controller
             }
 
             // Generate Reference
-            $transactionRef = 'B1' . strtoupper(Str::random(10)); // B1 for BVN
+            $transactionRef = 'CRM' . strtoupper(Str::random(10)); // CRM for CRM
             $performedBy = trim($user->first_name . ' ' . $user->last_name);
-            
-            // Handle Description & Name Extraction
-            $descriptionInput = $request->description;
-            $surname = $request->surname;
-            $firstname = $request->firstname;
-            $middlename = $request->middlename;
-            $finalDescription = $descriptionInput;
-
-            if (is_array($descriptionInput)) {
-                $surname = $descriptionInput['surname'] ?? $surname;
-                $firstname = $descriptionInput['firstname'] ?? $firstname;
-                $middlename = $descriptionInput['middlename'] ?? $middlename;
-                $finalDescription = json_encode($descriptionInput);
-            } elseif ($surname || $firstname) {
-                // If distinct name fields are provided, structure them as JSON
-                $finalDescription = json_encode([
-                    'surname'    => $surname,
-                    'firstname'  => $firstname,
-                    'middlename' => $middlename
-                ]);
-            }
 
             // 8. Create transaction (pending or success)
             $transaction = Transaction::create([
                 'transaction_ref' => $transactionRef,
                 'user_id'        => $user->id,
                 'amount'         => $servicePrice,
-                'description'    => "BVN modification for {$serviceField->field_name}",
+                'description'    => "BVN CRM for {$serviceField->field_name}",
                 'type'           => 'debit',
                 'status'         => 'completed',
                 'trans_source'   => 'API',
@@ -172,12 +140,8 @@ class BvnModificationController extends Controller
                     'service'          => $service->name,
                     'service_field'    => $serviceField->field_name,
                     'field_code'       => $serviceField->field_code,
-                    'bvn'              => $request->bvn,
-                    'nin'              => $request->nin,
-                    'surname'          => $surname,
-                    'firstname'        => $firstname,
-                    'middlename'       => $middlename,
-                    'details'          => $request->modification_data ?? $finalDescription
+                    'ticket_id'        => $request->ticket_id,
+                    'batch_id'         => $request->batch_id,
                 ],
             ]);
 
@@ -194,17 +158,15 @@ class BvnModificationController extends Controller
                 'field_code'       => $serviceField->field_code,
                 'field_name'       => $serviceField->field_name,
                 'bank'             => $service->name,
-                'bvn'              => $request->bvn,
-                'nin'              => $request->nin,
-                'description'      => $finalDescription,
+                'ticket_id'        => $request->ticket_id,
+                'batch_id'         => $request->batch_id,
                 'amount'           => $servicePrice,
                 'transaction_id'   => $transaction->id,
                 'submission_date'  => now(),
                 'status'           => 'pending',
-                'service_type'     => 'bvn_modification',
+                'service_type'     => 'bvn_crm',
                 'comment'          => 'Request submitted, pending processing',
                 'performed_by'     => $performedBy,
-                'modification_data'=> $request->modification_data,
             ]);
 
             DB::commit();
@@ -224,7 +186,7 @@ class BvnModificationController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('BVN Modification API failed', ['error' => $e->getMessage()]);
+            Log::error('BVN CRM API failed', ['error' => $e->getMessage()]);
 
             return response()->json(['success' => false, 'message' => 'Submission failed: ' . $e->getMessage()], 500);
         }
@@ -239,19 +201,19 @@ class BvnModificationController extends Controller
             $user = $this->authenticateUser($request);
             if (!$user) return response()->json(['success' => false, 'message' => 'Unauthorized.'], 401);
 
-            if (!$request->reference && !$request->bvn && !$request->nin) {
-                 return response()->json(['success' => false, 'message' => 'Provide either reference, bvn, or nin.'], 400);
+            if (!$request->reference && !$request->ticket_id && !$request->batch_id) {
+                 return response()->json(['success' => false, 'message' => 'Provide either reference, ticket_id, or batch_id.'], 400);
             }
             
             $query = AgentService::where('user_id', $user->id)
-                ->where('service_type', 'bvn_modification'); // Ensure case matches storage
+                ->where('service_type', 'bvn_crm');
 
             if ($request->reference) {
                 $query->where('reference', $request->reference);
-            } elseif ($request->bvn) {
-                $query->where('bvn', $request->bvn);
-            } elseif ($request->nin) {
-                $query->where('nin', $request->nin);
+            } elseif ($request->ticket_id) {
+                $query->where('ticket_id', $request->ticket_id);
+            } elseif ($request->batch_id) {
+                $query->where('batch_id', $request->batch_id);
             }
 
             $agentService = $query->latest('created_at')->first();
@@ -264,12 +226,11 @@ class BvnModificationController extends Controller
                 'success' => true,
                 'data' => [
                     'reference'       => $agentService->reference,
-                    'bvn'             => $agentService->bvn,
-                    'nin'             => $agentService->nin,
-                    'service'         => $agentService->service_field_name,
+                    'ticket_id'       => $agentService->ticket_id,
+                    'batch_id'        => $agentService->batch_id,
+                    'service'         => $agentService->service_field_name ?? $agentService->field_name,
                     'status'          => $agentService->status,
                     'comment'         => $agentService->comment,
-                    'description'     => $agentService->description,
                     'file_url'        => $agentService->file_url,
                     'submission_date' => $agentService->submission_date
                 ]
@@ -309,25 +270,5 @@ class BvnModificationController extends Controller
         }
         
         return $field->prices()->where('user_type', $role)->value('price') ?? $field->base_price;
-    }
-
-    /**
-     * Helper: Determine Category based on Field Code
-     */
-    private function getCategoryByCode($code)
-    {
-        if (in_array($code, self::KEYSTONE_CODES)) {
-            return 'keystone';
-        } 
-        
-        if (in_array($code, self::FIRST_BANK_CODES)) {
-            return 'firstbank';
-        } 
-        
-        if (in_array($code, self::AGENCY_CODES)) {
-            return 'agency';
-        }
-
-        return 'other';
     }
 }

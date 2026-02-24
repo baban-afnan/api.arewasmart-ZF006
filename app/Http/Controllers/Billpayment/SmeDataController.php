@@ -121,13 +121,13 @@ class SmeDataController extends Controller
     public function purchase(Request $request)
     {
         try {
-            // 1. Authentication (Standard API logic in this project seems to use manual check or middleware)
+            // 1. Authenticate user
             $user = $this->authenticateApiUser($request);
             if (!$user || $user->status !== 'active') {
                 return response()->json(['status' => 'error', 'message' => 'Unauthorized or account restricted.'], 401);
             }
 
-            // 2. Validation
+            // 2. Validate request
             $validator = Validator::make($request->all(), [
                 'network'    => ['required', 'string', 'in:MTN,AIRTEL,GLO,9MOBILE'],
                 'mobileno'   => 'required|numeric|digits:11',
@@ -139,7 +139,7 @@ class SmeDataController extends Controller
                 return response()->json(['status' => 'error', 'message' => $validator->errors()->first()], 422);
             }
 
-            // 3. Plan Lookup
+            // 3. Check service active & 4. Calculate price
             $plan = SmeData::where('data_id', $request->plan_id)
                 ->where('network', strtoupper($request->network))
                 ->where('status', 'enabled')
@@ -149,51 +149,70 @@ class SmeDataController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Invalid plan or network mismatch.'], 422);
             }
 
-            // 4. Calculate Final Price (SmeData Amount + Service Field Fees)
             $totalAmount = $plan->calculatePriceForRole($user->role ?? 'user');
-
-            // 5. Balance Check
-            $wallet = Wallet::where('user_id', $user->id)->first();
-            if (!$wallet || $wallet->balance < $totalAmount) {
-                return response()->json(['status' => 'error', 'message' => 'Insufficient wallet balance.'], 402);
-            }
-
-            // 6. Upstream API Call (DataStation)
             $requestId = $request->request_id ?? RequestIdHelper::generateRequestId();
-            $response = $this->callDataStation($requestId, $plan, $request->mobileno);
+            $transactionRef = $this->generateTransactionRef();
+            $performedBy = $user->first_name . ' ' . $user->last_name;
 
-            if (!$response['success']) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => $response['message'] ?? 'Purchase failed at please try again letter.',
-                ], 400);
-            }
+            DB::beginTransaction();
 
-            // 7. Process Transaction
-            return DB::transaction(function () use ($user, $wallet, $plan, $totalAmount, $request, $requestId, $response) {
-                // Debit Wallet
-                $wallet->decrement('balance', $totalAmount);
+            try {
+                // 5. Lock wallet row
+                $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
 
-                // Create Transaction record
-                $transactionRef = $this->generateTransactionRef();
-                Transaction::create([
+                // 6. Check wallet active
+                if (!$wallet || $wallet->status !== 'active') {
+                    DB::rollBack();
+                    return response()->json(['status' => 'error', 'message' => 'Wallet inactive.'], 400);
+                }
+
+                // 7. Check balance
+                if ($wallet->balance < $totalAmount) {
+                    DB::rollBack();
+                    return response()->json(['status' => 'error', 'message' => 'Insufficient wallet balance.'], 402);
+                }
+
+                // 8. Create transaction (pending or success)
+                $transaction = Transaction::create([
                     'transaction_ref' => $transactionRef,
                     'user_id' => $user->id,
-                    'payer_name' => $user->first_name . ' ' . $user->last_name,
+                    'payer_name' => $performedBy,
                     'amount' => $totalAmount,
                     'description' => "SME Data Purchase: {$plan->size} {$plan->plan_type} - {$request->mobileno}",
                     'type' => 'debit',
                     'status' => 'completed',
                     'trans_source' => 'api',
-                    'performed_by' => $user->first_name . ' ' . $user->last_name,
+                    'performed_by' => $performedBy,
                     'metadata' => [
                         'network' => $plan->network,
                         'plan_id' => $plan->data_id,
                         'phone' => $request->mobileno,
-                        'request_id' => $requestId,
-                        'upstream_ref' => $response['data']['id'] ?? null
+                        'request_id' => $requestId
                     ]
                 ]);
+
+                // 9. Debit wallet
+                $wallet->decrement('balance', $totalAmount);
+
+                // 10. Create service record and send to api if the service required api
+                $response = $this->callDataStation($requestId, $plan, $request->mobileno);
+
+                if (!$response['success']) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => $response['message'] ?? 'Purchase failed. Please try again later.',
+                    ], 400);
+                }
+
+                // Update transaction with upstream ref if available
+                if (isset($response['data']['id'])) {
+                    $metadata = $transaction->metadata;
+                    $metadata['upstream_ref'] = $response['data']['id'];
+                    $transaction->update(['metadata' => $metadata]);
+                }
+
+                DB::commit();
 
                 return response()->json([
                     'status' => 'success',
@@ -207,13 +226,19 @@ class SmeDataController extends Controller
                         'status' => 'completed'
                     ]
                 ], 200);
-            });
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
 
         } catch (\Throwable $e) {
-            Log::critical('SME Data Purchase Error: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'Internal server error.'], 500);
+            Log::critical('SME Data Purchase Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json(['status' => 'error', 'message' => 'Internal server error: ' . $e->getMessage()], 500);
         }
     }
+
+
 
 
     /**
