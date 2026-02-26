@@ -206,7 +206,7 @@ class BvnCrmController extends Controller
             }
             
             $query = AgentService::where('user_id', $user->id)
-                ->where('service_type', 'bvn_crm');
+                ->where('service_type', 'CRM');
 
             if ($request->reference) {
                 $query->where('reference', $request->reference);
