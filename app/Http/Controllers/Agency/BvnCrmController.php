@@ -165,7 +165,7 @@ class BvnCrmController extends Controller
                 'submission_date'  => now(),
                 'status'           => 'pending',
                 'service_type'     => 'crm',
-                'comment'          => 'Request submitted, pending processing',
+                'comment'          => 'Request submitted, pending we will update you shortly.',
                 'performed_by'     => $performedBy,
             ]);
 
