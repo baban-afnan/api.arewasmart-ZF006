@@ -149,37 +149,50 @@ class NinValidationController extends Controller
 
             // 10. Create service record and send to api if the service required api
             
-            // API Integration (Post method)
-            $apiKey = env('IDENFY_API_KEY');
-            $url = 'https://www.idenfy.ng/api/nin-validation';
-            $payload = [
-                'message' => 'Record not found',
-                'nin' => $request->nin
-            ];
+            // Check if record already exists
+            $existingRecord = AgentService::where('nin', $request->nin)
+                ->where('service_type', 'NIN_VALIDATION')
+                ->orderBy('created_at', 'desc')
+                ->first();
 
             $agentServiceStatus = 'processing';
             $comment = 'Request submitted, processing...';
             $isSuccess = false;
 
-            try {
-                $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $apiKey,
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                ])->timeout(30)->post($url, $payload);
-                
-                $apiResponseData = $response->json();
+            if ($existingRecord) {
+                // Use stored response
+                $isSuccess = in_array($existingRecord->status, ['successful', 'completed', 'processing']);
+                $agentServiceStatus = $existingRecord->status;
+                $comment = $existingRecord->comment;
+            } else {
+                // API Integration (Post method)
+                $apiKey = env('IDENFY_API_KEY');
+                $url = 'https://www.idenfy.ng/api/nin-validation';
+                $payload = [
+                    'message' => 'Record not found',
+                    'nin' => $request->nin
+                ];
 
-                if ($response->successful() && isset($apiResponseData['status']) && $apiResponseData['status'] === true && isset($apiResponseData['code']) && $apiResponseData['code'] === 'REQUEST_SUBMITTED') {
-                    $isSuccess = true;
-                    $agentServiceStatus = 'processing';
-                    $comment = 'your nin validation request was sent successful know that it make take upto 3 working days';
-                } else {
-                     $comment = strip_tags($apiResponseData['message'] ?? 'API Error');
+                try {
+                    $response = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $apiKey,
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
+                    ])->timeout(30)->post($url, $payload);
+                    
+                    $apiResponseData = $response->json();
+
+                    if ($response->successful() && isset($apiResponseData['status']) && $apiResponseData['status'] === true && isset($apiResponseData['code']) && $apiResponseData['code'] === 'REQUEST_SUBMITTED') {
+                        $isSuccess = true;
+                        $agentServiceStatus = 'processing';
+                        $comment = 'your nin validation request was sent successful know that it make take upto 3 working days';
+                    } else {
+                         $comment = strip_tags($apiResponseData['message'] ?? 'API Error');
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Validation API Error: ' . $e->getMessage());
+                    $comment = 'Connection Error: Provider unreachable. queued for retry.';
                 }
-            } catch (\Exception $e) {
-                Log::error('Validation API Error: ' . $e->getMessage());
-                $comment = 'Connection Error: Provider unreachable. queued for retry.';
             }
 
             $agentService = AgentService::create([

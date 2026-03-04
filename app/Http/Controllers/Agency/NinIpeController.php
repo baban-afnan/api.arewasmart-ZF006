@@ -145,30 +145,43 @@ class NinIpeController extends Controller
 
             // 10. Create service record and send to api if the service required api
             
-            // API Integration (Post method)
-            $apiKey = env('NIN_API_KEY');
-            $url = 'https://www.s8v.ng/api/clearance';
-            $payload = ['tracking_id' => $request->tracking_id, 'token' => $apiKey];
+            // Check if record already exists
+            $existingRecord = AgentService::where('tracking_id', $request->tracking_id)
+                ->where('service_type', 'IPE')
+                ->orderBy('created_at', 'desc')
+                ->first();
 
             $agentServiceStatus = 'processing';
             $comment = 'Request submitted, processing...';
             $isSuccess = false;
 
-            try {
-                $response = Http::timeout(30)->post($url, $payload);
-                $apiResponseData = $response->json();
+            if ($existingRecord) {
+                // Use stored response
+                $isSuccess = in_array($existingRecord->status, ['successful', 'completed']);
+                $agentServiceStatus = $existingRecord->status;
+                $comment = $existingRecord->comment;
+            } else {
+                // API Integration (Post method)
+                $apiKey = env('NIN_API_KEY');
+                $url = 'https://www.s8v.ng/api/clearance';
+                $payload = ['tracking_id' => $request->tracking_id, 'token' => $apiKey];
 
-                if ($response->successful() && isset($apiResponseData['status']) && 
-                   ($apiResponseData['status'] == 'success' || $apiResponseData['status'] == 'successful')) {
-                    $isSuccess = true;
-                    $agentServiceStatus = 'successful';
-                    $comment = 'IPE created successful';
-                } else {
-                    $comment = $apiResponseData['message'] ?? 'API Error';
+                try {
+                    $response = Http::timeout(30)->post($url, $payload);
+                    $apiResponseData = $response->json();
+
+                    if ($response->successful() && isset($apiResponseData['status']) && 
+                       ($apiResponseData['status'] == 'success' || $apiResponseData['status'] == 'successful')) {
+                        $isSuccess = true;
+                        $agentServiceStatus = 'successful';
+                        $comment = 'IPE created successful';
+                    } else {
+                        $comment = $apiResponseData['message'] ?? 'API Error';
+                    }
+                } catch (\Exception $e) {
+                    Log::error('IPE API Error: ' . $e->getMessage());
+                    $comment = 'Connection Error: Provider unreachable. queued for retry.';
                 }
-            } catch (\Exception $e) {
-                Log::error('IPE API Error: ' . $e->getMessage());
-                $comment = 'Connection Error: Provider unreachable. queued for retry.';
             }
 
             $agentService = AgentService::create([
@@ -344,7 +357,7 @@ class NinIpeController extends Controller
                     'amount' => $agentService->amount,
                     'type' => 'refund',
                     'status' => 'completed',
-                    'description' => "Refund 100% for rejected/cancelled IPE service [{$agentService->service_field_name}], Request ID #{$agentService->id}",
+                    'description' => "Refund 100% for failed/cancelled IPE service [{$agentService->service_field_name}], Request ID #{$agentService->id}",
                     'metadata' => [
                         'original_request_id' => $agentService->id,
                         'original_reference' => $agentService->reference
