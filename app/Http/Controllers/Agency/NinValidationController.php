@@ -150,25 +150,32 @@ class NinValidationController extends Controller
             // 10. Create service record and send to api if the service required api
             
             // API Integration (Post method)
-            $apiKey = env('NIN_API_KEY');
-            $url = 'https://s8v.ng/api/validation';
-            $payload = ['nin' => $request->nin, 'error' => $serviceField->field_name, 'api' => $apiKey];
+            $apiKey = env('IDENFY_API_KEY');
+            $url = 'https://www.idenfy.ng/api/nin-validation';
+            $payload = [
+                'message' => 'Record not found',
+                'nin' => $request->nin
+            ];
 
             $agentServiceStatus = 'processing';
             $comment = 'Request submitted, processing...';
             $isSuccess = false;
 
             try {
-                $response = Http::timeout(30)->post($url, $payload);
+                $response = Http::withHeaders([
+                    'Authorization' => 'Bearer ' . $apiKey,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ])->timeout(30)->post($url, $payload);
+                
                 $apiResponseData = $response->json();
 
-                if ($response->successful() && isset($apiResponseData['status']) && 
-                   ($apiResponseData['status'] == 'success' || $apiResponseData['status'] == 'successful')) {
+                if ($response->successful() && isset($apiResponseData['status']) && $apiResponseData['status'] === true && isset($apiResponseData['code']) && $apiResponseData['code'] === 'REQUEST_SUBMITTED') {
                     $isSuccess = true;
-                    $agentServiceStatus = 'successful';
-                    $comment = 'NIN validation is created successful';
+                    $agentServiceStatus = 'processing';
+                    $comment = 'your nin validation request was sent successful know that it make take upto 3 working days';
                 } else {
-                     $comment = $apiResponseData['message'] ?? 'API Error';
+                     $comment = strip_tags($apiResponseData['message'] ?? 'API Error');
                 }
             } catch (\Exception $e) {
                 Log::error('Validation API Error: ' . $e->getMessage());
@@ -197,7 +204,7 @@ class NinValidationController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => $isSuccess ? 'Request submitted successfully' : 'Request submitted, pending processing',
+                'message' => $isSuccess ? 'your nin validation request was sent successful know that it make take upto 3 working days' : 'Request submitted, pending processing',
                 'data' => [
                     'reference' => $agentService->reference,
                     'trx_ref' => $transactionRef,
@@ -246,26 +253,30 @@ class NinValidationController extends Controller
             }
 
             // Call Upstream Status API
-            $apiKey = env('NIN_API_KEY');
-            $url = 'https://s8v.ng/api/validation/status';
-            $payload = ['nin' => $agentService->nin, 'token' => $apiKey];
+            $apiKey = env('IDENFY_API_KEY');
+            $url = 'https://www.idenfy.ng/api/nin-validation-status';
+            $payload = ['nin' => $agentService->nin];
 
-            $response = Http::post($url, $payload);
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ])->post($url, $payload);
+            
             $apiResponse = $response->json();
-            $cleanResponse = $this->cleanApiResponse($apiResponse);
+            
+            // Extract message and reply for comment
+            $apiMsg = strip_tags($apiResponse['message'] ?? '');
+            $apiReply = strip_tags($apiResponse['data']['reply'] ?? '');
+            $fullComment = trim($apiMsg . ($apiMsg && $apiReply ? ': ' : '') . $apiReply);
+            if (empty($fullComment)) $fullComment = 'No response message';
 
-            $updateData = ['comment' => $cleanResponse];
+            $updateData = ['comment' => $fullComment];
             $newStatus = null;
             $statusRaw = null;
 
-            if (isset($apiResponse['status']) && is_string($apiResponse['status'])) {
-                $statusRaw = $apiResponse['status'];
-            } elseif (isset($apiResponse['response'])) {
-                if (is_array($apiResponse['response']) && isset($apiResponse['response']['status'])) {
-                    $statusRaw = $apiResponse['response']['status'];
-                } elseif (is_string($apiResponse['response'])) {
-                     $statusRaw = $apiResponse['response'];
-                }
+            if (isset($apiResponse['code'])) {
+                $statusRaw = $apiResponse['code'];
             }
 
             if ($statusRaw) {
@@ -281,7 +292,7 @@ class NinValidationController extends Controller
                 'success' => true,
                 'nin' => $agentService->nin,
                 'status' => $agentService->status,
-                'comment' => $cleanResponse,
+                'comment' => $fullComment,
                 'message' => 'Status checked.'
             ]);
 
@@ -331,54 +342,13 @@ class NinValidationController extends Controller
 
                 $submission->update($updateData);
 
-                // Handle Refund logic via IPE Controller method if IPE
-                if ($newStatus === 'failed' && strtoupper($submission->service_type) === 'IPE') {
-                     // Since we split controllers, we can instantiate IPE controller or just copy logic?
-                     // Safer to duplicate simple logic or create shared service. 
-                     // For now, I'll embed the IPE refund check here since webhook is shared.
-                     $this->processIpeRefund($submission);
-                }
             }
         }
         return response()->json(['success' => true, 'message' => 'Webhook received successfully']);
     }
 
-    // --- Helpers ---
+  
 
-    private function processIpeRefund(AgentService $agentService)
-    {
-        if (strtoupper($agentService->service_type) !== 'IPE') return;
-        if ($agentService->is_refunded) return;
-
-         try {
-            $user = \App\Models\User::find($agentService->user_id);
-            if (!$user) return;
-
-            DB::beginTransaction();
-            $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
-            if ($wallet) {
-                $wallet->balance += $agentService->amount;
-                $wallet->save();
-
-                Transaction::create([
-                    'transaction_ref' => strtoupper(Str::random(12)),
-                    'user_id' => $user->id,
-                    'performed_by' => 'System (Webhook)', 
-                    'amount' => $agentService->amount,
-                    'type' => 'refund',
-                    'status' => 'completed',
-                    'description' => "Refund 100% for rejected IPE service [{$agentService->service_field_name}], Request ID #{$agentService->id}",
-                    'metadata' => ['original_request_id' => $agentService->id],
-                ]);
-
-                $agentService->update(['is_refunded' => true]); 
-            }
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Webhook Refund Error: ' . $e->getMessage());
-        }
-    }
 
     private function authenticateUser(Request $request)
     {
@@ -398,11 +368,11 @@ class NinValidationController extends Controller
 
     private function normalizeStatus($status): string
     {
-        $s = strtolower(trim((string) $status));
+        $s = strtoupper(trim((string) $status));
         return match ($s) {
-            'successful', 'success', 'resolved', 'approved', 'in_progress', 'completed' => 'successful',
-            'processing', 'pending', 'submitted', 'new' => 'processing',
-            'failed', 'rejected', 'error', 'declined', 'invalid' => 'failed',
+            'SUCCESSFUL', 'SUCCESS' => 'successful',
+            'PENDING', 'IN-PROGRESS', 'REQUEST_SUBMITTED', 'PROCESSING' => 'processing',
+            'FAILED', 'REJECTED', 'CANCELLED', 'DECLINED' => 'failed',
             default => 'pending',
         };
     }

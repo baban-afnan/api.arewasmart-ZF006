@@ -59,7 +59,7 @@
                         <i class="ti ti-tag me-1"></i> Version 1.1.0
                     </span>
                     <button class="btn btn-white shadow-sm d-lg-none ms-2 rounded-circle p-2" type="button" id="sidebarToggle" aria-label="Toggle Navigation">
-                        <i class="ti ti-menu-2 fs-4 text-primary"></i>
+                        <i class="ti ti-menu-2 fs-15 text-primary"></i>
                     </button>
                 </div>
             </div>

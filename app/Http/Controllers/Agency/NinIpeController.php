@@ -279,14 +279,14 @@ class NinIpeController extends Controller
                 $refundResult = $this->processRefund($agentService);
                  if ($refundResult === 'already_refunded') {
                     return response()->json([
-                        'success' => false,
-                        'message' => 'the request was failed and already refunded',
+                        'success' => true,
+                        'message' => 'Status checked. Request was failed/cancelled and already refunded.',
                         'data' => [
                             'tracking_id' => $agentService->tracking_id,
                             'status' => $agentService->status,
                             'response' => $apiResponse
                         ]
-                    ], 400); 
+                    ], 200); 
                 } elseif ($refundResult === 'refunded') {
                      $refundMsg = ' Refund has been processed.';
                 }
@@ -312,14 +312,19 @@ class NinIpeController extends Controller
     {
         // Refund logic for IPE
         if (strtoupper($agentService->service_type) !== 'IPE') return 'not_eligible';
+
+        // Only refund if status is 'failed' (which includes 'cancelled' via mapping)
+        if ($agentService->status !== 'failed') return 'not_failed';
         
+        // Double check in Transaction table to prevent double refund
         $refundExists = Transaction::where('type', 'refund')
             ->where(function ($q) use ($agentService) {
                 $q->where('description', 'LIKE', "%Request ID #{$agentService->id}%")
                   ->orWhere('metadata->original_request_id', $agentService->id);
             })->exists();
 
-        if ($refundExists || $agentService->is_refunded) return 'already_refunded';
+        // Note: is_refunded column doesn't exist in DB according to research
+        if ($refundExists) return 'already_refunded';
 
         $user = \App\Models\User::find($agentService->user_id);
         if (!$user) return 'error';
@@ -339,16 +344,20 @@ class NinIpeController extends Controller
                     'amount' => $agentService->amount,
                     'type' => 'refund',
                     'status' => 'completed',
-                    'description' => "Refund 100% for rejected IPE service [{$agentService->service_field_name}], Request ID #{$agentService->id}",
-                    'metadata' => ['original_request_id' => $agentService->id],
+                    'description' => "Refund 100% for rejected/cancelled IPE service [{$agentService->service_field_name}], Request ID #{$agentService->id}",
+                    'metadata' => [
+                        'original_request_id' => $agentService->id,
+                        'original_reference' => $agentService->reference
+                    ],
                 ]);
 
-                $agentService->update(['is_refunded' => true]); 
+                // We skip is_refunded update as column doesn't exist
                 $status = 'refunded';
             }
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error("Refund Error for IPE ID {$agentService->id}: " . $e->getMessage());
             $status = 'error';
         }
         return $status;
@@ -368,7 +377,7 @@ class NinIpeController extends Controller
         return match ($s) {
             'successful', 'success', 'resolved', 'approved', 'completed' => 'successful',
             'processing', 'in_progress', 'pending', 'submitted', 'new' => 'processing',
-            'failed', 'rejected', 'error', 'declined', 'invalid' => 'failed',
+            'failed', 'rejected', 'error', 'declined', 'invalid', 'cancelled' => 'failed',
             default => 'pending',
         };
     }

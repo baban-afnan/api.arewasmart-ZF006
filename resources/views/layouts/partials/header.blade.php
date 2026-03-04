@@ -4,10 +4,10 @@
         <!-- Header Left - Logo -->
         <div class="header-left">
             <a href="{{ route('dashboard') }}" class="logo">
-                <img src="{{ asset('assets/img/logo/logo001.png') }}" alt="Logo" width="40" height="40">
+                <img src="{{ asset('assets/img/logo/logo001.png') }}" alt="Logo" width="30" height="40">
             </a>
             <a href="{{ route('dashboard') }}" class="dark-logo">
-                <img src="{{ asset('assets/img/logo/logo001.png') }}" alt="Logo" width="40" height="40">
+                <img src="{{ asset('assets/img/logo/logo001.png') }}" alt="Logo" width="30" height="40">
             </a>
         </div>
 
