@@ -208,11 +208,12 @@
                     </a>
                 </li>
                 
-                <li>
+                <li class="px-3 mt-4 mb-5">
                     <form method="POST" action="{{ route('logout') }}" id="logout-form">
                         @csrf
-                        <a href="javascript:void(0);" onclick="confirmLogout(event)">
-                            <i class="ti ti-logout"></i><span>Logout</span>
+                        <a href="javascript:void(0);" onclick="confirmLogout(event)" class="btn btn-primary w-100 d-flex align-items-center justify-content-center text-white shadow-sm" style="border-radius: 8px; padding: 12px;">
+                            <i class="ti ti-logout text-white" style="margin-right: 8px; width: auto;"></i>
+                            <span class="text-white">Logout</span>
                         </a>
                     </form>
                     <script>

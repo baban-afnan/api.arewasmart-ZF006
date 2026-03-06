@@ -47,6 +47,24 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\EnsureApiUser::class
 
 // API Routes are now in routes/api.php
 
+// Public API Documentation
+Route::group(['prefix' => 'docs', 'as' => 'docs.'], function () {
+    Route::view('/', 'documentation.index')->name('index');
+    Route::view('/pricing', 'documentation.pricing')->name('pricing');
+    Route::view('/nin', 'documentation.nin')->name('nin');
+    Route::view('/nin-demo', 'documentation.nin-demo')->name('nin-demo');
+    Route::view('/nin-phone', 'documentation.nin-phone')->name('nin-phone');
+    Route::view('/nin-validation', 'documentation.nin-validation')->name('nin-validation');
+    Route::view('/nin-modification', 'documentation.nin-modification')->name('nin-modification');
+    Route::view('/nin-ipe', 'documentation.nin-ipe')->name('nin-ipe');
+    Route::view('/bvn', 'documentation.bvn')->name('bvn');
+    Route::view('/tin', 'documentation.tin')->name('tin');
+    Route::view('/airtime', 'documentation.airtime')->name('airtime');
+    Route::view('/data', 'documentation.data')->name('data');
+    Route::view('/sme-data', 'documentation.sme-data')->name('sme-data');
+    Route::view('/electricity', 'documentation.electricity')->name('electricity');
+});
+
 // Developer Documentation
 Route::group(['prefix' => 'developer', 'as' => 'developer.', 'middleware' => ['auth']], function () {
     Route::get('/bvn', [App\Http\Controllers\Api\BvnVerificationController::class, 'index'])->name('bvn.docs');

@@ -257,21 +257,6 @@
             <div class="page-loader"></div>
         </div>
 
-    <!-- Top Bar -->
-    <div class="top-bar d-none d-md-block">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="contact-info">
-                <span class="me-4"><i class="fas fa-map-marker-alt"></i> NO983 Babantude Adelke Street Apapa Lagos</span>
-                <span><i class="fas fa-phone-alt"></i> 09112345678</span>
-            </div>
-            <div class="social-icons">
-                <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
-            </div>
-        </div>
-    </div>
-
     <!-- Header -->
     <header>
         <div class="container header-container">
@@ -287,7 +272,7 @@
                     <li><a href="#services">Services</a></li>
                     <li><a href="#partners">Partners</a></li>
                     <li><a href="#support">Support</a></li>
-                    <li><a href="#">Documentation</a></li>
+                    <li><a href="{{ route('docs.index') }}">Documentation</a></li>
                     <li><a href="{{route ('login')}}" class="btn btn-primary text-white">Get Started</a></li>
                 </ul>
             </nav>

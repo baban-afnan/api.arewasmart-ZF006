@@ -120,6 +120,7 @@
                         </div>
                     </div>
 
+                    @if(!Auth::user()->bvn)
                     <!-- Verification Section -->
                     <div class="card border-0 shadow-sm mb-4">
                         <div class="card-body">
@@ -139,6 +140,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
                     <!-- Transaction Pin -->
                     <div class="card border-0 shadow-sm mb-4">
