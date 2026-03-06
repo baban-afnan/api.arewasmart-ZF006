@@ -55,7 +55,7 @@ class ProfileController extends Controller
             'lga' => 'required|string|max:255',
             'state' => 'required|string|max:255',
             'address' => 'required|string|max:500',
-            'bvn' => 'required|digits:11|unique:users,bvn,' . $user->id,
+            'bvn' => (empty($user->bvn) ? 'required' : 'nullable') . '|digits:11|unique:users,bvn,' . $user->id,
             'pin' => 'required|digits:5',
             'termsCheck' => 'required|string|max:500', 
         ], [
@@ -72,7 +72,7 @@ class ProfileController extends Controller
                 'lga' => $validated['lga'],
                 'state' => $validated['state'],
                 'address' => $validated['address'],
-                'bvn' => $validated['bvn'],
+                'bvn' => $validated['bvn'] ?? $user->bvn,
                 'pin' => bcrypt($validated['pin']), 
                 'profile_completed' => true, 
             ]);
