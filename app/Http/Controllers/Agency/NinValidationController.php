@@ -265,47 +265,11 @@ class NinValidationController extends Controller
                     return response()->json(['success' => false, 'message' => 'Transaction not found.'], 404);
             }
 
-            // Call Upstream Status API
-            $apiKey = env('IDENFY_API_KEY');
-            $url = 'https://www.idenfy.ng/api/nin-validation-status';
-            $payload = ['nin' => $agentService->nin];
-
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $apiKey,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ])->post($url, $payload);
-            
-            $apiResponse = $response->json();
-            
-            // Extract message and reply for comment
-            $apiMsg = strip_tags($apiResponse['message'] ?? '');
-            $apiReply = strip_tags($apiResponse['data']['reply'] ?? '');
-            $fullComment = trim($apiMsg . ($apiMsg && $apiReply ? ': ' : '') . $apiReply);
-            if (empty($fullComment)) $fullComment = 'No response message';
-
-            $updateData = ['comment' => $fullComment];
-            $newStatus = null;
-            $statusRaw = null;
-
-            if (isset($apiResponse['code'])) {
-                $statusRaw = $apiResponse['code'];
-            }
-
-            if ($statusRaw) {
-                $newStatus = $this->normalizeStatus($statusRaw);
-                $updateData['status'] = $newStatus;
-            }
-
-            $agentService->update($updateData);
-
-            // NO REFUND FOR VALIDATION as per request ("refund attempt on validation since validation have no refund")
-
             return response()->json([
                 'success' => true,
                 'nin' => $agentService->nin,
                 'status' => $agentService->status,
-                'comment' => $fullComment,
+                'comment' => $agentService->comment,
                 'message' => 'Status checked.'
             ]);
 
