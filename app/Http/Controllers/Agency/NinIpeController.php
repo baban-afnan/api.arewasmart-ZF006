@@ -70,8 +70,8 @@ class NinIpeController extends Controller
 
         // 2. Validate request
         $validator = Validator::make($request->all(), [
-            'field_code' => 'required',
-            'tracking_id' => 'required|string|min:15',
+            'field_code' => 'required|string|max:50',
+            'tracking_id' => 'required|string|min:15|max:100|alpha_dash',
         ]);
 
         if ($validator->fails()) {
@@ -143,29 +143,101 @@ class NinIpeController extends Controller
             // 9. Debit wallet
             $wallet->decrement('balance', $servicePrice);
 
-            // 10. Create service record and send to api if the service required api
+            // 10. Pre-create AgentService record early to release database lock rapidly
+            $agentService = AgentService::create([
+                'reference' => $transactionRef,
+                'user_id' => $user->id,
+                'service_id' => $serviceField->service_id,
+                'service_field_id' => $serviceField->id,
+                'field_code' => $serviceField->field_code,
+                'transaction_id' => $transaction->id,
+                'service_type' => 'IPE',
+                'tracking_id' => $request->tracking_id,
+                'amount' => $servicePrice,
+                'status' => 'processing',
+                'submission_date' => now(),
+                'service_field_name' => $serviceField->field_name,
+                'description' => $request->description ?? $serviceField->field_name,
+                'comment' => 'Request submitted, processing...',
+                'performed_by' => $performedBy,
+            ]);
+
+            // COMMIT EARLY to unlock platform wallet!
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('IPE Store Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'System Error: ' . $e->getMessage()], 500);
+        }
+
+        // --- ASYNC SAFE OUTSIDE LOCK ---
+        // 11. Interact with API safely without choking Database
+        $agentServiceStatus = 'processing';
+        $comment = 'Request submitted, processing...';
+        $isSuccess = false;
+
+        // Check if record already exists and has a conclusive comment
+        $existingRecord = AgentService::where('tracking_id', $request->tracking_id)
+            ->where('service_type', 'IPE')
+            ->where('id', '!=', $agentService->id) // Skip the exact one we just generated
+            ->whereNotNull('comment')
+            ->where('comment', '!=', 'Request submitted, processing...')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if ($existingRecord) {
+            // Use stored response
+            $isSuccess = in_array($existingRecord->status, ['successful', 'completed']);
+            $agentServiceStatus = $existingRecord->status;
+            $comment = $existingRecord->comment;
+        } else {
+            $apiKey = env('NIN_API_KEY');
+            $payload = ['tracking_id' => $request->tracking_id, 'token' => $apiKey];
             
-            // Check if record already exists
-            $existingRecord = AgentService::where('tracking_id', $request->tracking_id)
-                ->where('service_type', 'IPE')
-                ->orderBy('created_at', 'desc')
-                ->first();
+            $hasConclusiveStatus = false;
+            
+            try {
+                // First, seamlessly check if the Provider already has this tracking_id's status
+                $statusUrl = 'https://www.s8v.ng/api/clearance/status';
+                $statusResponse = Http::timeout(20)->post($statusUrl, $payload);
+                $apiResponse = $statusResponse->json();
+                
+                if ($statusResponse->successful() && $apiResponse) {
+                    $jsonString = is_array($apiResponse) ? json_encode($apiResponse, JSON_PRETTY_PRINT) : (string) $apiResponse;
+                    $cleanResponse = str_replace(['{', '}', '"', "'"], '', $jsonString);
+                    $cleanResponse = preg_replace('/\s+/', ' ', $cleanResponse);
+                    $cleanResponse = trim($cleanResponse);
 
-            $agentServiceStatus = 'processing';
-            $comment = 'Request submitted, processing...';
-            $isSuccess = false;
+                    $statusRaw = null;
+                    if (isset($apiResponse['status']) && is_string($apiResponse['status'])) {
+                        $statusRaw = $apiResponse['status'];
+                    } elseif (isset($apiResponse['response'])) {
+                        if (is_array($apiResponse['response']) && isset($apiResponse['response']['status'])) {
+                            $statusRaw = $apiResponse['response']['status'];
+                        } elseif (is_string($apiResponse['response'])) {
+                             $statusRaw = $apiResponse['response'];
+                        }
+                    }
 
-            if ($existingRecord) {
-                // Use stored response
-                $isSuccess = in_array($existingRecord->status, ['successful', 'completed']);
-                $agentServiceStatus = $existingRecord->status;
-                $comment = $existingRecord->comment;
-            } else {
+                    // If the upstream API returns conclusive data (not 'not found' or 'invalid')
+                    if ($statusRaw && !in_array(strtolower(trim($statusRaw)), ['not found', 'invalid tracking id', 'invalid'])) {
+                        $newStatus = $this->normalizeStatus($statusRaw);
+                        $isSuccess = in_array($newStatus, ['successful', 'completed']);
+                        $agentServiceStatus = $newStatus;
+                        $comment = $cleanResponse;
+                        $hasConclusiveStatus = true;
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('IPE Status API Check Error in Store: ' . $e->getMessage());
+                // Soft error, safely fallback to Create API
+            }
+
+            // If Status API didn't return a definitive existing record, natively create a new one
+            if (!$hasConclusiveStatus) {
                 // API Integration (Post method)
-                $apiKey = env('NIN_API_KEY');
                 $url = 'https://www.s8v.ng/api/clearance';
-                $payload = ['tracking_id' => $request->tracking_id, 'token' => $apiKey];
-
                 try {
                     $response = Http::timeout(30)->post($url, $payload);
                     $apiResponseData = $response->json();
@@ -183,43 +255,24 @@ class NinIpeController extends Controller
                     $comment = 'Connection Error: Provider unreachable. queued for retry.';
                 }
             }
-
-            $agentService = AgentService::create([
-                'reference' => $transactionRef,
-                'user_id' => $user->id,
-                'service_id' => $serviceField->service_id,
-                'service_field_id' => $serviceField->id,
-                'field_code' => $serviceField->field_code,
-                'transaction_id' => $transaction->id,
-                'service_type' => 'IPE',
-                'tracking_id' => $request->tracking_id,
-                'amount' => $servicePrice,
-                'status' => $agentServiceStatus,
-                'submission_date' => now(),
-                'service_field_name' => $serviceField->field_name,
-                'description' => $request->description ?? $serviceField->field_name,
-                'comment' => $comment,
-                'performed_by' => $performedBy,
-            ]);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => $isSuccess ? 'Request submitted successfully' : 'Request submitted, pending processing',
-                'data' => [
-                    'reference' => $agentService->reference,
-                    'trx_ref' => $transactionRef,
-                    'status' => $agentServiceStatus,
-                    'response' => $comment
-                ]
-            ], 200);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('IPE Store Error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'System Error: ' . $e->getMessage()], 500);
         }
+
+        // Apply final conclusions directly onto unlocked row safely.
+        $agentService->update([
+            'status' => $agentServiceStatus,
+            'comment' => $comment,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $isSuccess ? 'Request submitted successfully' : 'Request submitted, pending processing',
+            'data' => [
+                'reference' => $agentService->reference,
+                'trx_ref' => $transactionRef,
+                'status' => $agentServiceStatus,
+                'response' => $comment
+            ]
+        ], 200);
     }
 
     /**
@@ -252,7 +305,28 @@ class NinIpeController extends Controller
                     return response()->json(['success' => false, 'message' => 'Transaction not found.'], 404);
             }
 
-            // Call Upstream Status API
+            // CHECK DATABASE FIRST - if comment exists, return cached response
+            if (!empty($agentService->comment) && $agentService->comment !== 'Request submitted, processing...') {
+                // Data already exists in DB, return it without calling API
+                $refundMsg = '';
+                if ($agentService->status === 'failed') {
+                    $refundResult = $this->processRefund($agentService);
+                    if ($refundResult === 'refunded') {
+                        $refundMsg = ' Refund has been processed.';
+                    }
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'tracking_id' => $agentService->tracking_id,
+                    'status' => $agentService->status,
+                    'comment' => $agentService->comment,
+                    'message' => 'Status retrieved from database.' . $refundMsg,
+                    'cached' => true
+                ]);
+            }
+
+            // DATA NOT IN DB - Call Upstream Status API
             $apiKey = env('NIN_API_KEY');
             $url = 'https://www.s8v.ng/api/clearance/status';
             $payload = ['tracking_id' => $agentService->tracking_id, 'token' => $apiKey];
@@ -329,23 +403,27 @@ class NinIpeController extends Controller
         // Only refund if status is 'failed' (which includes 'cancelled' via mapping)
         if ($agentService->status !== 'failed') return 'not_failed';
         
-        // Double check in Transaction table to prevent double refund
-        $refundExists = Transaction::where('type', 'refund')
-            ->where(function ($q) use ($agentService) {
-                $q->where('description', 'LIKE', "%Request ID #{$agentService->id}%")
-                  ->orWhere('metadata->original_request_id', $agentService->id);
-            })->exists();
-
-        // Note: is_refunded column doesn't exist in DB according to research
-        if ($refundExists) return 'already_refunded';
-
         $user = \App\Models\User::find($agentService->user_id);
         if (!$user) return 'error';
 
         $status = 'error';
         DB::beginTransaction();
         try {
+            // Acquire Pessimistic Thread Lock globally for user Wallet
             $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
+            
+            // Execute Database Query specifically sequentially INSIDE Lock guarding race-conditions
+            $refundExists = Transaction::where('type', 'refund')
+                ->where(function ($q) use ($agentService) {
+                    $q->where('description', 'LIKE', "%Request ID #{$agentService->id}%")
+                      ->orWhere('metadata->original_request_id', $agentService->id);
+                })->exists();
+
+            if ($refundExists) {
+                DB::rollBack();
+                return 'already_refunded';
+            }
+
             if ($wallet) {
                 $wallet->balance += $agentService->amount;
                 $wallet->save();
