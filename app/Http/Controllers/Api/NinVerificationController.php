@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\Verification;
 use App\Models\Transaction;
@@ -31,13 +33,18 @@ class NinVerificationController extends Controller
         
         // Fetch Service Price for Documentation
         // We use the service name 'Verification' and field code '610' (NIN Verification)
-        $service = Service::where('name', 'Verification')->first();
+        $service = Cache::remember('service_verification', 3600, function() {
+            return Service::where('name', 'Verification')->first();
+        });
+
         $price = 0;
         
         if ($service) {
-            $serviceField = $service->fields()
-                ->where('field_code', '610') // 610 is the NIN Verification Code based on logic below
-                ->first();
+            $serviceField = Cache::remember('service_field_610', 3600, function() use ($service) {
+                return $service->fields()
+                    ->where('field_code', '610')
+                    ->first();
+            });
                 
             if ($serviceField) {
                 // Default to 'user' role if not set
@@ -97,7 +104,9 @@ class NinVerificationController extends Controller
         }
 
         // 3. Get Verification Service
-        $service = Service::where('name', 'Verification')->first();
+        $service = Cache::remember('service_verification', 3600, function() {
+            return Service::where('name', 'Verification')->first();
+        });
 
         if (!$service || !$service->is_active) {
             return response()->json([
@@ -107,9 +116,11 @@ class NinVerificationController extends Controller
         }
 
         // 4. Get NIN Verification ServiceField (Code 610)
-        $serviceField = $service->fields()
-            ->where('field_code', '610')
-            ->first();
+        $serviceField = Cache::remember('service_field_610', 3600, function() use ($service) {
+            return $service->fields()
+                ->where('field_code', '610')
+                ->first();
+        });
 
         if (!$serviceField || !$serviceField->is_active) {
             return response()->json([
@@ -139,29 +150,9 @@ class NinVerificationController extends Controller
             ], 402);
         }
 
-        // 7. Initialize Transaction (Pending State)
-        $transactionRef = 'niv' . date('is') . strtoupper(Str::random(5));
+        // 7. Prep Transaction details
+        $transactionRef = 'NIA' . date('is') . strtoupper(Str::random(5));
         $performedBy = $user->first_name . ' ' . $user->last_name;
-        
-        // Create transaction record immediately to track the attempt
-        $transaction = Transaction::create([
-            'transaction_ref' => $transactionRef,
-            'user_id' => $user->id,
-            'amount' => $servicePrice,
-            'description' => "NIN Verification (Pending) - {$serviceField->field_name}",
-            'type' => 'debit',
-            'status' => 'pending',
-            'trans_source' => 'API',
-            'performed_by' => $performedBy,
-            'metadata' => [
-                'service' => 'verification',
-                'service_field' => $serviceField->field_name,
-                'field_code' => $serviceField->field_code,
-                'nin' => $request->nin,
-                'trans_source' => 'API',
-                'initial_status' => 'pending'
-            ],
-        ]);
 
         // 8. Process API Request to Upstream
         try {
@@ -188,16 +179,28 @@ class NinVerificationController extends Controller
             $upstreamToken = env('BEARER'); 
 
             $headers = [
-                'Accept: application/json',
-                'CountryCode: NG',
-                "Signature: $signature",
-                'Content-Type: application/json',
-                "Authorization: Bearer $upstreamToken",
+                'Accept' => 'application/json',
+                'CountryCode' => 'NG',
+                'Signature' => $signature,
+                'Content-Type' => 'application/json',
+                'Authorization' => "Bearer $upstreamToken",
             ];
 
-            // Execute Request
-            $response = $this->makeCurlRequest($url, $payload, $headers);
-            $decodedData = json_decode($response, true);
+            // Execute Request using Modern HTTP Client
+            $response = Http::withHeaders($headers)
+                ->timeout(30)
+                ->post($url, $payload);
+
+            if ($response->failed()) {
+                Log::error('NIN Verification API Upstream Failure', [
+                    'user_id' => $user->id,
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+                throw new \Exception('Upstream Service Error or Timeout');
+            }
+
+            $decodedData = $response->json();
 
             // Check Upstream Response
             $respCode = $decodedData['respCode'] ?? null;
@@ -205,20 +208,41 @@ class NinVerificationController extends Controller
             if ($respCode === '00000000') {
                 
                 // --- SUCCESS FLOW (Charged) ---
-                return DB::transaction(function () use ($transaction, $wallet, $servicePrice, $decodedData, $user, $serviceField, $service, $transactionRef, $performedBy) {
+                return DB::transaction(function () use ($servicePrice, $decodedData, $user, $serviceField, $service, $transactionRef, $performedBy) {
                     $resData = $decodedData['data'] ?? [];
 
-                    // 1. Update Transaction to Success
-                    $transaction->update([
-                        'status' => 'completed',
+                    // 1. Lock wallet for final check and decrement
+                    $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
+
+                    if (!$wallet || $wallet->balance < $servicePrice) {
+                        throw new \Exception('Insufficient wallet balance at time of charge.');
+                    }
+
+                    // 2. Create Transaction (Completed)
+                    $transaction = Transaction::create([
+                        'transaction_ref' => $transactionRef,
+                        'user_id' => $user->id,
+                        'amount' => $servicePrice,
                         'description' => "NIN Verification (API) - {$serviceField->field_name}",
-                        'metadata' => array_merge($transaction->metadata ?? [], ['api_response' => 'success', 'upstream_code' => '00000000']),
+                        'type' => 'debit',
+                        'status' => 'completed',
+                        'trans_source' => 'API',
+                        'performed_by' => $performedBy,
+                        'metadata' => [
+                            'service' => 'verification',
+                            'service_field' => $serviceField->field_name,
+                            'field_code' => $serviceField->field_code,
+                            'nin' => $resData['nin'] ?? '',
+                            'trans_source' => 'API',
+                            'api_response' => 'success',
+                            'upstream_code' => '00000000'
+                        ],
                     ]);
 
-                    // 2. Debit Wallet
+                    // 3. Debit Wallet
                     $wallet->decrement('balance', $servicePrice);
 
-                    // 3. Create Verification Record
+                    // 4. Create Verification Record
                     $verification = Verification::create([
                         'user_id' => $user->id,
                         'service_field_id' => $serviceField->id,
@@ -259,28 +283,14 @@ class NinVerificationController extends Controller
 
             } elseif ($respCode === '99120010') {
                 
-                // --- NIN NOT FOUND FLOW (Charged) ---
-                return DB::transaction(function () use ($transaction, $wallet, $servicePrice, $decodedData, $serviceField, $transactionRef) {
-                    
-                    // 1. Update Transaction to Completed (Charged)
-                    $transaction->update([
-                        'status' => 'completed',
-                        'description' => "NIN Verification (Not Found) - {$serviceField->field_name}",
-                        'metadata' => array_merge($transaction->metadata ?? [], ['api_response' => 'nin_not_found', 'upstream_code' => '99120010']),
-                    ]);
-
-                    // 2. Debit Wallet
-                    $wallet->decrement('balance', $servicePrice);
-
-                    // 3. Return Success Status (Transaction Successful) but Message indicates Not Found
-                    return response()->json([
-                        'status' => 'success',
-                        'message' => 'NIN do not exist',
-                        'data' => null,
-                        'transaction_ref' => $transactionRef,
-                        'charge' => $servicePrice
-                    ], 200);
-                });
+                // --- NIN NOT FOUND FLOW (Not Charged) ---
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'NIN do not exist',
+                    'data' => null,
+                    'transaction_ref' => $transactionRef,
+                    'charge' => 0
+                ], 200);
 
             } else {
                 // --- FAILURE FLOW (Not Charged) ---
@@ -295,13 +305,6 @@ class NinVerificationController extends Controller
                     $errorMessage = 'System Error';
                 }
 
-                // Update transaction to failed
-                $transaction->update([
-                    'status' => 'failed',
-                    'description' => 'Failed: ' . $errorMessage,
-                    'metadata' => array_merge($transaction->metadata ?? [], ['api_error' => $errorMessage, 'upstream_code' => $respCode ?? 'UNKNOWN']),
-                ]);
-
                 return response()->json([
                     'status' => 'error',
                     'message' => $errorMessage,
@@ -311,15 +314,6 @@ class NinVerificationController extends Controller
 
         } catch (\Exception $e) {
             // --- EXCEPTION FLOW ---
-            // Update transaction to failed
-            if (isset($transaction)) {
-                $transaction->update([
-                    'status' => 'failed',
-                    'description' => 'System Error: ' . $e->getMessage(),
-                    'metadata' => array_merge($transaction->metadata ?? [], ['exception' => $e->getMessage()]),
-                ]);
-            }
-
              return response()->json([
                 'status' => 'error',
                 'message' => 'Service Error: ' . $e->getMessage()

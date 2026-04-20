@@ -1,98 +1,184 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>API Documentation - Arewa Smart</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/logo/logo.png') }}">
     
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/tabler-icons/tabler-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
     <style>
         :root {
-            --primary-color: #D4AF37;
-            --primary-dark: #B8860B;
-            --sidebar-width: 280px;
-            --bg-light: #f8f9fa;
+            --primary-color: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --sidebar-width: 300px;
+            --peach-soft: #FFF5F2;
+            --peach-text: #e5715e;
+            --navy-dark: #1A2B4B;
+
+            /* Light Theme Variables */
+            --bg-body: #f8fafc;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --bg-topbar: rgba(255, 255, 255, 0.8);
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --text-heading: #1e293b;
+            --border-color: #eef2f6;
+            --sidebar-link: #64748b;
+            --sidebar-link-hover: #3b82f6;
+            --sidebar-link-bg: #fff;
+            --sidebar-link-hover-bg: #f8fafc;
+            --bg-soft-primary: #eff6ff;
+            --footer-bg: #ffffff;
         }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-sidebar: #1e293b;
+            --bg-card: #1e293b;
+            --bg-topbar: rgba(15, 23, 42, 0.8);
+            --text-main: #94a3b8;
+            --text-muted: #64748b;
+            --text-heading: #f1f5f9;
+            --border-color: #334155;
+            --sidebar-link: #94a3b8;
+            --sidebar-link-hover: #3b82f6;
+            --sidebar-link-bg: rgba(255, 255, 255, 0.02);
+            --sidebar-link-hover-bg: rgba(255, 255, 255, 0.05);
+            --bg-soft-primary: rgba(59, 130, 246, 0.1);
+            --footer-bg: #1e293b;
+            --peach-soft: #2a1f1c; /* Dimm peach for dark mode */
+        }
+
         body {
-            font-family: 'Figtree', sans-serif;
-            background-color: var(--bg-light);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
             display: flex;
             min-height: 100vh;
             margin: 0;
             overflow-x: hidden;
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-heading);
+        }
+
         /* Sidebar */
         .docs-sidebar {
             width: var(--sidebar-width);
-            background: #fff;
-            border-right: 1px solid #eaeaea;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
             position: fixed;
             height: 100vh;
             overflow-y: auto;
             z-index: 1000;
-            transition: transform 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .docs-sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid #eaeaea;
+            padding: 24px;
+            background-color: var(--peach-soft);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
-        .docs-sidebar-header img {
-            height: 40px;
+        .docs-sidebar-header h5 {
+            color: var(--peach-text);
+            font-weight: 700;
+            margin: 0;
+            font-size: 1.1rem;
         }
         .docs-nav {
-            padding: 20px 0;
+            padding: 24px;
         }
         .docs-nav-title {
-            padding: 0 20px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            font-weight: 700;
-            color: #888;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
+            font-weight: 800;
+            color: var(--text-muted);
+            margin: 24px 0 12px 12px;
+            letter-spacing: 0.1em;
         }
         .docs-nav ul {
             list-style: none;
             padding: 0;
-            margin: 0 0 20px 0;
+            margin: 0;
+        }
+        .docs-nav li {
+            margin-bottom: 8px;
         }
         .docs-nav li a {
             display: flex;
             align-items: center;
-            padding: 10px 20px;
-            color: #444;
+            padding: 12px 16px;
+            color: var(--sidebar-link);
             text-decoration: none;
-            font-size: 0.95rem;
-            border-left: 3px solid transparent;
-            transition: all 0.2s;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+            background: var(--sidebar-link-bg);
         }
         .docs-nav li a:hover {
-            background-color: #f5f5f5;
-            color: var(--primary-dark);
+            background-color: var(--sidebar-link-hover-bg);
+            color: var(--sidebar-link-hover);
+            transform: translateY(-1px);
+            border-color: var(--border-color);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        }
+        .support-card-custom .btn-support { 
+            background-color: #ffffff !important; 
+            color: #3b82f6 !important; 
+            font-weight: 700;
+            border-radius: 50px;
+        }
+
+        /* Documentation Theme Helper Overrides */
+        [data-theme="dark"] .text-dark {
+            color: var(--text-heading) !important;
+        }
+        [data-theme="dark"] .text-muted {
+            color: var(--text-muted) !important;
+        }
+        [data-theme="dark"] .bg-white {
+            background-color: var(--bg-card) !important;
+        }
+        [data-theme="dark"] .bg-light {
+            background-color: var(--bg-sidebar) !important;
+        }
+        [data-theme="dark"] .lead {
+            color: var(--text-main) !important;
+        }
+        [data-theme="dark"] .badge.bg-light {
+            background-color: var(--border-color) !important;
+            color: var(--text-main) !important;
+        }
+        [data-theme="dark"] .table-borderless thead.bg-light {
+            background-color: var(--border-color) !important;
+        }
+        [data-theme="dark"] .table-hover tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.05) !important;
         }
         .docs-nav li a.active {
-            background-color: rgba(212, 175, 55, 0.1);
-            color: var(--primary-dark);
-            border-left-color: var(--primary-color);
-            font-weight: 600;
+            background-color: var(--navy-dark) !important;
+            color: #3b82f6 !important;
+            font-weight: 700;
+            box-shadow: 0 10px 15px -3px rgba(26, 43, 75, 0.2);
+            border-color: var(--navy-dark);
         }
         .docs-nav li a i {
             margin-right: 12px;
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
-            color: #888;
-        }
-        .docs-nav li a.active i {
-            color: var(--primary-color);
+            font-size: 1.25rem;
+            opacity: 0.7;
         }
 
         /* Main Content */
@@ -102,14 +188,15 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            transition: margin-left 0.3s ease;
+            transition: all 0.3s ease;
         }
         
         /* Top Navigation */
         .docs-topbar {
-            background: #fff;
-            padding: 15px 30px;
-            border-bottom: 1px solid #eaeaea;
+            background: var(--bg-topbar);
+            backdrop-filter: blur(10px);
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -119,178 +206,147 @@
         }
         .btn-mobile-toggle {
             display: none;
-            background: none;
+            background: var(--bg-soft-primary);
             border: none;
-            font-size: 1.5rem;
-            color: #333;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            color: var(--text-main);
             cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        /* Theme Toggle Button */
+        .theme-toggle-btn {
+            background: var(--bg-soft-primary);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            margin-right: 10px;
+        }
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+            background: var(--primary-color);
+            color: white;
         }
 
-        /* Content Area */
+        /* Content Area Customizations */
         .docs-content {
-            padding: 40px;
+            padding: 48px;
             flex: 1;
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             width: 100%;
         }
-        .docs-content h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #222;
-        }
-        .docs-content h2 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin: 40px 0 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eaeaea;
-            color: #333;
-        }
-        .docs-content h3 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin: 30px 0 15px;
-            color: #444;
-        }
-        .docs-content p {
-            font-size: 1.05rem;
-            line-height: 1.7;
-            color: #555;
-            margin-bottom: 20px;
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color) !important;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
         }
         
-        /* Code Blocks */
-        .code-block {
-            background: #1e1e1e;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 25px;
-            position: relative;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .code-block pre {
-            margin: 0;
-            color: #d4d4d4;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
-        }
-        .code-caption {
-            background: #333;
-            color: #ccc;
-            font-size: 0.8rem;
-            padding: 5px 15px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            margin: -20px -20px 15px -20px;
-            border-bottom: 1px solid #444;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .code-method {
-            font-weight: bold;
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            margin-right: 10px;
-        }
-        .method-get { background: #61affe; color: #fff; }
-        .method-post { background: #49cc90; color: #fff; }
-
-        /* Tables */
-        .docs-table {
-            width: 100%;
-            margin-bottom: 30px;
-            border-collapse: collapse;
-            background: #fff;
-        }
-        .docs-table th, .docs-table td {
-            padding: 12px 15px;
-            border: 1px solid #eaeaea;
-            text-align: left;
-        }
-        .docs-table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #333;
-        }
-        .docs-table td {
-            color: #555;
-            font-size: 0.95rem;
-        }
-        .docs-table code {
-            background: #f1f1f1;
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: #e83e8c;
-            font-size: 0.85rem;
+        .alert-info, .bg-soft-primary {
+            background-color: var(--bg-soft-primary) !important;
+            color: var(--text-main) !important;
+            border: none;
         }
 
-        /* Badges */
-        .badge-req { background: #ffebee; color: #c62828; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
-        .badge-opt { background: #e8f5e9; color: #2e7d32; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
-
-        /* Alerts */
-        .docs-alert {
-            padding: 15px 20px;
-            border-radius: 8px;
-            border-left: 4px solid;
-            margin-bottom: 25px;
-            display: flex;
+        /* Table adjustments for dark mode */
+        .table {
+            color: var(--text-main);
         }
-        .docs-alert i { margin-right: 15px; font-size: 1.2rem; margin-top: 2px; }
-        .docs-alert-info { background: #e3f2fd; border-color: #2196f3; color: #0d47a1; }
-        .docs-alert-warning { background: #fff3e0; border-color: #ff9800; color: #e65100; }
+        .table thead th {
+            background-color: var(--border-color);
+            color: var(--text-heading);
+            border: none;
+        }
+        .table-hover tbody tr:hover {
+            background-color: var(--sidebar-link-hover-bg);
+            color: var(--primary-color);
+        }
+        
+        /* Code blocks often don't need changes if they are already dark */
+        .bg-dark {
+            background-color: #1e293b !important; /* Keep code areas consistent */
+        }
 
         /* Mobile Responsive */
         @media (max-width: 991px) {
             .docs-sidebar {
                 transform: translateX(-100%);
+                box-shadow: none;
             }
             .docs-sidebar.show {
                 transform: translateX(0);
-                box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+                box-shadow: 20px 0 25px -5px rgb(0 0 0 / 0.1);
             }
             .docs-main {
                 margin-left: 0;
             }
             .btn-mobile-toggle {
-                display: block;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
             .docs-content {
-                padding: 20px;
+                padding: 24px;
             }
         }
+
+        /* Footer */
+        .docs-footer {
+            padding: 32px 48px;
+            border-top: 1px solid var(--border-color);
+            background: var(--footer-bg);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
+    
+    <script>
+        // Critical script to prevent flash of unstyled content (FOUC)
+        (function() {
+            const savedTheme = localStorage.getItem('docs-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
 </head>
 <body>
 
     <!-- Sidebar -->
     <aside class="docs-sidebar" id="sidebar">
         <div class="docs-sidebar-header">
-            <a href="{{ url('/') }}">
-                <img src="{{ asset('assets/img/logo/logo.png') }}" alt="Arewa Smart">
-            </a>
-            <button class="btn btn-mobile-toggle d-lg-none" id="closeSidebar">
-                <i class="fas fa-times"></i>
+            <div class="d-flex align-items-center">
+                <img src="{{ asset('assets/img/logo/logo.png') }}" alt="Arewa Smart" class="me-2">
+                <h5 class="mb-0">Docs</h5>
+            </div>
+            <button class="btn-mobile-toggle d-lg-none" id="closeSidebar">
+                <i class="ti ti-x"></i>
             </button>
         </div>
 
         <nav class="docs-nav">
-            <div class="docs-nav-title">Getting Started</div>
+            <div class="docs-nav-title" style="margin-top: 0;">Getting Started</div>
             <ul>
                 <li>
                     <a href="{{ route('docs.index') }}" class="{{ request()->routeIs('docs.index') ? 'active' : '' }}">
-                        <i class="fas fa-book"></i> Introduction
+                        <i class="ti ti-book-2"></i> Introduction
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('docs.pricing') }}" class="{{ request()->routeIs('docs.pricing') ? 'active' : '' }}">
-                        <i class="fas fa-tags"></i> Pricing
+                        <i class="ti ti-receipt-2"></i> Pricing
                     </a>
                 </li>
             </ul>
@@ -299,42 +355,42 @@
             <ul>
                 <li>
                     <a href="{{ route('docs.nin') }}" class="{{ request()->routeIs('docs.nin') ? 'active' : '' }}">
-                        <i class="fas fa-id-card"></i> NIN Verification
+                        <i class="ti ti-id"></i> NIN Verification
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('docs.nin-demo') }}" class="{{ request()->routeIs('docs.nin-demo') ? 'active' : '' }}">
-                        <i class="fas fa-address-card"></i> NIN DEMO Docs
+                        <i class="ti ti-id-badge-2"></i> NIN DEMO Docs
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('docs.nin-phone') }}" class="{{ request()->routeIs('docs.nin-phone') ? 'active' : '' }}">
-                        <i class="fas fa-phone-square-alt"></i> NIN Phone No Docs
+                        <i class="ti ti-phone-check"></i> NIN Phone No Docs
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('docs.nin-validation') }}" class="{{ request()->routeIs('docs.nin-validation') ? 'active' : '' }}">
-                        <i class="fas fa-check-double"></i> NIN Validation
+                        <i class="ti ti-user-check"></i> NIN Validation
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('docs.nin-modification') }}" class="{{ request()->routeIs('docs.nin-modification') ? 'active' : '' }}">
-                        <i class="fas fa-user-edit"></i> NIN Modification
+                        <i class="ti ti-user-edit"></i> NIN Modification
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('docs.nin-ipe') }}" class="{{ request()->routeIs('docs.nin-ipe') ? 'active' : '' }}">
-                        <i class="fas fa-file-signature"></i> NIN IPE
+                        <i class="ti ti-file-certificate"></i> NIN IPE
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('docs.bvn') }}" class="{{ request()->routeIs('docs.bvn') ? 'active' : '' }}">
-                        <i class="fas fa-fingerprint"></i> BVN Verification
+                        <i class="ti ti-fingerprint"></i> BVN Verification
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('docs.tin') }}" class="{{ request()->routeIs('docs.tin') ? 'active' : '' }}">
-                        <i class="fas fa-file-invoice-dollar"></i> TIN Verification
+                        <i class="ti ti-file-analytics"></i> TIN Verification
                     </a>
                 </li>
             </ul>
@@ -343,25 +399,39 @@
             <ul>
                 <li>
                     <a href="{{ route('docs.airtime') }}" class="{{ request()->routeIs('docs.airtime') ? 'active' : '' }}">
-                        <i class="fas fa-mobile-alt"></i> Airtime Topup
+                        <i class="ti ti-device-mobile"></i> Airtime Topup
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('docs.data') }}" class="{{ request()->routeIs('docs.data') ? 'active' : '' }}">
-                        <i class="fas fa-wifi"></i> Data Subscription
+                        <i class="ti ti-wifi"></i> Data Subscription
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('docs.sme-data') }}" class="{{ request()->routeIs('docs.sme-data') ? 'active' : '' }}">
-                        <i class="fas fa-network-wired"></i> SME Data
+                        <i class="ti ti-broadcast"></i> SME Data
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('docs.electricity') }}" class="{{ request()->routeIs('docs.electricity') ? 'active' : '' }}">
-                        <i class="fas fa-bolt"></i> Electricity Payment
+                        <i class="ti ti-bolt"></i> Electricity Payment
                     </a>
                 </li>
             </ul>
+
+            <!-- Support Card -->
+            <div class="card border-0 shadow-sm support-card-custom text-white overflow-hidden position-relative mt-5">
+                <div class="position-absolute top-0 end-0 p-3 opacity-25">
+                    <i class="ti ti-headset fs-1"></i>
+                </div>
+                <div class="card-body p-4 position-relative z-index-1">
+                    <h6 class="fw-bold text-white mb-2">Need Help?</h6>
+                    <p class="small text-white-50 mb-3" style="font-size: 0.8rem;">Our support team is available 24/7 to assist with integration.</p>
+                    <a href="https://chat.whatsapp.com/KoSu12yDO4A8b6AvYSkvIx" target="_blank" class="btn btn-support w-100 btn-sm shadow-sm">
+                        <i class="ti ti-brand-whatsapp me-1"></i> Contact Support
+                    </a>
+                </div>
+            </div>
         </nav>
     </aside>
 
@@ -369,14 +439,20 @@
     <main class="docs-main">
         <header class="docs-topbar">
             <div class="d-flex align-items-center">
-                <button class="btn-mobile-toggle me-3" id="openSidebar">
-                    <i class="fas fa-bars"></i>
+                <button class="btn-mobile-toggle me-3 d-lg-none" id="openSidebar">
+                    <i class="ti ti-menu-2"></i>
                 </button>
-                <h5 class="m-0 d-none d-md-block text-muted">API Documentation</h5>
+                <div class="d-none d-md-flex align-items-center text-muted fw-semibold">
+                    <i class="ti ti-book me-2"></i>
+                    <span>Developer Documentation</span>
+                </div>
             </div>
-            <div>
-                <a href="{{ route('login') }}" class="btn btn-outline-dark btn-sm me-2">Login</a>
-                <a href="{{ route('register') }}" class="btn btn-dark btn-sm" style="background: linear-gradient(45deg, var(--primary-color), var(--primary-dark)); border: none;">Get API Key</a>
+            <div class="d-flex align-items-center gap-2">
+                <button class="theme-toggle-btn" id="themeToggle" title="Toggle Dark Mode">
+                    <i class="ti ti-moon" id="themeIcon"></i>
+                </button>
+                <a href="{{ route('login') }}" class="btn btn-ghost-dark btn-sm rounded-pill px-3">Login</a>
+                <a href="{{ route('register') }}" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm fw-bold">Get API Key</a>
             </div>
         </header>
 
@@ -384,17 +460,59 @@
             @yield('content')
         </div>
         
-        <footer style="padding: 20px 40px; border-top: 1px solid #eaeaea; color: #888; font-size: 0.9rem; margin-top: auto;">
-            &copy; {{ date('Y') }} Arewa Smart Idea. All rights reserved.
+        <footer class="docs-footer">
+            <div>&copy; {{ date('Y') }} Arewa Smart Idea. <span class="d-none d-sm-inline">All rights reserved.</span></div>
+            <div class="d-flex gap-3">
+                <a href="#" class="text-muted"><i class="ti ti-brand-github"></i></a>
+                <a href="#" class="text-muted"><i class="ti ti-brand-twitter"></i></a>
+            </div>
         </footer>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Sidebar Toggle
         document.getElementById('openSidebar').addEventListener('click', function() {
             document.getElementById('sidebar').classList.add('show');
         });
         document.getElementById('closeSidebar').addEventListener('click', function() {
             document.getElementById('sidebar').classList.remove('show');
+        });
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const openBtn = document.getElementById('openSidebar');
+            if (window.innerWidth < 992 && 
+                sidebar.classList.contains('show') && 
+                !sidebar.contains(event.target) && 
+                !openBtn.contains(event.target)) {
+                sidebar.classList.remove('show');
+            }
+        });
+
+        // Theme Management
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.classList.replace('ti-moon', 'ti-sun');
+            } else {
+                themeIcon.classList.replace('ti-sun', 'ti-moon');
+            }
+        }
+
+        // Initialize icon on load
+        updateThemeIcon(document.documentElement.getAttribute('data-theme'));
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('docs-theme', newTheme);
+            updateThemeIcon(newTheme);
         });
     </script>
 </body>

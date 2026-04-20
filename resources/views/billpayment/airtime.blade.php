@@ -38,22 +38,22 @@
                     <nav id="navbar-example3" class="h-100 flex-column align-items-stretch border-0">
                         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
                             <div class="card-body p-0">
-                                <div class="p-4 bg-soft-primary border-bottom border-light">
-                                    <h6 class="fw-bold text-primary mb-0 d-flex align-items-center">
+                                <div class="p-4 sidebar-nav-header">
+                                    <h6 class="fw-bold mb-0 d-flex align-items-center">
                                         <i class="ti ti-menu-deep me-2"></i> Navigation
                                     </h6>
                                 </div>
-                                <div class="list-group list-group-flush custom-sidebar-nav p-2">
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); return false;">
+                                <div class="list-group list-group-flush custom-sidebar-nav p-3">
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); return false;">
                                         <i class="ti ti-info-circle me-2 fs-5 opacity-75"></i> Overview
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); return false;">
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); return false;">
                                         <i class="ti ti-shield-lock me-2 fs-5 opacity-75"></i> Authentication
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); return false;">
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); return false;">
                                         <i class="ti ti-server me-2 fs-5 opacity-75"></i> Purchase Endpoint
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#codes" onclick="switchTab('codes'); return false;">
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#codes" onclick="switchTab('codes'); return false;">
                                         <i class="ti ti-list-numbers me-2 fs-5 opacity-75"></i> Networks & Commissions
                                     </a>
                                 </div>
@@ -61,14 +61,14 @@
                         </div>
 
                         <!-- Support Card -->
-                        <div class="card border-0 shadow-sm rounded-4 mt-4 bg-primary text-white overflow-hidden position-relative">
+                        <div class="card border-0 shadow-sm rounded-4 mt-4 support-card-custom text-white overflow-hidden position-relative">
                             <div class="position-absolute top-0 end-0 p-3 opacity-25">
                                 <i class="ti ti-headset fs-1"></i>
                             </div>
                             <div class="card-body p-4 position-relative z-index-1">
                                 <h6 class="fw-bold text-white mb-2">Need Help?</h6>
                                 <p class="small text-white-50 mb-3">Our support team is available 24/7 to assist with integration.</p>
-                                <a href="https://wa.me/2347037343660" target="_blank" class="btn btn-white text-primary w-100 btn-sm rounded-pill fw-bold shadow-sm">
+                                <a href="https://wa.me/2347037343660" target="_blank" class="btn btn-support w-100 btn-sm rounded-pill fw-bold shadow-sm">
                                     <i class="ti ti-brand-whatsapp me-1"></i> Contact Support
                                 </a>
                             </div>
@@ -78,23 +78,23 @@
             </div>
 
             <!-- Mobile Offcanvas Sidebar -->
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
-                <div class="offcanvas-header bg-white border-bottom">
-                    <h5 class="offcanvas-title fw-bold text-primary" id="mobileSidebarLabel">Documentation</h5>
+            <div class="offcanvas offcanvas-start border-0 shadow-lg" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+                <div class="offcanvas-header sidebar-nav-header border-bottom">
+                    <h5 class="offcanvas-title fw-bold" id="mobileSidebarLabel">Documentation</h5>
                     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body p-0">
                     <div class="list-group list-group-flush custom-sidebar-nav p-3">
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); closeOffcanvas(); return false;">
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); closeOffcanvas(); return false;">
                             <i class="ti ti-info-circle me-2"></i> Overview
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); closeOffcanvas(); return false;">
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); closeOffcanvas(); return false;">
                             <i class="ti ti-shield-lock me-2"></i> Authentication
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); closeOffcanvas(); return false;">
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); closeOffcanvas(); return false;">
                             <i class="ti ti-server me-2"></i> Purchase Endpoint
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#codes" onclick="switchTab('codes'); closeOffcanvas(); return false;">
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#codes" onclick="switchTab('codes'); closeOffcanvas(); return false;">
                             <i class="ti ti-list-numbers me-2"></i> Networks & Commissions
                         </a>
                     </div>
@@ -110,7 +110,7 @@
                         <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5" style="background: url('https://cdn.svgporn.com/logos/laravel.svg') no-repeat right bottom; background-size: 30%;"></div>
                         <div class="card-body p-5 position-relative">
                             <span class="badge bg-soft-primary text-primary mb-3">Introduction</span>
-                            <h2 class="fw-bold text-dark mb-3">Airtime API Guide</h2>
+                            <h2 class="fw-bold mb-3">Airtime API Guide</h2>
                             <p class="text-muted lead mb-4">
                                 Purchase airtime for MTN, Airtel, Glo, and 9mobile instantly. 
                                 Enjoy cashback commissions credited directly to your wallet.
@@ -147,7 +147,7 @@
                 <div class="docs-section d-none fade-in" id="auth">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">1</span>
                                 Authentication
                             </h4>
@@ -156,13 +156,13 @@
                             </p>
                             
                             <div class="mb-5">
-                                <label class="form-label fw-bold text-dark mb-2">Your API Token</label>
+                                <label class="form-label fw-bold mb-2">Your API Token</label>
                                 <div class="input-group input-group-lg shadow-sm">
-                                    <span class="input-group-text bg-white border-end-0 text-muted ps-3">
+                                    <span class="input-group-text border-end-0 text-muted ps-3">
                                         <i class="ti ti-key fs-4"></i>
                                     </span>
                                     <input type="text" 
-                                           class="form-control font-monospace border-start-0 border-end-0 bg-white text-dark" 
+                                           class="form-control font-monospace border-start-0 border-end-0" 
                                            value="{{ Auth::user()->api_token }}" 
                                            id="apiToken" 
                                            readonly>
@@ -199,7 +199,7 @@
                 <div class="docs-section d-none fade-in" id="endpoint">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">2</span>
                                 Purchase Endpoint
                             </h4>
@@ -218,8 +218,8 @@
                                 <!-- Request Body -->
                                 <div class="col-lg-6">
                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header bg-light border-bottom py-3">
-                                            <h6 class="fw-bold text-dark mb-0">Request Body</h6>
+                                        <div class="card-header border-bottom py-3">
+                                            <h6 class="fw-bold mb-0">Request Body</h6>
                                         </div>
                                         <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace"><code>{
@@ -235,7 +235,7 @@
                                 <!-- Success Response -->
                                 <div class="col-lg-6">
                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header bg-light border-bottom py-3">
+                                        <div class="card-header border-bottom py-3">
                                             <h6 class="fw-bold text-success mb-0">Success Response (200 OK)</h6>
                                         </div>
                                         <div class="card-body p-0 bg-dark">
@@ -277,7 +277,7 @@
                  <div class="docs-section d-none fade-in" id="codes">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">3</span>
                                 Networks & Commissions
                             </h4>
@@ -286,9 +286,9 @@
                                 Below are the supported networks, their corresponding codes, and the cashback commission you earn per transaction.
                             </p>
 
-                            <div class="table-responsive rounded-3 border">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="bg-light">
+                            <div class="table-responsive rounded-3 border custom-table-border">
+                                <table class="table table-premium table-hover align-middle mb-0">
+                                    <thead>
                                         <tr class="text-uppercase small text-muted">
                                             <th class="py-3 ps-4">Network</th>
                                             <th class="py-3 text-center">Code</th>
@@ -298,12 +298,12 @@
                                     <tbody class="border-top-0">
                                         @foreach($networks as $code => $name)
                                         <tr>
-                                            <td class="ps-4 fw-bold">{{ $name }}</td>
+                                            <td class="ps-4 fw-medium text-body">{{ $name }}</td>
                                             <td class="text-center">
-                                                <code class="text-primary bg-primary bg-opacity-10 px-2 py-1 rounded fw-bold">{{ $code }}</code>
+                                                <code class="text-primary border border-primary border-opacity-25 rounded px-2 py-1 fw-bold fs-14 bg-primary bg-opacity-10">{{ $code }}</code>
                                             </td>
                                             <td class="text-end pe-4">
-                                                <span class="badge bg-soft-success text-success">
+                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 rounded-pill">
                                                     {{ $commissions[$name] ?? 0 }}%
                                                 </span>
                                             </td>
@@ -314,10 +314,10 @@
                             </div>
                             
                             <div class="mt-4">
-                                <div class="alert alert-info border border-info border-opacity-25 rounded-3 d-flex align-items-start p-3" role="alert">
+                                <div class="alert alert-info border border-info border-opacity-25 bg-info bg-opacity-10 rounded-3 d-flex align-items-start p-3" role="alert">
                                     <i class="ti ti-info-circle fs-5 me-2 mt-1 text-info"></i>
-                                    <div>
-                                        <strong>Note:</strong> You can also use the network name (e.g., "mtn", "airtel", "glo", "etisalat", "smile") instead of the numeric code in the <code>network</code> field.
+                                    <div class="text-body text-opacity-75">
+                                        <strong class="text-info">Note:</strong> You can also use the network name (e.g., "mtn", "airtel", "glo", "etisalat", "smile") instead of the numeric code in the <code>network</code> field.
                                     </div>
                                 </div>
                             </div>
@@ -403,9 +403,63 @@
     <style>
         .docs-section { opacity: 0; transition: opacity 0.3s ease-in-out; }
         .docs-section.active-section { opacity: 1; }
-        .custom-sidebar-nav .list-group-item { transition: all 0.2s ease; font-weight: 500; }
-        .custom-sidebar-nav .list-group-item:hover { background-color: rgba(var(--bs-primary-rgb), 0.05); color: var(--bs-primary) !important; transform: translateX(5px); }
-        .custom-sidebar-nav .list-group-item.active { background-color: rgba(var(--bs-primary-rgb), 0.1); color: var(--bs-primary); border-left: 3px solid var(--bs-primary); }
+        
+        /* New Premium Sidebar Header */
+        .sidebar-nav-header { 
+            background-color: #FFF5F2 !important; 
+            border-bottom: 1px solid #f8e1da;
+        }
+        .dark-mode .sidebar-nav-header {
+            background-color: rgba(229, 113, 94, 0.1) !important;
+            border-bottom: 1px solid rgba(229, 113, 94, 0.2);
+        }
+        .sidebar-nav-header h6, .sidebar-nav-header h5 { color: #e5715e !important; }
+
+        /* Sidebar Navigation Items as Individual Cards */
+        .custom-sidebar-nav .list-group-item { 
+            transition: all 0.2s ease; 
+            font-weight: 500; 
+            background: var(--bg-card, #ffffff) !important; 
+            color: var(--text-muted, #64748b) !important; 
+            border: 1px solid var(--border-color, #eef2f6) !important;
+            border-radius: 12px !important;
+            margin-bottom: 10px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .custom-sidebar-nav .list-group-item:hover { 
+            background-color: var(--bg-body, #f8fafc) !important; 
+            color: var(--bs-primary) !important; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .custom-sidebar-nav .list-group-item.active { 
+            background-color: #1A2B4B !important; 
+            color: #ffffff !important; 
+            border-color: #1A2B4B !important;
+            box-shadow: 0 4px 12px rgba(26, 43, 75, 0.2);
+            font-weight: bold; 
+        }
+        .dark-mode .custom-sidebar-nav .list-group-item.active {
+            background-color: var(--bs-primary) !important;
+            border-color: var(--bs-primary) !important;
+        }
+
+        /* Support Card Redesign */
+        .support-card-custom { background-color: #0f172a !important; }
+        .support-card-custom .btn-support { 
+            background-color: #ffffff !important; 
+            color: #3b82f6 !important; 
+            font-weight: 700;
+        }
+
+        /* Badges */
+        .bg-indigo-soft { background-color: rgba(102, 16, 242, 0.1); }
+        .text-indigo { color: #6610f2; }
+        .bg-teal-soft { background-color: rgba(32, 201, 151, 0.1); }
+        .text-teal { color: #20c997; }
+
+        .dark-mode .custom-table-border { border-color: rgba(255, 255, 255, 0.1) !important; }
+
         @media (max-width: 991.98px) { .sticky-top { position: relative !important; top: 0 !important; z-index: 1 !important; } }
     </style>
     @endpush

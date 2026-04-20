@@ -23,10 +23,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // V1 API Routes
 Route::prefix('v1')->group(function () {
     // BVN Verification
-    Route::post('/bvn/verify', [BvnVerificationController::class, 'verify']);
+    Route::post('/bvn/verify', [BvnVerificationController::class, 'verify'])->middleware('throttle:60,1');
     
     // NIN Verification
-    Route::post('/nin/verify', [NinVerificationController::class, 'verify']);
+    Route::post('/nin/verify', [NinVerificationController::class, 'verify'])->middleware('throttle:60,1');
     Route::post('/nin/demo', [\App\Http\Controllers\Api\NinDemoController::class, 'store']);
     Route::post('/nin/phone', [\App\Http\Controllers\Api\NinPhoneController::class, 'store']);
 

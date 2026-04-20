@@ -21,11 +21,11 @@
                 </div>
                 <div class="col-auto">
                     <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill fw-medium fs-14 border border-primary border-opacity-10">
-                        <i class="ti ti-tag me-1"></i> Version 1.0.0
+                        <i class="ti ti-tag me-1 fs-15"></i> Version 1.0.0
                     </span>
                     <!-- Mobile Sidebar Toggle Button -->
                     <button class="btn btn-white shadow-sm d-lg-none ms-2 rounded-circle p-2" type="button" id="sidebarToggle" aria-label="Toggle Navigation">
-                        <i class="ti ti-menu-2 fs-15 text-primary"></i>
+                        <i class="ti ti-menu-2 text-primary fs-15"></i>
                     </button>
                 </div>
             </div>
@@ -40,24 +40,24 @@
                             <div class="card-body p-0">
                                 <div class="p-4 bg-soft-primary border-bottom border-light">
                                     <h6 class="fw-bold text-primary mb-0 d-flex align-items-center">
-                                        <i class="ti ti-menu-deep me-2"></i> Navigation
+                                        <i class="ti ti-menu-deep me-2 fs-15"></i> Navigation
                                     </h6>
                                 </div>
                                 <div class="list-group list-group-flush custom-sidebar-nav p-2">
                                     <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); return false;">
-                                        <i class="ti ti-info-circle me-2 fs-5 opacity-75"></i> Overview
+                                        <i class="ti ti-info-circle me-2 opacity-75 fs-15"></i> Overview
                                     </a>
                                     <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#services" onclick="switchTab('services'); return false;">
-                                        <i class="ti ti-currency-naira me-2 fs-5 opacity-75"></i> Services & Pricing
+                                        <i class="ti ti-currency-naira me-2 opacity-75 fs-15"></i> Services & Pricing
                                     </a>
                                     <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); return false;">
-                                        <i class="ti ti-shield-lock me-2 fs-5 opacity-75"></i> Authentication
+                                        <i class="ti ti-shield-lock me-2 opacity-75 fs-15"></i> Authentication
                                     </a>
                                     <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#submit" onclick="switchTab('submit'); return false;">
-                                        <i class="ti ti-server me-2 fs-5 opacity-75"></i> Submit Request
+                                        <i class="ti ti-server me-2 opacity-75 fs-15"></i> Submit Request
                                     </a>
                                     <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#status" onclick="switchTab('status'); return false;">
-                                        <i class="ti ti-activity me-2 fs-5 opacity-75"></i> Check Status
+                                        <i class="ti ti-activity me-2 opacity-75 fs-15"></i> Check Status
                                     </a>
                                 </div>
                             </div>
@@ -66,13 +66,13 @@
                         <!-- Support Card -->
                         <div class="card border-0 shadow-sm rounded-4 mt-4 bg-primary text-white overflow-hidden position-relative">
                             <div class="position-absolute top-0 end-0 p-3 opacity-25">
-                                <i class="ti ti-headset fs-1"></i>
+                                <i class="ti ti-headset fs-15"></i>
                             </div>
                             <div class="card-body p-4 position-relative z-index-1">
                                 <h6 class="fw-bold text-white mb-2">Need Help?</h6>
                                 <p class="small text-white-50 mb-3">Our support team is available 24/7.</p>
                                 <a href="https://wa.me/2347037343660" target="_blank" class="btn btn-white text-primary w-100 btn-sm rounded-pill fw-bold shadow-sm">
-                                    <i class="ti ti-brand-whatsapp me-1"></i> Contact Support
+                                    <i class="ti ti-brand-whatsapp me-1 fs-15"></i> Contact Support
                                 </a>
                             </div>
                         </div>
@@ -89,19 +89,19 @@
                 <div class="offcanvas-body p-0">
                     <div class="list-group list-group-flush custom-sidebar-nav p-3">
                         <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); closeOffcanvas(); return false;">
-                            <i class="ti ti-info-circle me-2"></i> Overview
+                            <i class="ti ti-info-circle me-2 fs-15"></i> Overview
                         </a>
                         <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#services" onclick="switchTab('services'); closeOffcanvas(); return false;">
-                            <i class="ti ti-currency-naira me-2"></i> Services & Pricing
+                            <i class="ti ti-currency-naira me-2 fs-15"></i> Services & Pricing
                         </a>
                         <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); closeOffcanvas(); return false;">
-                            <i class="ti ti-shield-lock me-2"></i> Authentication
+                            <i class="ti ti-shield-lock me-2 fs-15"></i> Authentication
                         </a>
                         <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#submit" onclick="switchTab('submit'); closeOffcanvas(); return false;">
-                            <i class="ti ti-server me-2"></i> Submit Request
+                            <i class="ti ti-server me-2 fs-15"></i> Submit Request
                         </a>
                         <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#status" onclick="switchTab('status'); closeOffcanvas(); return false;">
-                            <i class="ti ti-activity me-2"></i> Check Status
+                            <i class="ti ti-activity me-2 fs-15"></i> Check Status
                         </a>
                     </div>
                 </div>
@@ -116,7 +116,7 @@
                         <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5" style="background: url('https://cdn.svgporn.com/logos/laravel.svg') no-repeat right bottom; background-size: 30%;"></div>
                         <div class="card-body p-5 position-relative">
                             <span class="badge bg-soft-primary text-primary mb-3">Introduction</span>
-                            <h2 class="fw-bold text-dark mb-3">BVN Modification Guide</h2>
+                            <h2 class="fw-bold mb-3">BVN Modification Guide</h2>
                             <p class="text-muted lead mb-4">
                                 Integrate BVN Modification services for Keystone Bank, First Bank, and Agency/NIBSS services. 
                                 Support for Name Correction, DOB Updates, and more.
@@ -125,17 +125,17 @@
                             <!-- Endpoint Box -->
                             <div class="bg-dark rounded-4 p-4 text-white shadow-lg position-relative overflow-hidden">
                                 <div class="position-absolute top-0 end-0 p-3 opacity-10">
-                                    <i class="ti ti-world-www fs-1"></i>
+                                    <i class="ti ti-world-www fs-15"></i>
                                 </div>
                                 <label class="text-white-50 small text-uppercase ls-1 fw-bold mb-2">Base URL</label>
                                 <div class="d-flex align-items-center bg-white bg-opacity-10 rounded-3 p-3 border border-white border-opacity-10">
                                     <code class="text-white fs-16 font-monospace flex-grow-1">{{ url('/') }}/api/v1</code>
                                     <button class="btn btn-sm btn-secondary rounded-pill px-3 ms-3" onclick="copyToClipboard('{{ url('/') }}/api/v1')">
-                                        <i class="ti ti-copy me-1"></i> Copy
+                                        <i class="ti ti-copy me-1 fs-15"></i> Copy
                                     </button>
                                 </div>
                                 <div class="mt-3 d-flex align-items-center small text-warning">
-                                    <i class="ti ti-alert-world me-2"></i>
+                                    <i class="ti ti-alert-world me-2 fs-15"></i>
                                     <span>Ensure all requests are made via <strong>HTTPS</strong>.</span>
                                 </div>
                             </div>
@@ -143,7 +143,7 @@
                     </div>
                     <div class="text-end">
                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="services">
-                            Next: Services <i class="ti ti-arrow-right ms-2"></i>
+                            Next: Services <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
@@ -152,16 +152,16 @@
                 <div class="docs-section d-none fade-in" id="services">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">1</span>
                                 Services & Pricing
                             </h4>
                             
                             <div class="alert alert-info border border-info border-opacity-25 rounded-3 d-flex align-items-start p-4 mb-4" role="alert">
-                                <i class="ti ti-info-circle fs-4 me-3 mt-1"></i>
+                                <i class="ti ti-info-circle me-3 mt-1 fs-15"></i>
                                 <div>
                                     <h5 class="alert-heading fw-bold mb-2">Service Logic</h5>
-                                    <p class="mb-0 text-dark">
+                                    <p class="mb-0">
                                         You must select the correct <strong>Field Code</strong> for the destination bank/institution.
                                         Use the filters below to find the correct code.
                                     </p>
@@ -184,9 +184,9 @@
                             <div class="tab-content" id="pills-tabContent">
                                 <!-- Keystone -->
                                 <div class="tab-pane fade show active" id="pills-keystone">
-                                    <div class="table-responsive rounded-3 border">
-                                        <table class="table table-hover align-middle mb-0">
-                                            <thead class="bg-light">
+                                    <div class="table-responsive rounded-3 border custom-table-border">
+                                        <table class="table table-premium table-hover align-middle mb-0">
+                                            <thead>
                                                 <tr class="text-uppercase small text-muted">
                                                     <th class="py-3 ps-4">Service Name</th>
                                                     <th class="py-3">Field Code</th>
@@ -197,9 +197,9 @@
                                                 @if(isset($availableServices))
                                                     @foreach($availableServices->filter(fn($s) => $s->category === 'keystone') as $service)
                                                         <tr>
-                                                            <td class="ps-4 fw-medium text-dark">{{ $service->name }}</td>
+                                                            <td class="ps-4 fw-medium ">{{ $service->name }}</td>
                                                             <td><code class="bg-light text-primary border rounded px-2 py-1 fw-bold fs-14">{{ $service->code }}</code></td>
-                                                            <td class="text-end pe-4 fw-bold text-dark">₦{{ number_format($service->price, 2) }}</td>
+                                                            <td class="text-end pe-4 fw-bold ">₦{{ number_format($service->price, 2) }}</td>
                                                         </tr>
                                                     @endforeach
                                                 @else
@@ -213,9 +213,9 @@
                                 </div>
                                 <!-- First Bank -->
                                 <div class="tab-pane fade" id="pills-firstbank">
-                                    <div class="table-responsive rounded-3 border">
-                                        <table class="table table-hover align-middle mb-0">
-                                            <thead class="bg-light">
+                                    <div class="table-responsive rounded-3 border custom-table-border">
+                                        <table class="table table-premium table-hover align-middle mb-0">
+                                            <thead>
                                                 <tr class="text-uppercase small text-muted">
                                                     <th class="py-3 ps-4">Service Name</th>
                                                     <th class="py-3">Field Code</th>
@@ -226,9 +226,9 @@
                                                 @if(isset($availableServices))
                                                     @foreach($availableServices->filter(fn($s) => $s->category === 'firstbank') as $service)
                                                         <tr>
-                                                            <td class="ps-4 fw-medium text-dark">{{ $service->name }}</td>
+                                                            <td class="ps-4 fw-medium ">{{ $service->name }}</td>
                                                             <td><code class="bg-light text-primary border rounded px-2 py-1 fw-bold fs-14">{{ $service->code }}</code></td>
-                                                            <td class="text-end pe-4 fw-bold text-dark">₦{{ number_format($service->price, 2) }}</td>
+                                                            <td class="text-end pe-4 fw-bold ">₦{{ number_format($service->price, 2) }}</td>
                                                         </tr>
                                                     @endforeach
                                                 @else
@@ -242,9 +242,9 @@
                                 </div>
                                 <!-- Agency -->
                                 <div class="tab-pane fade" id="pills-agency">
-                                    <div class="table-responsive rounded-3 border">
-                                        <table class="table table-hover align-middle mb-0">
-                                            <thead class="bg-light">
+                                    <div class="table-responsive rounded-3 border custom-table-border">
+                                        <table class="table table-premium table-hover align-middle mb-0">
+                                            <thead>
                                                 <tr class="text-uppercase small text-muted">
                                                     <th class="py-3 ps-4">Service Name</th>
                                                     <th class="py-3">Field Code</th>
@@ -255,9 +255,9 @@
                                                 @if(isset($availableServices))
                                                     @foreach($availableServices->filter(fn($s) => $s->category === 'agency') as $service)
                                                         <tr>
-                                                            <td class="ps-4 fw-medium text-dark">{{ $service->name }}</td>
+                                                            <td class="ps-4 fw-medium ">{{ $service->name }}</td>
                                                             <td><code class="bg-light text-primary border rounded px-2 py-1 fw-bold fs-14">{{ $service->code }}</code></td>
-                                                            <td class="text-end pe-4 fw-bold text-dark">₦{{ number_format($service->price, 2) }}</td>
+                                                            <td class="text-end pe-4 fw-bold ">₦{{ number_format($service->price, 2) }}</td>
                                                         </tr>
                                                     @endforeach
                                                 @else
@@ -274,10 +274,10 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="overview">
-                            <i class="ti ti-arrow-left me-2"></i> Previous
+                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="auth">
-                            Next: Authentication <i class="ti ti-arrow-right ms-2"></i>
+                            Next: Authentication <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
@@ -286,7 +286,7 @@
                 <div class="docs-section d-none fade-in" id="auth">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">2</span>
                                 Authentication
                             </h4>
@@ -295,26 +295,26 @@
                             </p>
                             
                             <div class="mb-5">
-                                <label class="form-label fw-bold text-dark mb-2">Your Personal API Token</label>
+                                <label class="form-label fw-bold mb-2">Your Personal API Token</label>
                                 <div class="input-group input-group-lg shadow-sm">
-                                    <span class="input-group-text bg-white border-end-0 text-muted ps-3">
-                                        <i class="ti ti-key fs-4"></i>
+                                    <span class="input-group-text border-end-0 text-muted ps-3">
+                                        <i class="ti ti-key fs-15"></i>
                                     </span>
                                     <input type="text" 
-                                           class="form-control font-monospace border-start-0 border-end-0 bg-white text-dark" 
+                                           class="form-control font-monospace border-start-0 border-end-0" 
                                            value="{{ Auth::user()->api_token ?? 'No token available' }}" 
                                            id="apiToken" 
                                            readonly>
                                     <button class="btn btn-primary px-4" type="button" onclick="copyToken()">
-                                        <span id="copyBtnText">Copy</span> <i class="ti ti-copy ms-2"></i>
+                                        <span id="copyBtnText">Copy</span> <i class="ti ti-copy ms-2 fs-15"></i>
                                     </button>
                                 </div>
-                                <div class="form-text mt-2"><i class="ti ti-lock me-1"></i> Keep this token safe!</div>
+                                <div class="form-text mt-2"><i class="ti ti-lock me-1 fs-15"></i> Keep this token safe!</div>
                             </div>
 
                             <div class="card bg-dark text-white border-0 shadow-lg overflow-hidden position-relative">
                                 <div class="card-header bg-transparent border-white border-opacity-10 py-3">
-                                    <h6 class="mb-0 fw-bold text-light"><i class="ti ti-code me-2"></i>Header Authorization Example</h6>
+                                    <h6 class="mb-0 fw-bold text-light"><i class="ti ti-code me-2 fs-15"></i>Header Authorization Example</h6>
                                 </div>
                                 <div class="card-body bg-black bg-opacity-25 font-monospace p-4">
                                     <div class="d-flex">
@@ -341,10 +341,10 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="services">
-                            <i class="ti ti-arrow-left me-2"></i> Previous
+                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="submit">
-                            Next: Submit Request <i class="ti ti-arrow-right ms-2"></i>
+                            Next: Submit Request <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
@@ -353,7 +353,7 @@
                 <div class="docs-section d-none fade-in" id="submit">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">3</span>
                                 Submit a Request
                             </h4>
@@ -371,19 +371,19 @@
                             <div class="row g-4">
                                 <!-- Request Body -->
                                 <div class="col-lg-6">
-                                    <h5 class="fw-bold text-dark mb-3">Request Parameters</h5>
+                                    <h5 class="fw-bold mb-3">Request Parameters</h5>
                                     <ul class="list-group list-group-flush mb-3">
-                                        <li class="list-group-item px-0"><span class="fw-bold">field_code</span> <span class="text-danger">*</span>: (string) Code from Services tab.</li>
-                                        <li class="list-group-item px-0"><span class="fw-bold">bvn</span> <span class="text-danger">*</span>: (string) 11-digit BVN.</li>
-                                        <li class="list-group-item px-0"><span class="fw-bold">nin</span> <span class="text-danger">*</span>: (string) 11-digit NIN.</li>
-                                        <li class="list-group-item px-0"><span class="fw-bold">description</span> <span class="text-danger">*</span>: (string|JSON) Detail of the modification (e.g., New information about the BVN holder: first name MUSA, surname Haruna, middle name Gani, or a new date of birth (01-JAN-2000), or a new phone number, etc.).</li>
-                                        <li class="list-group-item px-0"><span class="fw-bold">modification_data</span> : (JSON/Array) Key-value pairs of what to change.</li>
+                                        <li class="list-group-item bg-transparent text-body px-0 border-opacity-10 border-white"><span class="fw-bold">field_code</span> <span class="text-danger">*</span>: (string) Code from Services tab.</li>
+                                        <li class="list-group-item bg-transparent text-body px-0 border-opacity-10 border-white"><span class="fw-bold">bvn</span> <span class="text-danger">*</span>: (string) 11-digit BVN.</li>
+                                        <li class="list-group-item bg-transparent text-body px-0 border-opacity-10 border-white"><span class="fw-bold">nin</span> <span class="text-danger">*</span>: (string) 11-digit NIN.</li>
+                                        <li class="list-group-item bg-transparent text-body px-0 border-opacity-10 border-white"><span class="fw-bold">description</span> <span class="text-danger">*</span>: (string|JSON) Detail of the modification (e.g., New information about the BVN holder: first name MUSA, surname Haruna, middle name Gani, or a new date of birth (01-JAN-2000), or a new phone number, etc.).</li>
+                                        <li class="list-group-item bg-transparent text-body px-0 border-opacity-10 border-white border-bottom-0"><span class="fw-bold">modification_data</span> : (JSON/Array) Key-value pairs of what to change.</li>
                                     </ul>
                                 </div>
 
                                 <!-- Example Tabs -->
                                 <div class="col-12 mt-2">
-                                    <h5 class="fw-bold text-dark mb-3">Payload Examples</h5>
+                                    <h5 class="fw-bold mb-3">Payload Examples</h5>
                                     <ul class="nav nav-tabs mb-3" id="payload-tabs">
                                         <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#payload-keystone">Keystone</a></li>
                                         <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#payload-firstbank">First Bank</a></li>
@@ -393,9 +393,9 @@
                                     <div class="tab-content">
                                         <div class="tab-pane fade show active" id="payload-keystone">
                                             <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                                <div class="card-header bg-light border-bottom py-3 d-flex justify-content-between">
-                                                    <h6 class="fw-bold text-dark mb-0">Keystone (e.g. DOB Update)</h6>
-                                                    <button class="btn btn-sm btn-outline-primary copy-btn" data-clipboard-target="#code-keystone"><i class="ti ti-clipboard"></i> Copy</button>
+                                                <div class="card-header border-bottom py-3 d-flex justify-content-between">
+                                                    <h6 class="fw-bold mb-0">Keystone (e.g. DOB Update)</h6>
+                                                    <button class="btn btn-sm btn-outline-primary copy-btn" data-clipboard-target="#code-keystone"><i class="ti ti-clipboard fs-15"></i> Copy</button>
                                                 </div>
                                                 <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace" id="code-keystone"><code>{
@@ -414,9 +414,9 @@
                                         
                                         <div class="tab-pane fade" id="payload-firstbank">
                                             <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                                <div class="card-header bg-light border-bottom py-3 d-flex justify-content-between">
-                                                    <h6 class="fw-bold text-dark mb-0">First Bank (e.g. Name Correction)</h6>
-                                                    <button class="btn btn-sm btn-outline-primary copy-btn" data-clipboard-target="#code-firstbank"><i class="ti ti-clipboard"></i> Copy</button>
+                                                <div class="card-header border-bottom py-3 d-flex justify-content-between">
+                                                    <h6 class="fw-bold mb-0">First Bank (e.g. Name Correction)</h6>
+                                                    <button class="btn btn-sm btn-outline-primary copy-btn" data-clipboard-target="#code-firstbank"><i class="ti ti-clipboard fs-15"></i> Copy</button>
                                                 </div>
                                                 <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace" id="code-firstbank"><code>{
@@ -435,9 +435,9 @@
 
                                         <div class="tab-pane fade" id="payload-response">
                                             <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                                <div class="card-header bg-light border-bottom py-3 d-flex justify-content-between">
-                                                    <h6 class="fw-bold text-dark mb-0">Sample Response</h6>
-                                                    <button class="btn btn-sm btn-outline-primary copy-btn" data-clipboard-target="#code-response"><i class="ti ti-clipboard"></i> Copy</button>
+                                                <div class="card-header border-bottom py-3 d-flex justify-content-between">
+                                                    <h6 class="fw-bold mb-0">Sample Response</h6>
+                                                    <button class="btn btn-sm btn-outline-primary copy-btn" data-clipboard-target="#code-response"><i class="ti ti-clipboard fs-15"></i> Copy</button>
                                                 </div>
                                                 <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace" id="code-response"><code>{
@@ -462,10 +462,10 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="auth">
-                            <i class="ti ti-arrow-left me-2"></i> Previous
+                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="status">
-                            Next: Check Status <i class="ti ti-arrow-right ms-2"></i>
+                            Next: Check Status <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
@@ -474,7 +474,7 @@
                 <div class="docs-section d-none fade-in" id="status">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">4</span>
                                 Check Transaction Status
                             </h4>
@@ -496,21 +496,21 @@
                             <div class="row g-4">
                                 <div class="col-lg-6">
                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header bg-light border-bottom py-3">
-                                            <h6 class="fw-bold text-dark mb-0">Query Parameters</h6>
+                                        <div class="card-header border-bottom py-3">
+                                            <h6 class="fw-bold mb-0">Query Parameters</h6>
                                         </div>
-                                        <div class="card-body p-4 bg-white">
-                                            <ul class="list-unstyled mb-0 font-monospace text-dark">
+                                        <div class="card-body p-4">
+                                            <ul class="list-unstyled mb-0 font-monospace">
                                                 <li class="mb-3">
-                                                    <span class="badge bg-light text-dark border me-2">OPTION 1</span>
+                                                    <span class="badge bg-light  border me-2">OPTION 1</span>
                                                     <strong>?bvn=</strong><span class="text-muted">12345678901</span>
                                                 </li>
                                                 <li>
-                                                    <span class="badge bg-light text-dark border me-2">OPTION 2</span>
+                                                    <span class="badge bg-light  border me-2">OPTION 2</span>
                                                     <strong>?reference=</strong><span class="text-muted">B1...</span>
                                                 </li>
                                                 <li class="mt-3">
-                                                    <span class="badge bg-light text-dark border me-2">OPTION 3</span>
+                                                    <span class="badge bg-light  border me-2">OPTION 3</span>
                                                     <strong>?nin=</strong><span class="text-muted">00045678901</span>
                                                 </li>
                                             </ul>
@@ -519,7 +519,7 @@
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header bg-light border-bottom py-3">
+                                        <div class="card-header border-bottom py-3">
                                             <h6 class="fw-bold text-success mb-0">Response</h6>
                                         </div>
                                         <div class="card-body p-0 bg-dark">
@@ -548,7 +548,7 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="submit">
-                            <i class="ti ti-arrow-left me-2"></i> Previous
+                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
                     </div>
                 </div>
@@ -627,7 +627,7 @@
                 const notif = document.createElement('div');
                 notif.className = 'alert alert-success position-fixed top-0 end-0 m-3 shadow-lg fw-bold';
                 notif.style.zIndex = '9999';
-                notif.innerHTML = '<i class="ti ti-check me-2"></i> Token copied!';
+                notif.innerHTML = '<i class="ti ti-check me-2 fs-15"></i> Token copied!';
                 document.body.appendChild(notif);
                 
                 setTimeout(() => {
@@ -642,34 +642,57 @@
                 const notif = document.createElement('div');
                 notif.className = 'alert alert-info position-fixed top-0 end-0 m-3 shadow-lg fw-bold';
                 notif.style.zIndex = '9999';
-                notif.innerHTML = '<i class="ti ti-check me-2"></i> Copied to clipboard!';
+                notif.innerHTML = '<i class="ti ti-check me-2 fs-15"></i> Copied to clipboard!';
                 document.body.appendChild(notif);
                 setTimeout(() => notif.remove(), 2000);
             });
         }
     </script>
     <style>
-        .docs-section { 
-            opacity: 0; 
-            transition: opacity 0.3s ease-in-out; 
+        .docs-section { opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .docs-section.active-section { opacity: 1; }
+        
+        /* New Premium Sidebar Header */
+        .bg-soft-primary.border-bottom {
+            background-color: #FFF5F2 !important; 
+            border-bottom: 1px solid #f8e1da !important;
         }
-        .docs-section.active-section { 
-            opacity: 1; 
+        .dark-mode .bg-soft-primary.border-bottom {
+            background-color: rgba(229, 113, 94, 0.1) !important;
+            border-bottom: 1px solid rgba(229, 113, 94, 0.2) !important;
         }
+
+        /* Sidebar Navigation Items as Individual Cards */
         .custom-sidebar-nav .list-group-item { 
             transition: all 0.2s ease; 
             font-weight: 500; 
+            background: var(--bg-card, #ffffff) !important; 
+            color: var(--text-muted, #64748b) !important; 
+            border: 1px solid var(--border-color, #eef2f6) !important;
+            border-radius: 12px !important;
+            margin-bottom: 10px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transform: none !important;
         }
         .custom-sidebar-nav .list-group-item:hover { 
-            background-color: rgba(var(--bs-primary-rgb), 0.05); 
+            background-color: var(--bg-body, #f8fafc) !important; 
             color: var(--bs-primary) !important; 
-            transform: translateX(5px); 
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
         .custom-sidebar-nav .list-group-item.active { 
-            background-color: rgba(var(--bs-primary-rgb), 0.1); 
-            color: var(--bs-primary); 
-            border-left: 3px solid var(--bs-primary); 
+            background-color: #1A2B4B !important; 
+            color: #ffffff !important; 
+            border-color: #1A2B4B !important;
+            box-shadow: 0 4px 12px rgba(26, 43, 75, 0.2);
+            font-weight: bold; 
+            border-left: none !important;
         }
+        .dark-mode .custom-sidebar-nav .list-group-item.active {
+            background-color: var(--bs-primary) !important;
+            border-color: var(--bs-primary) !important;
+        }
+
         .font-monospace {
             font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
         }

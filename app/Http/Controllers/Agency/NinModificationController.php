@@ -79,7 +79,7 @@ class NinModificationController extends Controller
             'field_code' => 'required',
             'nin' => 'required|digits:11',
             'modification_data' => 'nullable|array',
-            'description' => 'required|string|max:500' // Required as per standardization
+            'description' => 'required|string|max:1000' // Required as per standardization
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -107,18 +107,6 @@ class NinModificationController extends Controller
 
         // Additional Modification Validation
         $modData = $request->modification_data ?? [];
-        if (in_array($fieldCode, ['035'])) { 
-            $requiredDobFields = [
-                'first_name', 'surname', 'gender', 'new_dob', 'nationality', 'state_of_origin', 
-                'residence_state', 'phone_number', 'place_of_birth'
-            ];
-
-            foreach ($requiredDobFields as $field) {
-                if (empty($modData[$field])) {
-                     return response()->json(['success' => false, 'message' => "Missing required field for DOB Update: {$field}"], 400);
-                }
-            }
-        }
         
         if (empty($modData) && empty($request->description)) {
              return response()->json(['success' => false, 'message' => 'Please provide modification details or description.'], 400);

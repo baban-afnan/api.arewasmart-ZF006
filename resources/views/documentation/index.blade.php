@@ -1,73 +1,143 @@
 @extends('documentation.layout')
 
 @section('content')
-    <h1>Introduction</h1>
-    <p>Welcome to the Arewa Smart API Documentation. Our API allows you to integrate our robust identity verification, utility bill payments, and telecommunication services directly into your own applications seamlessly.</p>
+    <div class="mb-5">
+        <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill fw-bold mb-3">V1.0.0</span>
+        <h1 class="display-5 fw-bold mb-3">API Documentation</h1>
+        <p class="lead">Welcome to the Arewa Smart API. Power your business with Nigeria's most reliable identity and utility service gateway.</p>
+    </div>
 
-    <div class="docs-alert docs-alert-info">
-        <i class="fas fa-info-circle"></i>
-        <div>
-            <strong>Base URL:</strong> <code>https://arewasmart.com.ng/api</code><br>
-            All endpoints documented here should be prefixed with this base URL.
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5" style="background: linear-gradient(135deg, #1A2B4B, #1e293b);">
+        <div class="card-body p-5 text-white position-relative">
+            <div class="position-absolute top-0 end-0 p-4 opacity-10">
+                <i class="ti ti-world-www" style="font-size: 8rem;"></i>
+            </div>
+            <h4 class="fw-bold mb-4 d-flex align-items-center">
+                <i class="ti ti-link me-2 text-primary"></i> Base Endpoint
+            </h4>
+            <div class="bg-white bg-opacity-10 border border-white border-opacity-10 rounded-3 p-4 d-flex align-items-center justify-content-between">
+                <code class="text-white fs-5 font-monospace">{{ url('/') }}/api/v1</code>
+                <button class="btn btn-primary rounded-pill px-4" onclick="copyToClipboard('{{ url('/') }}/api/v1')">
+                    <i class="ti ti-copy me-1"></i> Copy
+                </button>
+            </div>
+            <div class="mt-4 text-warning-emphasis d-flex align-items-center small">
+                <i class="ti ti-shield-lock me-2"></i>
+                <span>All requests must be served over <strong>HTTPS</strong> for security.</span>
+            </div>
         </div>
     </div>
 
-    <h2>Authentication</h2>
+    <h2 class="fw-bold mb-4 mt-5">Authentication</h2>
     <p>We use Bearer Token authentication to secure our endpoints. To access any API route, you must include your unique API Token in the <code>Authorization</code> header of your HTTP request.</p>
 
-    <h3>Getting your API Token</h3>
-    <ol>
-        <li><a href="{{ route('register') }}">Create an account</a> on our platform.</li>
-        <li>Log in to your dashboard.</li>
-        <li>Navigate to your <strong>Profile Settings</strong> -> <strong>API Application</strong> to view or generate your API Token.</li>
-    </ol>
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
+                <div class="bg-soft-primary text-primary rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
+                    <i class="ti ti-user-plus fs-3"></i>
+                </div>
+                <h6 class="fw-bold">1. Create Account</h6>
+                <p class="small text-muted mb-0">Sign up on our platform to get started.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
+                <div class="bg-soft-success text-success rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
+                    <i class="ti ti-layout-dashboard fs-3"></i>
+                </div>
+                <h6 class="fw-bold">2. Login to Dashboard</h6>
+                <p class="small text-muted mb-0">Access your developer panel.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
+                <div class="bg-soft-warning text-warning rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
+                    <i class="ti ti-key fs-3"></i>
+                </div>
+                <h6 class="fw-bold">3. Get API Key</h6>
+                <p class="small text-muted mb-0">Generate your token in Profile Settings.</p>
+            </div>
+        </div>
+    </div>
 
-    <div class="docs-alert docs-alert-warning">
-        <i class="fas fa-exclamation-triangle"></i>
+    <div class="code-block bg-dark rounded-4 p-0 overflow-hidden shadow-lg mb-5">
+        <div class="bg-white bg-opacity-10 px-4 py-3 border-bottom border-white border-opacity-10 d-flex justify-content-between align-items-center">
+            <span class="text-white small fw-bold opacity-75">Header Authorization Example</span>
+            <span class="badge bg-primary text-white">cURL</span>
+        </div>
+        <pre class="m-0 p-4 font-monospace"><code class="text-white">curl -X GET "{{ url('/') }}/api/v1/user" \
+  -H "<span class="text-info">Authorization:</span> <span class="text-warning">Bearer YOUR_API_TOKEN</span>" \
+  -H "<span class="text-info">Accept:</span> <span class="text-warning">application/json</span>"</code></pre>
+    </div>
+
+    <div class="alert alert-danger border-0 rounded-4 d-flex align-items-center p-4 mb-5 shadow-sm">
+        <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 50px; height: 50px; flex-shrink: 0;">
+            <i class="ti ti-shield-x fs-3"></i>
+        </div>
         <div>
-            <strong>Keep your token secure!</strong> Never share your API Token publicly, commit it to version control, or expose it in client-side code such as front-end JavaScript apps.
+            <h6 class="fw-bold mb-1">Security Warning</h6>
+            <p class="small mb-0 opacity-75">Never share your API Token publicly. Avoid exposing it in client-side code such as front-end JavaScript components or mobile apps that can be decompiled.</p>
         </div>
     </div>
 
-    <h3>Example Request</h3>
-    <p>Here is an example of how to attach your API token in a standard HTTP request using cURL.</p>
+    <h2 class="fw-bold mb-4">Standardized Responses</h2>
+    <p>Our API returns consistent JSON payloads to make integration predictable and easy to handle across different programming languages.</p>
 
-    <div class="code-block">
-        <div class="code-caption">
-            <span>Authentication Header Example</span>
-        </div>
-<pre><code>curl -X GET "https://arewasmart.com.ng/api/endpoint" \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
-  -H "Accept: application/json"</code></pre>
-    </div>
-
-    <h2>Responses</h2>
-    <p>Our API returns standardized JSON responses. A successful request typically yields a <code>200 OK</code> status code with a JSON payload containing the requested data and a status indicator.</p>
-
-    <div class="code-block">
-        <div class="code-caption">
-            <span>Success Response (2xx)</span>
-        </div>
-<pre><code>{
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header border-bottom py-3">
+                    <h6 class="fw-bold text-success mb-0 d-flex align-items-center">
+                        <i class="ti ti-circle-check me-2"></i> Success Response (2xx)
+                    </h6>
+                </div>
+                <div class="card-body p-0 bg-dark">
+<pre class="m-0 p-4 text-white font-monospace small"><code>{
     "status": true,
     "message": "Operation successful",
     "data": { ... }
 }</code></pre>
-    </div>
-
-    <p>If an error occurs, you will receive an appropriate HTTP status code (e.g., 400 Bad Request, 401 Unauthorized, 422 Unprocessable Entity) alongside a JSON error message.</p>
-
-    <div class="code-block">
-        <div class="code-caption">
-            <span>Error Response (4xx/5xx)</span>
+                </div>
+            </div>
         </div>
-<pre><code>{
+        <div class="col-lg-6">
+            <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header border-bottom py-3">
+                    <h6 class="fw-bold text-danger mb-0 d-flex align-items-center">
+                        <i class="ti ti-circle-x me-2"></i> Error Response (4xx/5xx)
+                    </h6>
+                </div>
+                <div class="card-body p-0 bg-dark">
+<pre class="m-0 p-4 text-white font-monospace small"><code>{
     "status": false,
     "message": "The provided token is invalid or expired."
 }</code></pre>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <h2>Next Steps</h2>
-    <p>Navigate through the sidebar to explore specific services like NIN Verification, BVN Checking, and Utility payments. Each service page provides detailed endpoint URLs, required parameters, and sample responses.</p>
+    <div class="text-center bg-soft-primary rounded-4 p-5 mb-5 border border-primary border-dashed">
+        <h4 class="fw-bold mb-3">Ready to dive in?</h4>
+        <p class="mb-4">Explore our comprehensive API endpoints to start building your solution today.</p>
+        <a href="{{ route('docs.nin') }}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm fw-bold">
+            Explore Documentation <i class="ti ti-arrow-right ms-2"></i>
+        </a>
+    </div>
 
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.createElement('div');
+                toast.className = 'position-fixed top-0 end-0 m-4 alert alert-success shadow-lg border-0 animate__animated animate__fadeInDown';
+                toast.style.zIndex = '9999';
+                toast.innerHTML = '<i class="ti ti-check me-2"></i> Copied to clipboard!';
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            });
+        }
+    </script>
 @endsection

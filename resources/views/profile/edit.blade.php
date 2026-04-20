@@ -7,6 +7,7 @@
             background: linear-gradient(135deg, #c24343ff 0%, #c5e02bff 100%);
             position: relative;
             overflow: hidden;
+            border-radius: 10px !important;
         }
         .profile-header-gradient::before {
             content: '';
@@ -24,9 +25,9 @@
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            border: 5px solid #fff;
+            border: 5px solid var(--bg-card);
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            background: #fff;
+            background: var(--bg-card);
             overflow: hidden;
         }
         .profile-avatar-wrapper img {
@@ -84,7 +85,7 @@
         .delay-3 { animation-delay: 0.3s; }
     </style>
 
-    <div class="container-fluid py-4">
+    <div class="container-fluid px-0 px-md-3 py-4">
         
         <!-- Alerts -->
         @if (session('status'))
@@ -125,9 +126,9 @@
         <div class="row g-4">
             <!-- Left Column: Profile Card -->
             <div class="col-lg-4 animate-up">
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+                <div class="card shadow-lg border-0 rounded-0 rounded-md-4 overflow-hidden h-100">
                     <!-- Stylish Header -->
-                    <div class="profile-header-gradient" style="height: 150px;">
+                    <div class="profile-header-gradient rounded-0 rounded-top-md-4" style="height: 150px;">
                          <div class="d-flex justify-content-end p-3">
                              <span class="badge bg-white/20 backdrop-blur text-white border border-white/30 rounded-full px-3 py-1">
                                 <i class="ti ti-shield-check me-1"></i> {{ ucfirst($user->role) }}
@@ -149,14 +150,14 @@
                         <h4 class="fw-bold text-dark mb-1">{{ $user->first_name }} {{ $user->last_name }}</h4>
                         <p class="text-muted mb-3">{{ $user->email }}</p>
                         
-                         <div class="d-inline-flex align-items-center bg-light rounded-pill px-4 py-2 border mb-4">
-                             <div class="d-flex flex-column align-items-start me-4 border-end pe-4">
+                         <div class="d-inline-flex align-items-center bg-theme-subtle rounded-pill px-4 py-2 border border-theme mb-4">
+                             <div class="d-flex flex-column align-items-start me-4 border-end pe-4 border-theme">
                                 <small class="text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">Status</small>
                                 <span class="text-success fw-bold"><i class="ti ti-circle-filled fs-10 me-1"></i>Active</span>
                              </div>
                              <div class="d-flex flex-column align-items-start">
                                 <small class="text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">Limit</small>
-                                <span class="text-dark fw-bold">{{ $user->limit ?? 'Level 1' }}</span>
+                                <span class="fw-bold">{{ $user->limit ?? 'Level 1' }}</span>
                              </div>
                          </div>
 
@@ -188,55 +189,55 @@
 
             <!-- Right Column: User Details -->
             <div class="col-lg-8 animate-up delay-1">
-                <div class="card border-0 shadow-sm rounded-4 h-100">
-                    <div class="card-header bg-white border-bottom border-light py-4 px-4">
+                <div class="card shadow-lg border-0 rounded-0 rounded-md-4 h-100">
+                    <div class="card-header bg-transparent border-bottom-0 py-4 px-4 rounded-0 rounded-top-md-4">
                         <div class="d-flex align-items-center justify-content-between">
-                             <h5 class="fw-bold mb-0 text-dark">
+                             <h5 class="fw-bold mb-0">
                                 <i class="ti ti-user-circle me-2 text-primary"></i>Personal Information
                             </h5>
                         </div>
                     </div>
 
-                    <div class="card-body p-4">
+                    <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-borderless align-middle mb-0">
+                            <table class="table-premium table-hover mb-0">
                                 <tbody>
-                                    <tr class="border-bottom">
-                                        <th class="text-muted small text-uppercase py-3" style="width: 35%">First Name</th>
-                                        <td class="fw-semibold py-3">{{ $user->first_name }}</td>
-                                    </tr>
-                                    <tr class="border-bottom">
-                                        <th class="text-muted small text-uppercase py-3">Last Name</th>
-                                        <td class="fw-semibold py-3">{{ $user->last_name }}</td>
-                                    </tr>
-                                    <tr class="border-bottom">
-                                        <th class="text-muted small text-uppercase py-3">Middle Name</th>
-                                        <td class="fw-semibold py-3">{{ $user->middle_name ?? '-' }}</td>
-                                    </tr>
-                                    <tr class="border-bottom">
-                                        <th class="text-muted small text-uppercase py-3">Email</th>
-                                        <td class="fw-semibold py-3">{{ $user->email }}</td>
-                                    </tr>
-                                    <tr class="border-bottom">
-                                        <th class="text-muted small text-uppercase py-3">Phone Number</th>
-                                        <td class="fw-semibold py-3">{{ $user->phone_no }}</td>
-                                    </tr>
-                                   
-                                    <tr class="border-bottom">
-                                        <th class="text-muted small text-uppercase py-3">Business Name</th>
-                                        <td class="fw-semibold py-3">{{ $user->business_name ?? 'Not Provided' }}</td>
-                                    </tr>
-                                    <tr class="border-bottom">
-                                        <th class="text-muted small text-uppercase py-3">State</th>
-                                        <td class="fw-semibold py-3">{{ $user->state ?? 'Not Provided' }}</td>
-                                    </tr>
-                                    <tr class="border-bottom">
-                                        <th class="text-muted small text-uppercase py-3">LGA</th>
-                                        <td class="fw-semibold py-3">{{ $user->lga ?? 'Not Provided' }}</td>
+                                    <tr>
+                                        <th class="text-muted small text-uppercase ps-4 py-3" style="width: 35%">First Name</th>
+                                        <td class="fw-semibold py-3 pe-4">{{ $user->first_name }}</td>
                                     </tr>
                                     <tr>
-                                        <th class="text-muted small text-uppercase py-3">Address</th>
-                                        <td class="fw-semibold py-3">{{ $user->address ?? 'Not Provided' }}</td>
+                                        <th class="text-muted small text-uppercase ps-4 py-3">Last Name</th>
+                                        <td class="fw-semibold py-3 pe-4">{{ $user->last_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted small text-uppercase ps-4 py-3">Middle Name</th>
+                                        <td class="fw-semibold py-3 pe-4">{{ $user->middle_name ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted small text-uppercase ps-4 py-3">Email</th>
+                                        <td class="fw-semibold py-3 pe-4">{{ $user->email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted small text-uppercase ps-4 py-3">Phone Number</th>
+                                        <td class="fw-semibold py-3 pe-4">{{ $user->phone_no }}</td>
+                                    </tr>
+                                   
+                                    <tr>
+                                        <th class="text-muted small text-uppercase ps-4 py-3">Business Name</th>
+                                        <td class="fw-semibold py-3 pe-4">{{ $user->business_name ?? 'Not Provided' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted small text-uppercase ps-4 py-3">State</th>
+                                        <td class="fw-semibold py-3 pe-4">{{ $user->state ?? 'Not Provided' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted small text-uppercase ps-4 py-3">LGA</th>
+                                        <td class="fw-semibold py-3 pe-4">{{ $user->lga ?? 'Not Provided' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted small text-uppercase ps-4 py-4">Address</th>
+                                        <td class="fw-semibold py-4 pe-4">{{ $user->address ?? 'Not Provided' }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -253,7 +254,7 @@
     <div class="modal fade" id="photoModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 shadow-lg border-0 overflow-hidden">
-                <div class="modal-header bg-primary text-white border-0 py-3">
+                <div class="modal-header bg-primary text-white border-0 py-3 rounded-0 rounded-top-md-4">
                     <h5 class="modal-title fw-bold"><i class="ti ti-camera me-2"></i>Update Profile Photo</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
@@ -270,7 +271,7 @@
                             <input type="file" name="photo" class="form-control form-control-lg" accept="image/*" required>
                         </div>
                     </div>
-                    <div class="modal-footer border-0 bg-light justify-content-center py-3">
+                    <div class="modal-footer border-0 justify-content-center py-3">
                         <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">Upload Photo</button>
                     </div>
@@ -283,7 +284,7 @@
     <div class="modal fade" id="passwordModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 shadow-lg border-0 overflow-hidden">
-                <div class="modal-header bg-primary text-white border-0 py-3">
+                <div class="modal-header bg-primary text-white border-0 py-3 rounded-0 rounded-top-md-4">
                     <h5 class="modal-title fw-bold"><i class="ti ti-lock me-2"></i>Change Password</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
@@ -304,7 +305,7 @@
                             <label for="confirmPass">Confirm Password</label>
                         </div>
                     </div>
-                    <div class="modal-footer border-0 bg-light justify-content-end py-3">
+                    <div class="modal-footer border-0 justify-content-end py-3">
                         <button type="button" class="btn btn-outline-primary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">Update Password</button>
                     </div>
@@ -317,7 +318,7 @@
     <div class="modal fade" id="pinModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 shadow-lg border-0 overflow-hidden">
-                <div class="modal-header bg-primary text-white border-0 py-3">
+                <div class="modal-header bg-primary text-white border-0 py-3 rounded-0 rounded-top-md-4">
                     <h5 class="modal-title fw-bold"><i class="ti ti-shield-lock me-2"></i>Reset Transaction PIN</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
@@ -349,7 +350,7 @@
                              </div>
                         </div>
                     </div>
-                    <div class="modal-footer border-0 bg-light justify-content-end py-3">
+                    <div class="modal-footer border-0 justify-content-end py-3">
                         <button type="button" class="btn btn-outline-primary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">Update PIN</button>
                     </div>
@@ -362,7 +363,7 @@
     <div class="modal fade" id="apiTokenModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 shadow-lg border-0 overflow-hidden">
-                <div class="modal-header bg-primary text-white border-0 py-3">
+                <div class="modal-header bg-primary text-white border-0 py-3 rounded-0 rounded-top-md-4">
                     <h5 class="modal-title fw-bold"><i class="ti ti-code me-2"></i>Your API Token</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
@@ -397,7 +398,7 @@
                         </form>
                     </div>
                 </div>
-                <div class="modal-footer border-0 bg-light justify-content-center py-3">
+                <div class="modal-footer border-0 justify-content-center py-3">
                     <button type="button" class="btn btn-secondary rounded-pill px-5" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>

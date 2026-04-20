@@ -1,13 +1,13 @@
 <x-app-layout>
      <title>Arewa Smart - {{ $title ?? 'transaction Bonus' }}</title>
     
-    <div class="container-fluid py-4">
+    <div class="container-fluid px-0 px-md-3 py-4">
         <!-- Header Section -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h3 class="fw-bold text-dark mb-1">
+                        <h3 class="fw-bold mb-1">
                             <i class="bi bi-gift-fill text-warning me-2"></i> Available Balance
                         </h3>
                         <p class="text-muted mb-0">Manage and transfer your pending funds</p>
@@ -19,13 +19,13 @@
             </div>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-0 g-md-4">
             <!-- Main Balance Card -->
             <div class="col-lg-8">
                 <!-- Premium Balance Display Card -->
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden premium-card">
+                <div class="card shadow-lg border-0 rounded-0 rounded-md-4 overflow-hidden premium-card">
                     <!-- Gradient Header -->
-                    <div class="card-header text-white p-5 position-relative" style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);">
+                    <div class="card-header text-white p-4 p-md-5 position-relative rounded-0 rounded-top-md-4" style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); border-radius: 10px !important;">
                         <div class="position-absolute top-0 end-0 p-4 opacity-10">
                             <i class="bi bi-cash-stack" style="font-size: 120px;"></i>
                         </div>
@@ -54,17 +54,17 @@
                     </div>
 
                     <!-- Body with Stats -->
-                    <div class="card-body p-4">
+                    <div class="card-body p-4 scrollable-card-body">
                         <div class="row g-3">
                             <!-- Main Wallet Balance -->
                             <div class="col-md-6">
-                                <div class="stat-card p-4 rounded-4 h-100 position-relative overflow-hidden" style="background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);">
+                                <div class="stat-card p-4 rounded-4 h-100 position-relative overflow-hidden bg-light border">
                                     <div class="position-absolute top-0 end-0 opacity-5 p-3">
                                         <i class="bi bi-wallet2" style="font-size: 60px;"></i>
                                     </div>
                                     <div class="position-relative z-1">
                                         <small class="text-muted text-uppercase d-block mb-2 fw-bold">Main Wallet</small>
-                                        <h3 class="fw-bold text-dark mb-0">₦{{ number_format($walletData['wallet_balance'] ?? 0, 2) }}</h3>
+                                        <h3 class="fw-bold mb-0">₦{{ number_format($walletData['wallet_balance'] ?? 0, 2) }}</h3>
                                         <small class="text-muted">Current balance</small>
                                     </div>
                                 </div>
@@ -72,7 +72,7 @@
 
                             <!-- After Transfer Preview -->
                             <div class="col-md-6">
-                                <div class="stat-card p-4 rounded-4 h-100 position-relative overflow-hidden" style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);">
+                                <div class="stat-card p-4 rounded-4 h-100 position-relative overflow-hidden bg-success bg-opacity-10 border border-success border-opacity-25">
                                     <div class="position-absolute top-0 end-0 opacity-10 p-3">
                                         <i class="bi bi-arrow-up-circle-fill text-success" style="font-size: 60px;"></i>
                                     </div>
@@ -99,9 +99,9 @@
                                 </div>
                             </div>
                         @else
-                            <div class="alert alert-light border rounded-4 text-center mt-4 py-4">
+                            <div class="bg-light border rounded-4 text-center mt-4 py-5 shadow-sm">
                                 <i class="bi bi-inbox fs-1 d-block mb-3 text-muted"></i>
-                                <h6 class="fw-bold text-dark">No Available Balance</h6>
+                                <h6 class="fw-bold">No Available Balance</h6>
                                 <p class="text-muted mb-0">Your available balance is empty. Funds will appear here when you receive commissions or pending credits.</p>
                             </div>
                         @endif
@@ -112,18 +112,18 @@
             <!-- Sidebar -->
             <div class="col-lg-4">
                 <!-- Quick Stats -->
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card shadow-lg border-0 rounded-0 rounded-md-4 mb-4">
                     <div class="card-body p-4">
                         <h6 class="fw-bold mb-3">
                             <i class="bi bi-graph-up text-primary me-2"></i> Quick Stats
                         </h6>
-                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3 mb-2" style="background-color: #f8f9fa;">
+                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3 mb-2 bg-light border">
                             <span class="text-muted">Total Available</span>
-                            <span class="fw-bold text-dark">₦{{ number_format($walletData['available_balance'] ?? 0, 2) }}</span>
+                            <span class="fw-bold">₦{{ number_format($walletData['available_balance'] ?? 0, 2) }}</span>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3" style="background-color: #f8f9fa;">
+                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3 bg-light border">
                             <span class="text-muted">Main Wallet</span>
-                            <span class="fw-bold text-dark">₦{{ number_format($walletData['wallet_balance'] ?? 0, 2) }}</span>
+                            <span class="fw-bold">₦{{ number_format($walletData['wallet_balance'] ?? 0, 2) }}</span>
                         </div>
                     </div>
                 </div>

@@ -107,6 +107,14 @@
 
                 <!-- Right Side - Icons & Profile -->
                 <div class="d-flex align-items-center">
+                    <!-- Theme Toggle -->
+                    <div class="me-1">
+                        <a href="javascript:void(0);" onclick="toggleTheme()" class="btn btn-menubar" id="theme-toggle">
+                            <i class="ti ti-moon" id="theme-moon"></i>
+                            <i class="ti ti-sun d-none" id="theme-sun"></i>
+                        </a>
+                    </div>
+
                     <!-- Fullscreen -->
                     <div class="me-1">
                         <a href="#" class="btn btn-menubar btnFullscreen">

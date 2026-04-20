@@ -259,6 +259,31 @@
 
 
  <style>
+    /* Dark Mode Sidebar Support */
+    .dark-mode .sidebar {
+        background-color: var(--bg-card) !important;
+        border-right: 1px solid var(--border-color) !important;
+    }
+    
+    .dark-mode .sidebar-menu li a {
+        color: var(--text-main) !important;
+    }
+
+    .dark-mode .sidebar-menu li a:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .dark-mode .modern-profile .bg-light, 
+    .dark-mode .sidebar-header .bg-light {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        color: var(--text-main) !important;
+    }
+
+    /* Logo Toggling */
+    .dark-mode .logo-normal { display: none !important; }
+    .dark-mode .dark-logo { display: block !important; }
+    .logo-normal { display: block !important; }
+    .dark-logo { display: none !important; }
 
   /* Better icon and text spacing */
 .sidebar-menu li a {

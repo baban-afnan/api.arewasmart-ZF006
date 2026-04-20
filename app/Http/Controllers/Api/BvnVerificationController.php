@@ -8,12 +8,15 @@ use App\Helpers\signatureHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
-use App\Models\Transaction;
-use App\Models\Service;
 use App\Models\Wallet;
 use App\Models\Verification;
 use App\Models\User;
+use App\Models\Service;
+use App\Models\ServiceField;
+use App\Models\Transaction;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class BvnVerificationController extends Controller
@@ -28,13 +31,18 @@ class BvnVerificationController extends Controller
         $user = \Illuminate\Support\Facades\Auth::user();
         
         // Fetch Service Price for Documentation
-        $service = Service::where('name', 'Verification')->first();
+        $service = Cache::remember('service_verification_bvn', 3600, function() {
+            return Service::where('name', 'Verification')->first();
+        });
+
         $price = 0;
         
         if ($service) {
-            $serviceField = $service->fields()
-                ->where('field_code', '600') // BVN Verification Code
-                ->first();
+            $serviceField = Cache::remember('service_field_600', 3600, function() use ($service) {
+                return $service->fields()
+                    ->where('field_code', '600') // BVN Verification Code
+                    ->first();
+            });
                 
             if ($serviceField) {
                 // Default to 'user' role if not set
@@ -90,7 +98,10 @@ class BvnVerificationController extends Controller
         }
 
         // 3. Get Verification Service & Field
-        $service = Service::where('name', 'Verification')->first();
+        $service = Cache::remember('service_verification_bvn', 3600, function() {
+            return Service::where('name', 'Verification')->first();
+        });
+
         if (!$service || !$service->is_active) {
             return response()->json([
                 'status' => 'error',
@@ -98,7 +109,10 @@ class BvnVerificationController extends Controller
             ], 503);
         }
 
-        $serviceField = $service->fields()->where('field_code', '600')->first();
+        $serviceField = Cache::remember('service_field_600', 3600, function() use ($service) {
+            return $service->fields()->where('field_code', '600')->first();
+        });
+
         if (!$serviceField || !$serviceField->is_active) {
              return response()->json([
                 'status' => 'error',
@@ -126,30 +140,9 @@ class BvnVerificationController extends Controller
             ], 402);
         }
 
-        // 5. Initialize Transaction (Pending State)
-        $transactionRef = 'b1vn' . date('is') . strtoupper(Str::random(5));
+        // 5. Prep Transaction details
+        $transactionRef = 'B1A' . date('is') . strtoupper(Str::random(5));
         $performedBy = $user->first_name . ' ' . $user->last_name;
-
-        // Create transaction record immediately
-        $transaction = Transaction::create([
-            'transaction_ref' => $transactionRef,
-            'user_id' => $user->id,
-            'amount' => $servicePrice,
-            'description' => "BVN Verification (Pending) - {$serviceField->field_name}",
-            'type' => 'debit',
-            'status' => 'pending',
-            'performed_by'    => $performedBy,
-            'trans_source' => 'API',
-            'metadata' => [
-                'service' => 'verification',
-                'service_field' => $serviceField->field_name,
-                'field_code' => $serviceField->field_code,
-                'bvn' => $request->bvn,
-                'user_role' => $user->role,
-                'trans_source' => 'API',
-                'initial_status' => 'pending'
-            ],
-        ]);
 
         try {
             // 6. Call External API
@@ -186,14 +179,12 @@ class BvnVerificationController extends Controller
             if ($response->failed()) {
                  $errorMessage = 'Upstream Service Error: ' . $response->status();
                  
-                 // Update transaction to failed
-                 $transaction->update([
-                    'status' => 'failed',
-                    'description' => 'Failed: ' . $errorMessage,
-                    'metadata' => array_merge($transaction->metadata ?? [], ['api_error' => $response->body()]),
+                 Log::error('BVN API Failed', [
+                     'user_id' => $user->id,
+                     'status' => $response->status(),
+                     'body' => $response->body()
                  ]);
 
-                 \Illuminate\Support\Facades\Log::error('BVN API Failed', ['body' => $response->body(), 'status' => $response->status()]);
                  return response()->json(['status' => 'error', 'message' => 'Upstream Service Error'], 502);
             }
 
@@ -203,129 +194,93 @@ class BvnVerificationController extends Controller
             // Log response for debugging
             \Illuminate\Support\Facades\Log::info('BVN API Response', ['data' => $responseData]);
 
-            // 7. Process Response
-            // Define chargeable and non-chargeable codes
-            $chargeableCodes = [
-                '00000000', // Successful
-                '99120020', // BVN do not existing
-                '99120024', // BVN suspend
-                '99120026', // BIRTH_DATE_INVALID
-                '99120027', // NAME_INVALID
-                '99120028', // GENDER_NULL
-                '99120029', // PHOTO_INVALID
-            ];
-            
             $respCode = $responseData['respCode'] ?? '00000000';
             
-            if (in_array($respCode, $chargeableCodes)) {
+            if ($respCode === '00000000') {
                 
-                // --- CHARGEABLE FLOW ---
-                $resultResponse = DB::transaction(function () use ($transaction, $wallet, $servicePrice, $bvnData, $user, $serviceField, $service, $transactionRef, $performedBy, $respCode) {
+                // --- SUCCESS FLOW (Charged) ---
+                return DB::transaction(function () use ($servicePrice, $responseData, $user, $serviceField, $service, $transactionRef, $performedBy) {
                     
-                    $isSuccess = ($respCode == '00000000');
-                    $description = $isSuccess ? "BVN Verification - {$serviceField->field_name}" : "BVN Verification (Charged) - Response Code: $respCode";
-                    
-                    // Update Transaction to Success (Charged)
-                    $transaction->update([
+                    // 1. Lock wallet for final check and decrement
+                    $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
+
+                    if (!$wallet || $wallet->balance < $servicePrice) {
+                        throw new \Exception('Insufficient balance at time of charge.');
+                    }
+
+                    // 2. Create Transaction Record (Completed)
+                    $transaction = Transaction::create([
+                        'transaction_ref' => $transactionRef,
+                        'user_id' => $user->id,
+                        'amount' => $servicePrice,
+                        'description' => "BVN Verification - {$serviceField->field_name}",
+                        'type' => 'debit',
                         'status' => 'completed',
-                        'description' => $description,
-                        'metadata' => array_merge($transaction->metadata ?? [], [
-                            'price_details' => [
-                                'base_price' => $serviceField->base_price,
-                                'user_price' => $servicePrice,
-                            ],
-                            'api_response' => $isSuccess ? 'success' : 'charged_error',
-                            'upstream_code' => $respCode
-                        ]),
+                        'performed_by'    => $performedBy,
+                        'trans_source' => 'API',
+                        'metadata' => [
+                            'service' => 'verification',
+                            'service_field' => $serviceField->field_name,
+                            'field_code' => $serviceField->field_code,
+                            'bvn' => $responseData['data']['bvn'] ?? '',
+                            'api_response' => 'success',
+                            'upstream_code' => '00000000'
+                        ],
                     ]);
 
-                    // Deduct wallet balance
+                    // 3. Deduct wallet balance
                     $wallet->decrement('balance', $servicePrice);
 
-                    if ($isSuccess) {
-                        // Create Verification Record only on full success
-                        Verification::create([
-                            'user_id' => $user->id,
-                            'service_field_id' => $serviceField->id,
-                            'service_id' => $service->id,
-                            'transaction_id' => $transaction->id,
-                            'reference' => $transactionRef,
-                            'idno' => $bvnData['data']['bvn'] ?? '',
-                            'firstname' => $bvnData['data']['firstName'] ?? '',
-                            'middlename' => $bvnData['data']['middleName'] ?? '',
-                            'surname' => $bvnData['data']['lastName'] ?? '',
-                            'birthdate' =>  $bvnData['data']['birthday'] ?? '',
-                            'gender' => $bvnData['data']['gender'] ?? '',
-                            'telephoneno' => $bvnData['data']['phoneNumber'] ?? '',
-                            'photo_path' => $bvnData['data']['photo'] ?? '',
-                            'performed_by'    => $performedBy,
-                            'submission_date' => Carbon::now()
-                        ]);
-                        
-                        return response()->json([
-                            'status' => 'success',
-                            'message' => 'BVN verification successful',
-                            'data' => $bvnData['data'],
-                            'meta' => [
-                                'transaction_ref' => $transactionRef,
-                                'charge' => $servicePrice,
-                                'timestamp' => Carbon::now()->toDateTimeString()
-                            ]
-                        ], 200);
-                    } else {
-                        // Return charged error response
-                        $errorMessage = $bvnData['respDescription'] ?? ($bvnData['message'] ?? 'Verification Failed');
-                         return response()->json([
-                            'status' => 'success', // Kept as success to indicate charge was made, or could be 'error' but with data. Usually 'success' if charged? User requested "charge" for these errors. 
-                            // Note: Usually APIs return error status for logical failures, but if charged, we might want to communicate that. 
-                            // Let's stick to 'error' status but with a message indicating charge, OR follow the user's "Successful" annotation for 00000000 only.
-                            // The user said "99120020 charge BVN do not existing".
-                            // I will return a success=false (error) but with specific code, or maybe the user implies success=true just with error info?
-                            // Let's stick to standard HTTP codes: 422 for validation/data errors, but since we CHARGED, maybe 200 is acceptable? 
-                            // Actually, let's keep it consistent: failed verification content = error status, but side effect = charged.
-                            
-                            // Re-reading usage: often if charged, it's treated as a successful *transaction* even if data is 'not found'.
-                            // However, let's try to be clear.
-                            'status' => 'error',
-                            'message' => $errorMessage,
-                            'response_code' => $respCode,
-                            'meta' => [
-                                'charge' => $servicePrice, // Indicate charged
-                                'info' => 'Wallet was charged for this request.'
-                            ]
-                        ], 422);
-                    }
+                    // 4. Create Verification Record
+                    Verification::create([
+                        'user_id' => $user->id,
+                        'service_field_id' => $serviceField->id,
+                        'service_id' => $service->id,
+                        'transaction_id' => $transaction->id,
+                        'reference' => $transactionRef,
+                        'idno' => $responseData['data']['bvn'] ?? '',
+                        'firstname' => $responseData['data']['firstName'] ?? '',
+                        'middlename' => $responseData['data']['middleName'] ?? '',
+                        'surname' => $responseData['data']['lastName'] ?? '',
+                        'birthdate' =>  $responseData['data']['birthday'] ?? '',
+                        'gender' => $responseData['data']['gender'] ?? '',
+                        'telephoneno' => $responseData['data']['phoneNumber'] ?? '',
+                        'photo_path' => $responseData['data']['photo'] ?? '',
+                        'performed_by'    => $performedBy,
+                        'submission_date' => Carbon::now()
+                    ]);
+                    
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'BVN verification successful',
+                        'data' => $responseData['data'],
+                        'meta' => [
+                            'transaction_ref' => $transactionRef,
+                            'charge' => $servicePrice,
+                            'timestamp' => Carbon::now()->toDateTimeString()
+                        ]
+                    ], 200);
                 });
 
-                return $resultResponse;
-
             } else {
-                 // --- NON-CHARGEABLE FLOW (System Error / Invalid Params) ---
+                 // --- NON-CHARGEABLE FLOW (Not Found / Error) ---
                  $errorMessage = $responseData['respDescription'] ?? ($responseData['message'] ?? 'Verification Failed');
 
-                 $transaction->update([
-                    'status' => 'failed',
-                    'description' => 'Failed: ' . $errorMessage,
-                    'metadata' => array_merge($transaction->metadata ?? [], ['api_error' => $errorMessage, 'upstream_code' => $respCode]),
-                 ]);
+                 // Backward compatibility for common not-found codes
+                 $status = ($respCode === '99120020') ? 'success' : 'error';
+                 $httpCode = ($respCode === '99120020') ? 200 : 422;
 
                  return response()->json([
-                    'status' => 'error',
+                    'status' => $status,
                     'message' => $errorMessage,
-                    'response_code' => $respCode
-                ], 422);
+                    'response_code' => $respCode,
+                    'meta' => [
+                        'charge' => 0,
+                        'transaction_ref' => $transactionRef
+                    ]
+                ], $httpCode);
             }
-
         } catch (\Exception $e) {
-            // --- EXCEPTION FLOW ---
-            if (isset($transaction)) {
-                $transaction->update([
-                    'status' => 'failed',
-                    'description' => 'System Error: ' . $e->getMessage(),
-                    'metadata' => array_merge($transaction->metadata ?? [], ['exception' => $e->getMessage()]),
-                ]);
-            }
-            
             return response()->json([
                 'status' => 'error', 
                 'message' => 'System Error: ' . $e->getMessage()

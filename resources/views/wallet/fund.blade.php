@@ -1,13 +1,13 @@
 <x-app-layout>
   <title>Arewa Smart - wallet funding</title>
   
-  <div class="container-fluid py-4">
-    <div class="row g-4 align-items-start">
+  <div class="container-fluid px-0 px-md-3 py-4">
+    <div class="row g-0 g-md-4 align-items-start">
 
       <!-- Left Column: Funding Details (Visible on All Devices) -->
       <div class="col-lg-6 col-md-12">
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-          <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-0">
+        <div class="card shadow-lg border-0 rounded-0 rounded-md-4 overflow-hidden">
+          <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-0 rounded-0 rounded-top-md-4">
             <h5 class="fw-bold text-primary mb-0">
               <i class="bi bi-wallet2 me-2"></i>Wallet Funding
             </h5>
@@ -29,11 +29,6 @@
               </div>
             @endif
 
-            @php
-              $ws = \App\Models\Webservice::where('name', 'wallet funding')->first();
-            @endphp
-
-            @if($ws && $ws->status == 'active')
               @if($virtualAccount)
                 <!-- Virtual Account Card -->
                 <div class="account-details-card p-3 rounded-3 mb-3">
@@ -92,12 +87,6 @@
                    </a>
                 </div>
               @endif
-            @else
-              <!-- Disabled State -->
-              <div class="alert alert-warning border-0 shadow-sm rounded-3">
-                  <i class="bi bi-cone-striped me-2"></i> Wallet Funding is currently unavailable. Please check back later.
-              </div>
-            @endif
           </div>
         </div>
       </div>
@@ -105,7 +94,7 @@
       <!-- Right Column: Professional System View (Desktop Only) -->
       <div class="col-lg-6 d-none d-lg-block">
         <!-- Digital Card Visual -->
-        <div class="wallet-card-visual text-white p-4 rounded-4 mb-4 shadow-lg position-relative overflow-hidden">
+        <div class="wallet-card-visual text-white p-4 mb-4 shadow-lg position-relative overflow-hidden">
            <div class="card-bg-pattern"></div>
            <div class="position-relative z-1">
              <div class="d-flex justify-content-between align-items-center mb-4">
@@ -131,7 +120,7 @@
         </div>
 
         <!-- Funding Tips / Info -->
-        <div class="card border-0 shadow-sm rounded-4">
+        <div class="card shadow-lg border-0 rounded-0 rounded-md-4">
           <div class="card-body p-4">
              <h6 class="fw-bold mb-3 text-dark">Why use Automated Funding?</h6>
              <ul class="list-unstyled mb-0 v-stack gap-3">
@@ -257,6 +246,7 @@
       background: linear-gradient(135deg, #1e1e1e 0%, #2c3e50 100%);
       min-height: 220px;
       border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px !important;
     }
     .card-bg-pattern {
       position: absolute;

@@ -1,78 +1,106 @@
 @extends('documentation.layout')
 
 @section('content')
-    <h1>NIN Validation</h1>
-    <p>Perform an advanced validation of a NIN or tracking ID. This endpoint utilizes smart caching logic to return saved information if it exists in our system, reducing your wait time, otherwise, it fetches the data directly from the national registry.</p>
-
-    <h2>Endpoint</h2>
-    <div class="code-block" style="padding: 15px; margin-bottom: 30px;">
-        <span class="code-method method-post">POST</span> <code>/nin-validation</code>
+    <div class="mb-5">
+        <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill fw-bold mb-3">IDENTITY VERIFICATION</span>
+        <h1 class="display-5 fw-bold  mb-3">NIN Validation</h1>
+        <p class="lead text-muted">Perform an advanced validation of a NIN or tracking ID. This endpoint utilizes smart caching logic to return saved information if it exists in our system.</p>
     </div>
 
-    <h2>Headers</h2>
-    <table class="docs-table">
-        <thead>
-            <tr>
-                <th>Header</th>
-                <th>Value</th>
-                <th>Required</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><code>Authorization</code></td>
-                <td><code>Bearer YOUR_API_TOKEN</code></td>
-                <td><span class="badge-req">Required</span></td>
-            </tr>
-            <tr>
-                <td><code>Accept</code></td>
-                <td><code>application/json</code></td>
-                <td><span class="badge-req">Required</span></td>
-            </tr>
-        </tbody>
-    </table>
-
-    <h2>Parameters</h2>
-    <table class="docs-table">
-        <thead>
-            <tr>
-                <th>Parameter</th>
-                <th>Type</th>
-                <th>Description</th>
-                <th>Required</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><code>tracking_id</code></td>
-                <td><code>string</code></td>
-                <td>The Tracking ID or NIN to validate.</td>
-                <td><span class="badge-req">Required</span></td>
-            </tr>
-        </tbody>
-    </table>
-
-    <h2>Example Request</h2>
-    <div class="code-block">
-        <div class="code-caption">
-            <span>cURL</span>
+    <!-- Endpoint Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+        <div class="card-body p-0">
+            <div class="bg-soft-primary p-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-primary px-3 py-2 rounded-2 fw-bold fs-14 shadow-sm me-3">POST</span>
+                    <code class="text-primary fw-bold fs-5 font-monospace">/api/v1/nin-validation</code>
+                </div>
+                <button class="btn btn-white btn-sm rounded-pill px-3 shadow-sm" onclick="copyToClipboard('{{ url('/') }}/api/v1/nin-validation')">
+                    <i class="ti ti-copy me-1 fs-15"></i> Copy URL
+                </button>
+            </div>
+            <div class="p-4 bg-white">
+                <h6 class="fw-bold  mb-3">Authentication & Headers</h6>
+                <div class="table-responsive">
+                    <table class="table table-borderless align-middle mb-0">
+                        <thead class="bg-light rounded-3">
+                            <tr class="text-muted small">
+                                <th class="ps-3">HEADER</th>
+                                <th>VALUE</th>
+                                <th class="text-end pe-3">REQUIRED</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ps-3"><code class="text-primary">Authorization</code></td>
+                                <td><code class="text-muted">Bearer YOUR_API_TOKEN</code></td>
+                                <td class="text-end pe-3"><span class="badge bg-soft-danger text-danger px-2 py-1 rounded">Yes</span></td>
+                            </tr>
+                            <tr>
+                                <td class="ps-3"><code class="text-primary">Accept</code></td>
+                                <td><code class="text-muted">application/json</code></td>
+                                <td class="text-end pe-3"><span class="badge bg-soft-danger text-danger px-2 py-1 rounded">Yes</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-<pre><code>curl -X POST "https://arewasmart.com.ng/api/nin-validation" \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
-  -H "Accept: application/json" \
-  -d "tracking_id=12345678901"</code></pre>
     </div>
 
-    <h2>Example Response</h2>
-    <div class="code-block">
-        <div class="code-caption">
-            <span>JSON</span>
+    <h4 class="fw-bold  mb-4 mt-5">Request Parameters</h4>
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr class="text-muted small">
+                        <th class="ps-4 py-3">PARAMETER</th>
+                        <th class="py-3">TYPE</th>
+                        <th class="py-3">DESCRIPTION</th>
+                        <th class="text-end pe-4 py-3">REQUIRED</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="ps-4"><code class="text-primary fw-bold">tracking_id</code></td>
+                        <td><span class="badge bg-light text-muted">string</span></td>
+                        <td>The Tracking ID or 11-digit National Identity Number.</td>
+                        <td class="text-end pe-4"><span class="badge bg-danger text-white px-2 py-1 rounded">Required</span></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-<pre><code>{
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-dark">
+                <div class="card-header bg-white bg-opacity-10 border-bottom border-white border-opacity-10 py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold text-white mb-0">Example Request</h6>
+                    <span class="badge bg-primary">cURL</span>
+                </div>
+                <div class="card-body p-0">
+<pre class="m-0 p-4 font-monospace small"><code class="text-white">curl -X POST "{{ url('/') }}/api/v1/nin-validation" \
+  -H "<span class="text-info">Authorization:</span> <span class="text-warning">Bearer YOUR_API_TOKEN</span>" \
+  -H "<span class="text-info">Accept:</span> <span class="text-warning">application/json</span>" \
+  -d "<span class="text-info">tracking_id</span>=<span class="text-warning">12345678901</span>"</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-dark">
+                <div class="card-header bg-white bg-opacity-10 border-bottom border-white border-opacity-10 py-3">
+                    <h6 class="fw-bold text-success mb-0 d-flex align-items-center">
+                        <i class="ti ti-circle-check me-2 fs-15"></i> Success Response (Validation)
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+<pre class="m-0 p-4 font-monospace small"><code class="text-white">{
     "status": true,
     "message": "NIN Validation Successful",
     "source": "cached",
-    "data": {
+     "data": {
         "nin": "12345678901",
         "tracking_id": "12345678901",
         "firstname": "Fatima",
@@ -81,5 +109,8 @@
         "verified_at": "2024-03-05T15:20:00Z"
     }
 }</code></pre>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection

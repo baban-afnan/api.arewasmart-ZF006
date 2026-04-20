@@ -2,9 +2,9 @@
     <title>Arewa Smart - {{ $title ?? 'Dashboard' }}</title>
     
     <!-- Add space between header and content -->
-    <div class="mt-4">
+    <div class="container-fluid px-0 px-md-3 mt-4">
         <!-- User + Wallet Section -->
-        <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card shadow-lg border-0 rounded-0 rounded-md-4 mb-3">
             <div class="card-body user-wallet-wrap">
                 <div class="d-flex align-items-center gap-3 flex-wrap">
                     <!-- User Image -->
@@ -29,7 +29,7 @@
                                           style="cursor: pointer;" 
                                           title="Click to copy account number"
                                           id="copyAcctBtn"
-                                          onclick="navigator.clipboard.writeText('{{ $virtualAccount->accountNo }}').then(() => { this.innerHTML='<i class=\'fas fa-check\'></i> Copied!'; setTimeout(() => { this.innerHTML='<i class=\'far fa-copy\'></i> Copy'; }, 2000); })">
+                                          onclick="navigator.clipboard.writeText('{{ $virtualAccount->accountNo }}').then(() => { showToast('Account Number Copied!'); })">
                                         <i class="far fa-copy"></i> Copy
                                     </span>
                                 </small>
@@ -43,7 +43,7 @@
                     <div class="d-flex align-items-center gap-2 ms-2">
                         <span class="fw-medium text-muted small mb-0">Balance:</span>
 
-                        <h5 id="wallet-balance" class="mb-0 text-success fw-bold balance-text">
+                        <h5 id="wallet-balance" class="mb-0 text-success fw-bold balance-text load-skeleton">
                             ₦{{ number_format($wallet->balance ?? 0, 2) }}
                         </h5>
 
@@ -66,8 +66,8 @@
         @include('pages.alart')
 
         <!-- API Access Section -->
-        <div class="card border-0 shadow-sm rounded-4 mb-3">
-            <div class="card-body">
+        <div class="card shadow-lg border-0 rounded-0 rounded-md-4 mb-3">
+            <div class="card-body p-4 p-md-5">
                 
                 @php
                     $application = Auth::user()->apiApplication;
@@ -140,11 +140,11 @@
             
             <!-- verification Card -->
             <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.1s;">
-                <div class="financial-card shadow-sm h-80 p-4" style="background: var(--primary-gradient);">
+                <div class="financial-card shadow-sm h-100 p-4 rounded-3" style="background: var(--primary-gradient);">
                     <div class="d-flex justify-content-between align-items-start position-relative z-1">
                         <div>
                             <p class="stats-label mb-1" style="color: white;">Verification</p>
-                            <h3 class="stats-value mb-0">{{ number_format(($monthlyStats['nin'] ?? 0) + ($monthlyStats['bvn'] ?? 0) + ($monthlyStats['tin'] ?? 0)) }}</h3>
+                            <h3 class="stats-value mb-0 load-skeleton">{{ number_format(($monthlyStats['nin'] ?? 0) + ($monthlyStats['bvn'] ?? 0) + ($monthlyStats['tin'] ?? 0)) }}</h3>
                             <small class="text-white-50 fs-12 fw-medium">Total Verifications</small>
                         </div>
                         <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-3">
@@ -156,7 +156,7 @@
 
             <!-- validation and ipe Card -->
             <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.2s;">
-                <div class="financial-card shadow-sm h-80 p-4" style="background: var(--success-gradient);">
+                <div class="financial-card shadow-sm h-100 p-4 rounded-3" style="background: var(--success-gradient);">
                     <div class="d-flex justify-content-between align-items-start position-relative z-1">
                         <div>
                             <p class="stats-label mb-1" style="color: white;">Validation and IPE</p>
@@ -172,7 +172,7 @@
 
             <!-- modifications Card -->
             <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.3s;">
-                <div class="financial-card shadow-sm h-80 p-4" style="background: var(--info-gradient);">
+                <div class="financial-card shadow-sm h-100 p-4 rounded-3" style="background: var(--info-gradient);">
                     <div class="d-flex justify-content-between align-items-start position-relative z-1">
                         <div>
                             <p class="stats-label mb-1" style="color: white;">NIN & BVN Mod</p>
@@ -188,7 +188,7 @@
 
             <!-- Commission/Bonus card -->
             <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.4s;">
-                 <div class="financial-card shadow-sm h-80 p-4" style="background: var(--warning-gradient);">
+                 <div class="financial-card shadow-sm h-100 p-4 rounded-3" style="background: var(--warning-gradient);">
                     <div class="d-flex justify-content-between align-items-start position-relative z-1">
                         <div>
                             <p class="stats-label mb-1" style="color: white;">Commissions Earned</p>
@@ -205,26 +205,26 @@
         @endif
 
 
-        <div class="row g-3">
+        <div class="row g-0 g-md-4">
             <!-- Recent Transactions -->
-            <div class="col-xxl-8 col-xl-7">
-                <div class="card border-0 shadow-sm rounded-4 h-100">
-                    <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between flex-wrap border-bottom-0">
-                        <h5 class="mb-0 fw-bold text-dark">Recent Transactions</h5>
+            <div class="col-12 col-xl-7 mb-4 mt-2 mt-md-0 order-2 order-xl-1">
+                <div class="card shadow-lg border-0 rounded-0 rounded-md-4 h-100">
+                    <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap border-bottom-0 rounded-0 rounded-top-md-4">
+                        <h5 class="mb-0 fw-bold">Recent Transactions</h5>
                         <div class="d-flex align-items-center">
-                            <a href="{{ route('transactions.index') }}" class="btn btn-sm btn-light text-primary fw-medium">View All</a>
+                            <a href="{{ route('transactions.index') }}" class="btn btn-sm btn-light fw-medium">View All</a>
                         </div>
                     </div>
-                    <div class="card-body p-0">
+                    <div class="card-body p-0 scrollable-card-body">
                         <div class="table-responsive">  
-                            <table class="table table-hover table-nowrap mb-0 align-middle">
-                                <thead class="bg-light">
+                            <table class="table-premium table-hover mb-0">
+                                <thead>
                                     <tr>
-                                        <th class="text-secondary small fw-semibold ps-4">#</th>
-                                        <th class="text-secondary small fw-semibold">Ref ID</th>
-                                        <th class="text-secondary small fw-semibold">Type</th>
-                                        <th class="text-secondary small fw-semibold">Amount</th>
-                                        <th class="text-secondary small fw-semibold">Date</th>
+                                        <th class="ps-4">#</th>
+                                        <th>Ref ID</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -234,17 +234,16 @@
                                             <span class="text-muted small">{{ $loop->iteration }}</span>
                                         </td>
                                         <td>
-                                            <span class="fw-medium text-dark">#{{ substr($transaction->transaction_ref, 0, 10) }}...</span>
+                                            <span class="fw-medium">#{{ substr($transaction->transaction_ref, 0, 10) }}...</span>
                                         </td>
                                         <td>
                                             @php
-                                                $tColor = match($transaction->type) {
-                                                    'credit', 'manual_credit'           => 'success-subtle text-success',
-                                                    'bonus'                             => 'success-subtle text-success',
-                                                    'debit', 'manual_debit'             => 'danger-subtle text-danger',
-                                                    'refund'                            => 'info-subtle text-info',
-                                                    'chargeback'                        => 'warning-subtle text-warning',
-                                                    default                             => 'secondary-subtle text-secondary',
+                                                $tTypeClass = match($transaction->type) {
+                                                    'credit', 'manual_credit', 'bonus' => 'success',
+                                                    'debit', 'manual_debit'            => 'danger',
+                                                    'refund'                           => 'info',
+                                                    'chargeback'                        => 'warning',
+                                                    default                             => 'primary',
                                                 };
                                                 $tIcon  = in_array($transaction->type, ['credit', 'manual_credit', 'bonus', 'refund'])
                                                             ? 'arrow-down-left' : 'arrow-up-right';
@@ -254,19 +253,18 @@
                                                     default         => ucfirst($transaction->type),
                                                 };
                                             @endphp
-                                            <span class="badge bg-{{ $tColor }} border-0 rounded-pill px-2 py-1">
+                                            <span class="badge-subtle badge-subtle-{{ $tTypeClass }}">
                                                 <i class="ti ti-{{ $tIcon }} me-1"></i>
                                                 {{ $tLabel }}
                                             </span>
                                         </td>
-                                    
                                         <td>
-                                           <span class="fw-bold {{ in_array($transaction->type, ['credit', 'manual_credit', 'bonus', 'refund']) ? 'text-success' : 'text-danger' }}">
-                                              {{ in_array($transaction->type, ['credit', 'manual_credit', 'bonus', 'refund']) ? '+' : '-' }}₦{{ number_format($transaction->amount, 2) }}
+                                            <span class="fw-bold {{ in_array($transaction->type, ['credit', 'manual_credit', 'bonus', 'refund']) ? 'text-success' : 'text-danger' }}">
+                                                {{ in_array($transaction->type, ['credit', 'manual_credit', 'bonus', 'refund']) ? '+' : '-' }}₦{{ number_format($transaction->amount, 2) }}
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="text-muted small">{{ $transaction->created_at->format('d M Y, h:i A') }}</span>
+                                            <span class="text-muted small">{{ $transaction->created_at->format('d M, h:i A') }}</span>
                                         </td>
                                     </tr>
                                     @empty
@@ -288,8 +286,8 @@
             <!-- /Recent Transactions -->
 
             <!-- Transaction Statistics -->
-            <div class="col-xxl-4 col-xl-5">
-                <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="col-12 col-xl-5 mb-4 order-1 order-xl-2">
+                <div class="card shadow-lg border-0 rounded-0 rounded-md-4 h-100">
                     <div class="card-body pt-5">
                         <div class="position-relative mb-5 d-flex justify-content-center">
                             <div style="height: 180px; width: 180px;">
@@ -303,45 +301,53 @@
 
                         <div class="row g-2 mb-4 justify-content-center">
                             <div class="col-4">
-                                <div class="p-3 rounded-3 text-center h-100" style="background-color: #d1fae5;">
-                                    <h6 class="fw-bold text-dark mb-1">{{ $completedPercentage }}%</h6>
-                                    <span class="fs-10 text-muted text-uppercase fw-semibold" style="font-size: 10px;">SUCCESS</span>
+                                <div class="p-3 rounded-3 text-center h-100 bg-success bg-opacity-10 border border-success border-opacity-25">
+                                    <h6 class="fw-bold text-success mb-1">{{ $completedPercentage }}%</h6>
+                                    <span class="fs-10 text-success text-uppercase fw-semibold" style="font-size: 10px;">SUCCESS</span>
                                 </div>
                             </div>
                             <div class="col-4">
-                                <div class="p-3 rounded-3 text-center h-100" style="background-color: #fef3c7;">
-                                    <h6 class="fw-bold text-dark mb-1">{{ $pendingPercentage }}%</h6>
-                                    <span class="fs-10 text-muted text-uppercase fw-semibold" style="font-size: 10px;">PENDING</span>
+                                <div class="p-3 rounded-3 text-center h-100 bg-warning bg-opacity-10 border border-warning border-opacity-25">
+                                    <h6 class="fw-bold text-warning mb-1">{{ $pendingPercentage }}%</h6>
+                                    <span class="fs-10 text-warning text-uppercase fw-semibold" style="font-size: 10px;">PENDING</span>
                                 </div>
                             </div>
                             <div class="col-4">
-                                <div class="p-3 rounded-3 text-center h-100" style="background-color: #fee2e2;">
-                                    <h6 class="fw-bold text-dark mb-1">{{ $failedPercentage }}%</h6>
-                                    <span class="fs-10 text-muted text-uppercase fw-semibold" style="font-size: 10px;">FAILED</span>
+                                <div class="p-3 rounded-3 text-center h-100 bg-danger bg-opacity-10 border border-danger border-opacity-25">
+                                    <h6 class="fw-bold text-danger mb-1">{{ $failedPercentage }}%</h6>
+                                    <span class="fs-10 text-danger text-uppercase fw-semibold" style="font-size: 10px;">FAILED</span>
                                 </div>
                             </div>
                             <div class="col-4">
-                                <div class="p-3 rounded-3 text-center h-100" style="background-color: #e0f2fe;">
-                                    <h6 class="fw-bold text-dark mb-1">{{ $refundPercentage }}%</h6>
-                                    <span class="fs-10 text-muted text-uppercase fw-semibold" style="font-size: 10px;">REFUND</span>
+                                <div class="p-3 rounded-3 text-center h-100 bg-info bg-opacity-10 border border-info border-opacity-25">
+                                    <h6 class="fw-bold text-info mb-1">{{ $refundPercentage }}%</h6>
+                                    <span class="fs-10 text-info text-uppercase fw-semibold" style="font-size: 10px;">REFUND</span>
                                 </div>
                             </div>
                             <div class="col-4">
-                                <div class="p-3 rounded-3 text-center h-100" style="background-color: #f3e8ff;">
-                                    <h6 class="fw-bold text-dark mb-1">{{ $bonusPercentage }}%</h6>
-                                    <span class="fs-10 text-muted text-uppercase fw-semibold" style="font-size: 10px;">BONUS</span>
+                                <div class="p-3 rounded-3 text-center h-100" style="background-color: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.25);">
+                                    <h6 class="fw-bold mb-1" style="color: #a855f7;">{{ $bonusPercentage }}%</h6>
+                                    <span class="fs-10 text-uppercase fw-semibold" style="font-size: 10px; color: #a855f7;">BONUS</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="p-3 rounded-3 d-flex align-items-center justify-content-between" style="background-color: #fafafa;">
+                        <div class="p-3 rounded-3 d-flex align-items-center justify-content-between mb-4 border border-warning border-opacity-25" style="background-color: rgba(249, 115, 22, 0.05);">
                             <div>
-                                <h4 class="fw-bold mb-0" style="color: #f97316;">₦{{ number_format($totalTransactionAmount, 2) }}</h4>
+                                <h4 class="fw-bold mb-0 load-skeleton" style="color: #f97316;">₦{{ number_format($totalTransactionAmount, 2) }}</h4>
                                 <p class="fs-12 text-muted mb-0">Total Spent This Month</p>
                             </div>
                             <a href="{{ route('transactions.index') }}" class="btn btn-sm rounded-pill px-3 text-white" style="background-color: #f97316; border-color: #f97316;">
                                 View Report <i class="fas fa-arrow-right ms-1"></i>
                             </a>
+                        </div>
+
+                        <!-- Step 5: Service Distribution Chart -->
+                        <div class="border-top pt-4">
+                            <h6 class="fw-bold text-dark mb-2 small text-uppercase" style="font-size: 10px; letter-spacing: 0.05em;">Distribution per Service</h6>
+                            <div style="height: 140px;">
+                                <canvas id="serviceChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -487,6 +493,22 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Skeleton Simulation for Premium Feel
+            const skeletonTargets = document.querySelectorAll('.load-skeleton');
+            skeletonTargets.forEach(target => {
+                const finalContent = target.innerHTML;
+                const isSmall = target.classList.contains('small') || target.tagName === 'SMALL';
+                target.innerHTML = `<span class="skeleton-shimmer ${isSmall ? 'sk-text' : 'sk-title'}"></span>`;
+                
+                setTimeout(() => {
+                    target.innerHTML = finalContent;
+                    target.classList.remove('load-skeleton');
+                    target.style.opacity = 0;
+                    target.style.transition = 'opacity 0.5s ease';
+                    requestAnimationFrame(() => target.style.opacity = 1);
+                }, 800 + Math.random() * 400); // Randomize timing for natural feel
+            });
+
             // Initialize Transaction Chart
             var ctx = document.getElementById('transactionChart');
             if (ctx) {
@@ -498,25 +520,57 @@
                         datasets: [{
                             data: [{{ $completedTransactions }}, {{ $pendingTransactions }}, {{ $failedTransactions }}],
                             backgroundColor: [
-                                '#22c55e', // Success - Green (Tailwind green-500)
-                                '#fbbf24', // Pending - Amber (Tailwind amber-400)
-                                '#ef4444'  // Failed - Red (Tailwind red-500)
+                                '#22c55e', // Success
+                                '#fbbf24', // Pending
+                                '#ef4444'  // Failed
                             ],
                             borderWidth: 0,
                             hoverOffset: 4
                         }]
                     },
                     options: {
-                        cutout: '80%', // Thinner ring
+                        cutout: '80%',
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                enabled: true
-                            }
+                            legend: { display: false },
+                            tooltip: { enabled: true }
+                        }
+                    }
+                });
+            }
+
+            // Step 5: Initialize Service Distribution Chart
+            var ctxService = document.getElementById('serviceChart');
+            if (ctxService) {
+                ctxService = ctxService.getContext('2d');
+                var serviceChart = new Chart(ctxService, {
+                    type: 'bar',
+                    data: {
+                        labels: ['NIN', 'BVN', 'TIN', 'IPE', 'API'],
+                        datasets: [{
+                            label: 'Requests',
+                            data: [
+                                {{ $monthlyStats['nin'] ?? 0 }}, 
+                                {{ $monthlyStats['bvn'] ?? 0 }}, 
+                                {{ $monthlyStats['tin'] ?? 0 }}, 
+                                {{ $monthlyStats['ipe'] ?? 0 }},
+                                {{ $totalTransactions }}
+                            ],
+                            backgroundColor: '#0d6efd',
+                            borderRadius: 6,
+                            barThickness: 20
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, grid: { display: false }, ticks: { font: { size: 10 } } },
+                            x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+                        },
+                        plugins: {
+                            legend: { display: false }
                         }
                     }
                 });

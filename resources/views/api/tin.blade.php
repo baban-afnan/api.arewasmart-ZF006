@@ -21,11 +21,11 @@
                 </div>
                 <div class="col-auto">
                     <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill fw-medium fs-14 border border-primary border-opacity-10">
-                        <i class="ti ti-tag me-1"></i> Version 1.0.0
+                        <i class="ti ti-tag me-1 fs-15"></i> Version 1.0.0
                     </span>
                     <!-- Mobile Sidebar Toggle Button -->
                     <button class="btn btn-white shadow-sm d-lg-none ms-2 rounded-circle p-2" type="button" id="sidebarToggle" aria-label="Toggle Navigation">
-                        <i class="ti ti-menu-2 fs-15 text-primary"></i>
+                        <i class="ti ti-menu-2 text-primary fs-15"></i>
                     </button>
                 </div>
             </div>
@@ -38,38 +38,38 @@
                     <nav id="navbar-example3" class="h-100 flex-column align-items-stretch border-0">
                         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
                             <div class="card-body p-0">
-                                <div class="p-4 bg-soft-primary border-bottom border-light">
-                                    <h6 class="fw-bold text-primary mb-0 d-flex align-items-center">
-                                        <i class="ti ti-menu-deep me-2"></i> Navigation
+                                <div class="p-4 sidebar-nav-header">
+                                    <h6 class="fw-bold mb-0 d-flex align-items-center">
+                                        <i class="ti ti-menu-deep me-2 fs-15"></i> Navigation
                                     </h6>
                                 </div>
-                                <div class="list-group list-group-flush custom-sidebar-nav p-2">
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); return false;">
-                                        <i class="ti ti-info-circle me-2 fs-5 opacity-75"></i> Overview
+                                <div class="list-group list-group-flush custom-sidebar-nav p-3">
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); return false;">
+                                        <i class="ti ti-info-circle me-2 opacity-75 fs-15"></i> Overview
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); return false;">
-                                        <i class="ti ti-shield-lock me-2 fs-5 opacity-75"></i> Authentication
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); return false;">
+                                        <i class="ti ti-shield-lock me-2 opacity-75 fs-15"></i> Authentication
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); return false;">
-                                        <i class="ti ti-server me-2 fs-5 opacity-75"></i> Register Endpoint
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); return false;">
+                                        <i class="ti ti-server me-2 opacity-75 fs-15"></i> Register Endpoint
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#responses" onclick="switchTab('responses'); return false;">
-                                        <i class="ti ti-message-code me-2 fs-5 opacity-75"></i> Responses & Billing
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#responses" onclick="switchTab('responses'); return false;">
+                                        <i class="ti ti-message-code me-2 opacity-75 fs-15"></i> Responses & Billing
                                     </a>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Support Card -->
-                        <div class="card border-0 shadow-sm rounded-4 mt-4 bg-primary text-white overflow-hidden position-relative">
+                        <div class="card border-0 shadow-sm rounded-4 mt-4 support-card-custom text-white overflow-hidden position-relative">
                             <div class="position-absolute top-0 end-0 p-3 opacity-25">
-                                <i class="ti ti-headset fs-1"></i>
+                                <i class="ti ti-headset fs-15"></i>
                             </div>
                             <div class="card-body p-4 position-relative z-index-1">
                                 <h6 class="fw-bold text-white mb-2">Need Help?</h6>
                                 <p class="small text-white-50 mb-3">Our support team is available 24/7 to assist with integration.</p>
-                                <a href="https://wa.me/2347037343660" target="_blank" class="btn btn-white text-primary w-100 btn-sm rounded-pill fw-bold shadow-sm">
-                                    <i class="ti ti-brand-whatsapp me-1"></i> Contact Support
+                                <a href="https://wa.me/2347037343660" target="_blank" class="btn btn-support w-100 btn-sm rounded-pill fw-bold shadow-sm">
+                                    <i class="ti ti-brand-whatsapp me-1 fs-15"></i> Contact Support
                                 </a>
                             </div>
                         </div>
@@ -78,24 +78,24 @@
             </div>
 
             <!-- Mobile Offcanvas Sidebar -->
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
-                <div class="offcanvas-header bg-white border-bottom">
-                    <h5 class="offcanvas-title fw-bold text-primary" id="mobileSidebarLabel">Documentation</h5>
+            <div class="offcanvas offcanvas-start border-0 shadow-lg" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+                <div class="offcanvas-header sidebar-nav-header border-bottom">
+                    <h5 class="offcanvas-title fw-bold" id="mobileSidebarLabel">Documentation</h5>
                     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body p-0">
                     <div class="list-group list-group-flush custom-sidebar-nav p-3">
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); closeOffcanvas(); return false;">
-                            <i class="ti ti-info-circle me-2"></i> Overview
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); closeOffcanvas(); return false;">
+                            <i class="ti ti-info-circle me-2 fs-15"></i> Overview
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); closeOffcanvas(); return false;">
-                            <i class="ti ti-shield-lock me-2"></i> Authentication
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); closeOffcanvas(); return false;">
+                            <i class="ti ti-shield-lock me-2 fs-15"></i> Authentication
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); closeOffcanvas(); return false;">
-                            <i class="ti ti-server me-2"></i> Register Endpoint
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); closeOffcanvas(); return false;">
+                            <i class="ti ti-server me-2 fs-15"></i> Register Endpoint
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#responses" onclick="switchTab('responses'); closeOffcanvas(); return false;">
-                            <i class="ti ti-message-code me-2"></i> Responses & Billing
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#responses" onclick="switchTab('responses'); closeOffcanvas(); return false;">
+                            <i class="ti ti-message-code me-2 fs-15"></i> Responses & Billing
                         </a>
                     </div>
                 </div>
@@ -110,7 +110,7 @@
                         <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5" style="background: url('https://cdn.svgporn.com/logos/laravel.svg') no-repeat right bottom; background-size: 30%;"></div>
                         <div class="card-body p-5 position-relative">
                             <span class="badge bg-soft-primary text-primary mb-3">Introduction</span>
-                            <h2 class="fw-bold text-dark mb-3">Integration Guide</h2>
+                            <h2 class="fw-bold  mb-3">Integration Guide</h2>
                             <p class="text-muted lead mb-4">
                                 Register and Retrieve Tax Identification Numbers (TIN) for both Individuals (JTB) and Corporates (CAC) via our unified API.
                             </p>
@@ -118,17 +118,17 @@
                             <!-- Endpoint Box -->
                             <div class="bg-dark rounded-4 p-4 text-white shadow-lg position-relative overflow-hidden">
                                 <div class="position-absolute top-0 end-0 p-3 opacity-10">
-                                    <i class="ti ti-world-www fs-1"></i>
+                                    <i class="ti ti-world-www fs-15"></i>
                                 </div>
                                 <label class="text-white-50 small text-uppercase ls-1 fw-bold mb-2">Base URL</label>
                                 <div class="d-flex align-items-center bg-white bg-opacity-10 rounded-3 p-3 border border-white border-opacity-10">
                                     <code class="text-white fs-16 font-monospace flex-grow-1">{{ url('/') }}/api/v1</code>
                                     <button class="btn btn-sm btn-secondary rounded-pill px-3 ms-3" onclick="copyToClipboard('https://arewasmart.com.ng/api/v1')">
-                                        <i class="ti ti-copy me-1"></i> Copy
+                                        <i class="ti ti-copy me-1 fs-15"></i> Copy
                                     </button>
                                 </div>
                                 <div class="mt-3 d-flex align-items-center small text-warning">
-                                    <i class="ti ti-alert-triangle me-2"></i>
+                                    <i class="ti ti-alert-triangle me-2 fs-15"></i>
                                     <span>Ensure all requests are made via <strong>HTTPS</strong>.</span>
                                 </div>
                             </div>
@@ -137,10 +137,10 @@
 
                      <!-- Service Fee Information -->
                      <div class="alert alert-success border border-success border-opacity-25 rounded-3 d-flex align-items-start p-4 mb-4" role="alert">
-                        <i class="ti ti-wallet fs-4 me-3 mt-1 text-success"></i>
+                        <i class="ti ti-wallet me-3 mt-1 text-success fs-15"></i>
                         <div>
                             <h5 class="alert-heading fw-bold mb-2">Service Fee</h5>
-                            <p class="mb-0 text-dark">
+                            <p class="mb-0 ">
                                 You will be charged <span class="fw-bold">₦{{ number_format($verificationPrice ?? 0, 2) }}</span> per successful registration found.
                                 <span class="badge bg-success bg-opacity-10 text-success ms-1 border border-success border-opacity-25">{{ ucfirst($user->role ?? 'user') }} Rate</span>
                             </p>
@@ -149,7 +149,7 @@
 
                     <div class="text-end">
                          <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="auth">
-                            Next: Authentication <i class="ti ti-arrow-right ms-2"></i>
+                            Next: Authentication <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
@@ -158,7 +158,7 @@
                 <div class="docs-section d-none fade-in" id="auth">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">1</span>
                                 Authentication
                             </h4>
@@ -167,26 +167,26 @@
                             </p>
                             
                             <div class="mb-5">
-                                <label class="form-label fw-bold text-dark mb-2">Your Personal API Token</label>
+                                <label class="form-label fw-bold  mb-2">Your Personal API Token</label>
                                 <div class="input-group input-group-lg shadow-sm">
                                     <span class="input-group-text bg-white border-end-0 text-muted ps-3">
-                                        <i class="ti ti-key fs-4"></i>
+                                        <i class="ti ti-key fs-15"></i>
                                     </span>
                                     <input type="text" 
-                                           class="form-control font-monospace border-start-0 border-end-0 bg-white text-dark" 
+                                           class="form-control font-monospace border-start-0 border-end-0 bg-white " 
                                            value="{{ Auth::user()->api_token }}" 
                                            id="apiToken" 
                                            readonly>
                                     <button class="btn btn-primary px-4" type="button" onclick="copyToken()">
-                                        <span id="copyBtnText">Copy</span> <i class="ti ti-copy ms-2"></i>
+                                        <span id="copyBtnText">Copy</span> <i class="ti ti-copy ms-2 fs-15"></i>
                                     </button>
                                 </div>
-                                <div class="form-text mt-2"><i class="ti ti-lock me-1"></i> Keep this token secret. Do not share it publicly.</div>
+                                <div class="form-text mt-2"><i class="ti ti-lock me-1 fs-15"></i> Keep this token secret. Do not share it publicly.</div>
                             </div>
 
                             <div class="card bg-dark text-white border-0 shadow-lg overflow-hidden position-relative">
                                 <div class="card-header bg-transparent border-white border-opacity-10 py-3">
-                                     <h6 class="mb-0 fw-bold text-light"><i class="ti ti-code me-2"></i>Header Authorization Example</h6>
+                                     <h6 class="mb-0 fw-bold text-light"><i class="ti ti-code me-2 fs-15"></i>Header Authorization Example</h6>
                                 </div>
                                 <div class="card-body bg-black bg-opacity-25 font-monospace p-4">
                                     <div class="d-flex">
@@ -207,10 +207,10 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="overview">
-                            <i class="ti ti-arrow-left me-2"></i> Previous
+                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="endpoint">
-                            Next: Register Endpoint <i class="ti ti-arrow-right ms-2"></i>
+                            Next: Register Endpoint <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
@@ -219,7 +219,7 @@
                 <div class="docs-section d-none fade-in" id="endpoint">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">2</span>
                                 Register Endpoint
                             </h4>
@@ -239,7 +239,7 @@
                             </p>
                             
                             <!-- Tabs for Request Types -->
-                            <ul class="nav nav-pills nav-fill mb-4 p-1 rounded-3 bg-light" id="pills-tab" role="tablist">
+                            <ul class="nav nav-pills nav-fill mb-4 p-1 rounded-3 bg-theme-subtle border border-theme" id="pills-tab" role="tablist">
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link active rounded-3 small fw-bold py-2" id="pills-individual-tab" data-bs-toggle="pill" data-bs-target="#pills-individual" type="button" role="tab" aria-selected="true">Individual (JTB)</button>
                                 </li>
@@ -254,8 +254,8 @@
                                     <div class="row g-4">
                                         <div class="col-lg-6">
                                             <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                                <div class="card-header bg-light border-bottom py-3">
-                                                    <h6 class="fw-bold text-dark mb-0">Individual Payload (JTB)</h6>
+                                                <div class="card-header bg-theme-subtle border-bottom border-theme py-3">
+                                                    <h6 class="fw-bold text-main mb-0">Individual Payload (JTB)</h6>
                                                 </div>
                                                 <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace"><code>{
@@ -269,7 +269,7 @@
                                         </div>
                                          <div class="col-lg-6">
                                             <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                                <div class="card-header bg-light border-bottom py-3">
+                                                <div class="card-header bg-theme-subtle border-bottom border-theme py-3">
                                                     <h6 class="fw-bold text-success mb-0">Success Response</h6>
                                                 </div>
                                                 <div class="card-body p-0 bg-dark">
@@ -297,8 +297,8 @@
                                      <div class="row g-4">
                                         <div class="col-lg-6">
                                             <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                                <div class="card-header bg-light border-bottom py-3">
-                                                    <h6 class="fw-bold text-dark mb-0">Corporate Payload (CAC)</h6>
+                                                <div class="card-header bg-theme-subtle border-bottom border-theme py-3">
+                                                    <h6 class="fw-bold text-main mb-0">Corporate Payload (CAC)</h6>
                                                 </div>
                                                 <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace"><code>{
@@ -310,7 +310,7 @@
                                         </div>
                                          <div class="col-lg-6">
                                             <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                                <div class="card-header bg-light border-bottom py-3">
+                                                <div class="card-header bg-theme-subtle border-bottom border-theme py-3">
                                                     <h6 class="fw-bold text-success mb-0">Success Response</h6>
                                                 </div>
                                                 <div class="card-body p-0 bg-dark">
@@ -337,10 +337,10 @@
                     </div>
                      <div class="d-flex justify-content-between">
                         <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="auth">
-                            <i class="ti ti-arrow-left me-2"></i> Previous
+                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="responses">
-                            Next: Responses & Billing <i class="ti ti-arrow-right ms-2"></i>
+                            Next: Responses & Billing <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
@@ -349,17 +349,17 @@
                 <div class="docs-section d-none fade-in" id="responses">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">3</span>
                                 Responses & Billing
                             </h4>
 
                              <!-- Billing Policy Alert -->
                             <div class="alert alert-warning border border-warning border-opacity-25 rounded-3 d-flex align-items-start p-4 mb-4" role="alert">
-                                <i class="ti ti-info-circle fs-4 me-3 mt-1"></i>
+                                <i class="ti ti-info-circle me-3 mt-1 fs-15"></i>
                                 <div>
                                     <h5 class="alert-heading fw-bold mb-2">Billing Policy & Response Codes</h5>
-                                    <p class="mb-0 text-dark">
+                                    <p class="mb-0 ">
                                         Please note that some responses are chargeable even if the TIN is not found (Verification Attempted).
                                     </p>
                                 </div>
@@ -367,37 +367,37 @@
                             
                             <div class="table-responsive rounded-3 border">
                                 <table class="table table-hover align-middle mb-0">
-                                    <thead class="bg-light">
-                                        <tr class="text-uppercase small text-muted">
-                                            <th class="py-3 ps-4">Code</th>
-                                            <th class="py-3">Description</th>
-                                            <th class="py-3">Status</th>
-                                            <th class="py-3 text-end pe-4">Billing</th>
+                                    <thead class="bg-theme-subtle text-muted">
+                                        <tr class="text-uppercase small">
+                                            <th class="py-3 ps-4 border-theme">Code</th>
+                                            <th class="py-3 border-theme">Description</th>
+                                            <th class="py-3 border-theme">Status</th>
+                                            <th class="py-3 text-end pe-4 border-theme">Billing</th>
                                         </tr>
                                     </thead>
                                     <tbody class="border-top-0">
                                         <tr>
                                             <td class="ps-4"><code class="text-success fw-bold">111111</code></td>
-                                            <td class="text-dark fw-medium">Successful Verification</td>
+                                            <td class=" fw-medium">Successful Verification</td>
                                             <td><span class="badge bg-soft-success text-success">Success</span></td>
                                             <td class="text-end pe-4"><span class="badge bg-danger">Charged</span></td>
                                         </tr>
                                          <tr>
                                             <td class="ps-4"><code class="text-warning fw-bold">222222</code></td>
-                                            <td class="text-dark fw-medium">TIN does not exist</td>
+                                            <td class=" fw-medium">TIN does not exist</td>
                                             <td><span class="badge bg-soft-warning text-warning">Not Found</span></td>
                                             <td class="text-end pe-4"><span class="badge bg-danger">Charged</span></td>
                                         </tr>
                                          <tr>
                                             <td class="ps-4"><code class="text-secondary fw-bold">333333</code></td>
-                                            <td class="text-dark fw-medium">Parameter Error</td>
-                                            <td><span class="badge bg-light text-dark">Error</span></td>
+                                            <td class=" fw-medium">Parameter Error</td>
+                                            <td><span class="badge bg-light ">Error</span></td>
                                             <td class="text-end pe-4"><span class="badge bg-success">Free</span></td>
                                         </tr>
                                          <tr>
                                             <td class="ps-4"><code class="text-secondary fw-bold">444444</code></td>
-                                            <td class="text-dark fw-medium">System Error</td>
-                                            <td><span class="badge bg-light text-dark">Error</span></td>
+                                            <td class=" fw-medium">System Error</td>
+                                            <td><span class="badge bg-light ">Error</span></td>
                                             <td class="text-end pe-4"><span class="badge bg-success">Free</span></td>
                                         </tr>
                                     </tbody>
@@ -408,7 +408,7 @@
                     </div>
                      <div class="d-flex justify-content-between">
                         <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="endpoint">
-                            <i class="ti ti-arrow-left me-2"></i> Previous
+                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
                     </div>
                 </div>
@@ -496,7 +496,7 @@
                 const notif = document.createElement('div');
                 notif.className = 'alert alert-success position-fixed top-0 end-0 m-3 shadow-lg fw-bold';
                 notif.style.zIndex = '9999';
-                notif.innerHTML = '<i class="ti ti-check me-2"></i> Token copied!';
+                notif.innerHTML = '<i class="ti ti-check me-2 fs-15"></i> Token copied!';
                 document.body.appendChild(notif);
                 
                 setTimeout(() => {
@@ -511,7 +511,7 @@
                 const notif = document.createElement('div');
                 notif.className = 'alert alert-info position-fixed top-0 end-0 m-3 shadow-lg fw-bold';
                 notif.style.zIndex = '9999';
-                notif.innerHTML = '<i class="ti ti-check me-2"></i> Copied to clipboard!';
+                notif.innerHTML = '<i class="ti ti-check me-2 fs-15"></i> Copied to clipboard!';
                 document.body.appendChild(notif);
                 setTimeout(() => notif.remove(), 2000);
             });
@@ -523,9 +523,9 @@
         .docs-section.active-section { opacity: 1; }
         
         /* Sidebar Styling */
-        .custom-sidebar-nav .list-group-item { transition: all 0.2s ease; font-weight: 500; }
-        .custom-sidebar-nav .list-group-item:hover { background-color: rgba(var(--bs-primary-rgb), 0.05); color: var(--bs-primary) !important; transform: translateX(5px); }
-        .custom-sidebar-nav .list-group-item.active { background-color: rgba(var(--bs-primary-rgb), 0.1); color: var(--bs-primary); border-left: 3px solid var(--bs-primary); }
+        .custom-sidebar-nav .list-group-item { transition: all 0.2s ease; font-weight: 500; background: transparent !important; color: var(--text-main) !important; }
+        .custom-sidebar-nav .list-group-item:hover { background-color: rgba(var(--bs-primary-rgb), 0.05) !important; color: var(--bs-primary) !important; transform: translateX(5px); }
+        .custom-sidebar-nav .list-group-item.active { background-color: rgba(var(--bs-primary-rgb), 0.1) !important; color: var(--bs-primary) !important; border-left: 3px solid var(--bs-primary) !important; font-weight: bold; }
         
         /* Mobile Adjustments */
         @media (max-width: 991.98px) {

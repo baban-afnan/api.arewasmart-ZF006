@@ -21,11 +21,11 @@
                 </div>
                 <div class="col-auto">
                     <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill fw-medium fs-14 border border-primary border-opacity-10">
-                        <i class="ti ti-tag me-1"></i> Version 1.0.0
+                        <i class="ti ti-tag me-1 fs-15"></i> Version 1.0.0
                     </span>
                     <!-- Mobile Sidebar Toggle Button -->
                     <button class="btn btn-white shadow-sm d-lg-none ms-2 rounded-circle p-2" type="button" id="sidebarToggle" aria-label="Toggle Navigation">
-                        <i class="ti ti-menu-2 fs-15 text-primary"></i>
+                        <i class="ti ti-menu-2 text-primary fs-15"></i>
                     </button>
                 </div>
             </div>
@@ -38,41 +38,41 @@
                     <nav id="navbar-example3" class="h-100 flex-column align-items-stretch border-0">
                         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
                             <div class="card-body p-0">
-                                <div class="p-4 bg-soft-primary border-bottom border-light">
-                                    <h6 class="fw-bold text-primary mb-0 d-flex align-items-center">
-                                        <i class="ti ti-menu-deep me-2"></i> Navigation
+                                <div class="p-4 sidebar-nav-header">
+                                    <h6 class="fw-bold mb-0 d-flex align-items-center">
+                                        <i class="ti ti-menu-deep me-2 fs-15"></i> Navigation
                                     </h6>
                                 </div>
-                                <div class="list-group list-group-flush custom-sidebar-nav p-2">
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); return false;">
-                                        <i class="ti ti-info-circle me-2 fs-5 opacity-75"></i> Overview
+                                <div class="list-group list-group-flush custom-sidebar-nav p-3">
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); return false;">
+                                        <i class="ti ti-info-circle me-2 opacity-75 fs-15"></i> Overview
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#services" onclick="switchTab('services'); return false;">
-                                        <i class="ti ti-currency-naira me-2 fs-5 opacity-75"></i> Services & Pricing
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#services" onclick="switchTab('services'); return false;">
+                                        <i class="ti ti-currency-naira me-2 opacity-75 fs-15"></i> Services & Pricing
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); return false;">
-                                        <i class="ti ti-shield-lock me-2 fs-5 opacity-75"></i> Authentication
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); return false;">
+                                        <i class="ti ti-shield-lock me-2 opacity-75 fs-15"></i> Authentication
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#submit" onclick="switchTab('submit'); return false;">
-                                        <i class="ti ti-server me-2 fs-5 opacity-75"></i> Submit Request
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#submit" onclick="switchTab('submit'); return false;">
+                                        <i class="ti ti-server me-2 opacity-75 fs-15"></i> Submit Request
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#status" onclick="switchTab('status'); return false;">
-                                        <i class="ti ti-activity me-2 fs-5 opacity-75"></i> Check Status
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#status" onclick="switchTab('status'); return false;">
+                                        <i class="ti ti-activity me-2 opacity-75 fs-15"></i> Check Status
                                     </a>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Support Card -->
-                        <div class="card border-0 shadow-sm rounded-4 mt-4 bg-primary text-white overflow-hidden position-relative">
+                        <div class="card border-0 shadow-sm rounded-4 mt-4 support-card-custom text-white overflow-hidden position-relative">
                             <div class="position-absolute top-0 end-0 p-3 opacity-25">
-                                <i class="ti ti-headset fs-1"></i>
+                                <i class="ti ti-headset fs-15"></i>
                             </div>
                             <div class="card-body p-4 position-relative z-index-1">
                                 <h6 class="fw-bold text-white mb-2">Need Help?</h6>
                                 <p class="small text-white-50 mb-3">Our support team is available 24/7 to assist with integration.</p>
-                                <a href="https://chat.whatsapp.com/KoSu12yDO4A8b6AvYSkvIx" target="_blank" class="btn btn-white text-primary w-100 btn-sm rounded-pill fw-bold shadow-sm">
-                                    <i class="ti ti-brand-whatsapp me-1"></i> Contact Support
+                                <a href="https://chat.whatsapp.com/KoSu12yDO4A8b6AvYSkvIx" target="_blank" class="btn btn-support w-100 btn-sm rounded-pill fw-bold shadow-sm">
+                                    <i class="ti ti-brand-whatsapp me-1 fs-15"></i> Contact Support
                                 </a>
                             </div>
                         </div>
@@ -81,27 +81,27 @@
             </div>
 
             <!-- Mobile Offcanvas Sidebar -->
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
-                <div class="offcanvas-header bg-white border-bottom">
-                    <h5 class="offcanvas-title fw-bold text-primary" id="mobileSidebarLabel">Documentation</h5>
+            <div class="offcanvas offcanvas-start border-0 shadow-lg" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+                <div class="offcanvas-header sidebar-nav-header border-bottom">
+                    <h5 class="offcanvas-title fw-bold" id="mobileSidebarLabel">Documentation</h5>
                     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body p-0">
                     <div class="list-group list-group-flush custom-sidebar-nav p-3">
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); closeOffcanvas(); return false;">
-                            <i class="ti ti-info-circle me-2"></i> Overview
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); closeOffcanvas(); return false;">
+                            <i class="ti ti-info-circle me-2 fs-15"></i> Overview
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#services" onclick="switchTab('services'); closeOffcanvas(); return false;">
-                            <i class="ti ti-currency-naira me-2"></i> Services & Pricing
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#services" onclick="switchTab('services'); closeOffcanvas(); return false;">
+                            <i class="ti ti-currency-naira me-2 fs-15"></i> Services & Pricing
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); closeOffcanvas(); return false;">
-                            <i class="ti ti-shield-lock me-2"></i> Authentication
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); closeOffcanvas(); return false;">
+                            <i class="ti ti-shield-lock me-2 fs-15"></i> Authentication
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#submit" onclick="switchTab('submit'); closeOffcanvas(); return false;">
-                            <i class="ti ti-server me-2"></i> Submit Request
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#submit" onclick="switchTab('submit'); closeOffcanvas(); return false;">
+                            <i class="ti ti-server me-2 fs-15"></i> Submit Request
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#status" onclick="switchTab('status'); closeOffcanvas(); return false;">
-                            <i class="ti ti-activity me-2"></i> Check Status
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#status" onclick="switchTab('status'); closeOffcanvas(); return false;">
+                            <i class="ti ti-activity me-2 fs-15"></i> Check Status
                         </a>
                     </div>
                 </div>
@@ -116,7 +116,7 @@
                         <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5" style="background: url('https://cdn.svgporn.com/logos/laravel.svg') no-repeat right bottom; background-size: 30%;"></div>
                         <div class="card-body p-5 position-relative">
                             <span class="badge bg-soft-primary text-primary mb-3">Introduction</span>
-                            <h2 class="fw-bold text-dark mb-3">IPE Integration Guide</h2>
+                            <h2 class="fw-bold mb-3">IPE Integration Guide</h2>
                             <p class="text-muted lead mb-4">
                                 Seamlessly integrate our NIN IPE Clearance services into your application. 
                                 Our RESTful API ensures secure, fast, and reliable identity verification.
@@ -125,17 +125,17 @@
                             <!-- Endpoint Box -->
                             <div class="bg-dark rounded-4 p-4 text-white shadow-lg position-relative overflow-hidden">
                                 <div class="position-absolute top-0 end-0 p-3 opacity-10">
-                                    <i class="ti ti-world-www fs-1"></i>
+                                    <i class="ti ti-world-www fs-15"></i>
                                 </div>
                                 <label class="text-white-50 small text-uppercase ls-1 fw-bold mb-2">Base URL</label>
                                 <div class="d-flex align-items-center bg-white bg-opacity-10 rounded-3 p-3 border border-white border-opacity-10">
                                     <code class="text-white fs-16 font-monospace flex-grow-1">{{ url('/') }}/api/v1</code>
                                     <button class="btn btn-sm btn-secondary rounded-pill px-3 ms-3" onclick="copyToClipboard('{{ url('/') }}/api/v1')">
-                                        <i class="ti ti-copy me-1"></i> Copy
+                                        <i class="ti ti-copy me-1 fs-15"></i> Copy
                                     </button>
                                 </div>
                                 <div class="mt-3 d-flex align-items-center small text-warning">
-                                    <i class="ti ti-alert-triangle me-2"></i>
+                                    <i class="ti ti-alert-triangle me-2 fs-15"></i>
                                     <span>Ensure all requests are made via <strong>HTTPS</strong>.</span>
                                 </div>
                             </div>
@@ -143,7 +143,7 @@
                     </div>
                     <div class="text-end">
                          <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="services">
-                            Next: Services <i class="ti ti-arrow-right ms-2"></i>
+                            Next: Services <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
@@ -152,17 +152,17 @@
                 <div class="docs-section d-none fade-in" id="services">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">1</span>
                                 Services & Pricing
                             </h4>
                             
                             <!-- Refund Policy Alert -->
                             <div class="alert alert-warning border border-warning border-opacity-25 rounded-3 d-flex align-items-start p-4 mb-4" role="alert">
-                                <i class="ti ti-info-circle fs-4 me-3 mt-1"></i>
+                                <i class="ti ti-info-circle me-3 mt-1 fs-15"></i>
                                 <div>
                                     <h5 class="alert-heading fw-bold mb-2">Refund Policy</h5>
-                                    <p class="mb-0 text-dark">
+                                    <p class="mb-0">
                                         Please note our refund policy regarding failed transaction attempts:
                                     </p>
                                     <ul class="mb-0 mt-2">
@@ -175,9 +175,9 @@
                                 Use the corresponding <strong>Service Field Code</strong> when initializing a transaction.
                             </p>
                             
-                            <div class="table-responsive rounded-3 border">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="bg-light">
+                            <div class="table-responsive rounded-3 border custom-table-border">
+                                <table class="table table-premium table-hover align-middle mb-0">
+                                    <thead>
                                         <tr class="text-uppercase small text-muted">
                                             <th class="py-3 ps-4">Service Name</th>
                                             <th class="py-3">Type</th>
@@ -188,14 +188,14 @@
                                     <tbody class="border-top-0">
                                         @forelse($services as $service)
                                             <tr>
-                                                <td class="ps-4 fw-medium text-dark">{{ $service->name }}</td>
+                                                <td class="ps-4 fw-medium">{{ $service->name }}</td>
                                                 <td>
                                                     <span class="badge bg-teal-soft text-teal border border-teal border-opacity-10 py-2 px-3 rounded-pill">IPE Clearance</span>
                                                 </td>
                                                 <td>
-                                                    <code class="bg-light text-primary border rounded px-2 py-1 fw-bold fs-14">{{ $service->code }}</code>
+                                                    <code class="text-primary border rounded px-2 py-1 fw-bold fs-14">{{ $service->code }}</code>
                                                 </td>
-                                                <td class="text-end pe-4 fw-bold text-dark">₦{{ number_format($service->price, 2) }}</td>
+                                                <td class="text-end pe-4 fw-bold">₦{{ number_format($service->price, 2) }}</td>
                                             </tr>
                                         @empty
                                             <tr>
@@ -209,10 +209,10 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="overview">
-                            <i class="ti ti-arrow-left me-2"></i> Previous
+                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="auth">
-                            Next: Authentication <i class="ti ti-arrow-right ms-2"></i>
+                            Next: Authentication <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
@@ -221,7 +221,7 @@
                 <div class="docs-section d-none fade-in" id="auth">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">2</span>
                                 Authentication
                             </h4>
@@ -230,26 +230,26 @@
                             </p>
                             
                             <div class="mb-5">
-                                <label class="form-label fw-bold text-dark mb-2">Your Personal API Token</label>
+                                <label class="form-label fw-bold mb-2">Your Personal API Token</label>
                                 <div class="input-group input-group-lg shadow-sm">
-                                    <span class="input-group-text bg-white border-end-0 text-muted ps-3">
-                                        <i class="ti ti-key fs-4"></i>
+                                    <span class="input-group-text border-end-0 text-muted ps-3">
+                                        <i class="ti ti-key fs-15"></i>
                                     </span>
                                     <input type="text" 
-                                           class="form-control font-monospace border-start-0 border-end-0 bg-white text-dark" 
+                                           class="form-control font-monospace border-start-0 border-end-0" 
                                            value="{{ Auth::user()->api_token }}" 
                                            id="apiToken" 
                                            readonly>
                                     <button class="btn btn-primary px-4" type="button" onclick="copyToken()">
-                                        <span id="copyBtnText">Copy</span> <i class="ti ti-copy ms-2"></i>
+                                        <span id="copyBtnText">Copy</span> <i class="ti ti-copy ms-2 fs-15"></i>
                                     </button>
                                 </div>
-                                <div class="form-text mt-2"><i class="ti ti-lock me-1"></i> Keep this token secret. Do not share it publicly.</div>
+                                <div class="form-text mt-2"><i class="ti ti-lock me-1 fs-15"></i> Keep this token secret. Do not share it publicly.</div>
                             </div>
 
                             <div class="card bg-dark text-white border-0 shadow-lg overflow-hidden position-relative">
                                 <div class="card-header bg-transparent border-white border-opacity-10 py-3">
-                                     <h6 class="mb-0 fw-bold text-light"><i class="ti ti-code me-2"></i>Header Authorization Example</h6>
+                                     <h6 class="mb-0 fw-bold text-light"><i class="ti ti-code me-2 fs-15"></i>Header Authorization Example</h6>
                                 </div>
                                 <div class="card-body bg-black bg-opacity-25 font-monospace p-4">
                                     <div class="d-flex">
@@ -270,10 +270,10 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="services">
-                            <i class="ti ti-arrow-left me-2"></i> Previous
+                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="submit">
-                            Next: Submit Request <i class="ti ti-arrow-right ms-2"></i>
+                            Next: Submit Request <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
@@ -282,7 +282,7 @@
                 <div class="docs-section d-none fade-in" id="submit">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">3</span>
                                 Submit a Request
                             </h4>
@@ -301,8 +301,8 @@
                                 <!-- Request Body -->
                                 <div class="col-lg-6">
                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header bg-light border-bottom py-3">
-                                            <h6 class="fw-bold text-dark mb-0">Request Payload</h6>
+                                        <div class="card-header border-bottom py-3">
+                                            <h6 class="fw-bold mb-0">Request Payload</h6>
                                         </div>
                                         <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace"><code>{
@@ -318,7 +318,7 @@
                                 <!-- Success Response -->
                                 <div class="col-lg-6">
                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header bg-light border-bottom py-3">
+                                        <div class="card-header border-bottom py-3">
                                             <h6 class="fw-bold text-success mb-0">Success Response (200 OK)</h6>
                                         </div>
                                         <div class="card-body p-0 bg-dark">
@@ -340,10 +340,10 @@
                     </div>
                      <div class="d-flex justify-content-between">
                         <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="auth">
-                            <i class="ti ti-arrow-left me-2"></i> Previous
+                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="status">
-                            Next: Check Status <i class="ti ti-arrow-right ms-2"></i>
+                            Next: Check Status <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
@@ -352,7 +352,7 @@
                 <div class="docs-section d-none fade-in" id="status">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">4</span>
                                 Check Transaction Status
                             </h4>
@@ -374,13 +374,13 @@
                             <div class="row g-4">
                                 <div class="col-lg-6">
                                      <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header bg-light border-bottom py-3">
-                                            <h6 class="fw-bold text-dark mb-0">Query Parameters</h6>
+                                        <div class="card-header border-bottom py-3">
+                                            <h6 class="fw-bold mb-0">Query Parameters</h6>
                                         </div>
-                                        <div class="card-body p-4 bg-white">
-                                            <ul class="list-unstyled mb-0 font-monospace text-dark">
+                                        <div class="card-body p-4">
+                                            <ul class="list-unstyled mb-0 font-monospace">
                                                 <li>
-                                                    <span class="badge bg-light text-dark border me-2">REQUIRED</span>
+                                                    <span class="badge bg-light  border me-2">REQUIRED</span>
                                                     <strong>?tracking_id=</strong><span class="text-muted">IPE-123456</span>
                                                 </li>
                                             </ul>
@@ -389,7 +389,7 @@
                                 </div>
                                 <div class="col-lg-6">
                                      <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header bg-light border-bottom py-3">
+                                        <div class="card-header border-bottom py-3">
                                             <h6 class="fw-bold text-success mb-0">Response</h6>
                                         </div>
                                         <div class="card-body p-0 bg-dark">
@@ -409,7 +409,7 @@
                     </div>
                      <div class="d-flex justify-content-between">
                         <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="submit">
-                            <i class="ti ti-arrow-left me-2"></i> Previous
+                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
                     </div>
                 </div>
@@ -494,7 +494,7 @@
                 const notif = document.createElement('div');
                 notif.className = 'alert alert-success position-fixed top-0 end-0 m-3 shadow-lg fw-bold';
                 notif.style.zIndex = '9999';
-                notif.innerHTML = '<i class="ti ti-check me-2"></i> Token copied!';
+                notif.innerHTML = '<i class="ti ti-check me-2 fs-15"></i> Token copied!';
                 document.body.appendChild(notif);
                 
                 setTimeout(() => {
@@ -509,32 +509,85 @@
                 const notif = document.createElement('div');
                 notif.className = 'alert alert-info position-fixed top-0 end-0 m-3 shadow-lg fw-bold';
                 notif.style.zIndex = '9999';
-                notif.innerHTML = '<i class="ti ti-check me-2"></i> Copied to clipboard!';
+                notif.innerHTML = '<i class="ti ti-check me-2 fs-15"></i> Copied to clipboard!';
                 document.body.appendChild(notif);
                 setTimeout(() => notif.remove(), 2000);
             });
         }
     </script>
     <style>
-        /* Smooth Fade Transitions */
         .docs-section { opacity: 0; transition: opacity 0.3s ease-in-out; }
         .docs-section.active-section { opacity: 1; }
         
-        /* Sidebar Styling */
-        .custom-sidebar-nav .list-group-item { transition: all 0.2s ease; font-weight: 500; }
-        .custom-sidebar-nav .list-group-item:hover { background-color: rgba(var(--bs-primary-rgb), 0.05); color: var(--bs-primary) !important; transform: translateX(5px); }
-        .custom-sidebar-nav .list-group-item.active { background-color: rgba(var(--bs-primary-rgb), 0.1); color: var(--bs-primary); border-left: 3px solid var(--bs-primary); }
-        
+        /* New Premium Sidebar Header */
+        .sidebar-nav-header { 
+            background-color: #FFF5F2 !important; 
+            border-bottom: 1px solid #f8e1da;
+        }
+        .dark-mode .sidebar-nav-header {
+            background-color: rgba(229, 113, 94, 0.1) !important;
+            border-bottom: 1px solid rgba(229, 113, 94, 0.2);
+        }
+        .sidebar-nav-header h6, .sidebar-nav-header h5 { color: #e5715e !important; }
+
+        /* Sidebar Navigation Items as Individual Cards */
+        .custom-sidebar-nav .list-group-item { 
+            transition: all 0.2s ease; 
+            font-weight: 500; 
+            background: var(--bg-card, #ffffff) !important; 
+            color: var(--text-muted, #64748b) !important; 
+            border: 1px solid var(--border-color, #eef2f6) !important;
+            border-radius: 12px !important;
+            margin-bottom: 10px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .custom-sidebar-nav .list-group-item:hover { 
+            background-color: var(--bg-body, #f8fafc) !important; 
+            color: var(--bs-primary) !important; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .custom-sidebar-nav .list-group-item.active { 
+            background-color: #1A2B4B !important; 
+            color: #ffffff !important; 
+            border-color: #1A2B4B !important;
+            box-shadow: 0 4px 12px rgba(26, 43, 75, 0.2);
+            font-weight: bold; 
+        }
+        .dark-mode .custom-sidebar-nav .list-group-item.active {
+            background-color: var(--bs-primary) !important;
+            border-color: var(--bs-primary) !important;
+        }
+
+        /* Support Card Redesign */
+        .support-card-custom { background-color: #1e2532 !important; }
+        .support-card-custom .btn-support { 
+            background-color: #ffffff !important; 
+            color: #3b82f6 !important; 
+            font-weight: 700;
+        }
+
+        /* Dark mode sidebar items */
+        .dark-mode .custom-sidebar-nav .list-group-item {
+            background-color: #1e2532 !important;
+            border-color: #2b3346 !important;
+            color: #94a3b8 !important;
+        }
+        .dark-mode .custom-sidebar-nav .list-group-item.active {
+            background-color: #0d6efd !important;
+            border-color: #0d6efd !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+        }
+        .dark-mode .custom-table-border { border-color: rgba(255,255,255,0.1) !important; }
+
         /* Badges */
         .bg-indigo-soft { background-color: rgba(102, 16, 242, 0.1); }
         .text-indigo { color: #6610f2; }
         .bg-teal-soft { background-color: rgba(32, 201, 151, 0.1); }
         .text-teal { color: #20c997; }
 
-        /* Mobile Adjustments */
-        @media (max-width: 991.98px) {
-            .sticky-top { position: relative !important; top: 0 !important; z-index: 1 !important; }
-        }
+        @media (max-width: 991.98px) { .sticky-top { position: relative !important; top: 0 !important; z-index: 1 !important; } }
     </style>
     @endpush
 </x-app-layout>

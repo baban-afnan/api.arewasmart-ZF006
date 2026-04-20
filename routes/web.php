@@ -103,8 +103,8 @@ Route::group(['prefix' => 'developer', 'as' => 'developer.', 'middleware' => ['a
     // SME Data API Docs
     Route::get('/sme-data', [\App\Http\Controllers\Billpayment\SmeDataController::class, 'index'])->name('sme-data.docs');
 
-
-
+    // AI Assistant Route
+    Route::post('/ai-chat', [\App\Http\Controllers\Api\DocumentationAiController::class, 'chat'])->name('ai.chat');
 });
 
 // Authenticated API Routes (Web-based auth for docs/usage or just API endpoints)
