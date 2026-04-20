@@ -166,15 +166,14 @@
                             <p class="text-muted mb-4">
                                 Security is paramount. All requests must be authenticated using your unique API Bearer Token.
                             </p>
-                            
-                            <div class="mb-5">
-                                <label class="form-label fw-bold  mb-2">Your Personal API Token</label>
+                                                        <div class="mb-5">
+                                <label class="form-label fw-bold mb-2">Your Personal API Token</label>
                                 <div class="input-group input-group-lg shadow-sm">
-                                    <span class="input-group-text bg-white border-end-0 text-muted ps-3">
+                                    <span class="input-group-text border-end-0 text-muted ps-3">
                                         <i class="ti ti-key fs-15"></i>
                                     </span>
                                     <input type="text" 
-                                           class="form-control font-monospace border-start-0 border-end-0 bg-white " 
+                                           class="form-control font-monospace border-start-0 border-end-0" 
                                            value="{{ Auth::user()->api_token }}" 
                                            id="apiToken" 
                                            readonly>
@@ -309,14 +308,14 @@
                                 </div>
                             </div>
                             
-                            <div class="table-responsive rounded-3 border">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="bg-theme-subtle">
+                            <div class="table-responsive rounded-3 border custom-table-border">
+                                <table class="table table-premium table-hover align-middle mb-0">
+                                    <thead>
                                         <tr class="text-uppercase small text-muted">
-                                            <th class="py-3 ps-4 border-theme">Code</th>
-                                            <th class="py-3 border-theme">Description</th>
-                                            <th class="py-3 border-theme">Status</th>
-                                            <th class="py-3 text-end pe-4 border-theme">Billing</th>
+                                            <th class="py-3 ps-4">Code</th>
+                                            <th class="py-3">Description</th>
+                                            <th class="py-3">Status</th>
+                                            <th class="py-3 text-end pe-4">Billing</th>
                                         </tr>
                                     </thead>
                                     <tbody class="border-top-0">
@@ -464,45 +463,62 @@
         .docs-section { opacity: 0; transition: opacity 0.3s ease-in-out; }
         .docs-section.active-section { opacity: 1; }
         
-        /* New Premium Sidebar Header */
+        /* Sidebar Header */
         .sidebar-nav-header { 
-            background-color: #FFF5F2 !important; 
-            border-bottom: 1px solid #f8e1da;
+            background-color: #f0f4ff !important; 
+            border-bottom: 1px solid #dce6f9;
         }
-        .sidebar-nav-header h6, .sidebar-nav-header h5 { color: #e5715e !important; }
+        .sidebar-nav-header h6, .sidebar-nav-header h5 { color: #0d6efd !important; }
+        .dark-mode .sidebar-nav-header {
+            background-color: rgba(13, 110, 253, 0.08) !important;
+            border-bottom: 1px solid rgba(13, 110, 253, 0.15) !important;
+        }
+        .dark-mode .sidebar-nav-header h6, .dark-mode .sidebar-nav-header h5 { color: #60a5fa !important; }
 
-        /* Sidebar Navigation Items as Individual Cards */
+        /* Sidebar Navigation Items */
         .custom-sidebar-nav .list-group-item { 
             transition: all 0.2s ease; 
             font-weight: 500; 
-            background: #ffffff !important; 
-            color: #64748b !important; 
-            border: 1px solid #eef2f6 !important;
+            background: var(--bg-card, #ffffff) !important; 
+            color: var(--text-muted, #64748b) !important; 
+            border: 1px solid var(--border-color, #eef2f6) !important;
             border-radius: 12px !important;
             margin-bottom: 10px !important;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
         .custom-sidebar-nav .list-group-item:hover { 
-            background-color: #f8fafc !important; 
-            color: var(--bs-primary) !important; 
+            background-color: var(--bg-body, #f8fafc) !important; 
+            color: #0d6efd !important; 
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
         .custom-sidebar-nav .list-group-item.active { 
             background-color: #1A2B4B !important; 
-            color: #3b82f6 !important; 
+            color: #ffffff !important; 
             border-color: #1A2B4B !important;
             box-shadow: 0 4px 12px rgba(26, 43, 75, 0.2);
             font-weight: bold; 
         }
+        .dark-mode .custom-sidebar-nav .list-group-item {
+            background-color: #1e2532 !important;
+            border-color: #2b3346 !important;
+            color: #94a3b8 !important;
+        }
+        .dark-mode .custom-sidebar-nav .list-group-item.active {
+            background-color: #0d6efd !important;
+            border-color: #0d6efd !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+        }
 
-        /* Support Card Redesign */
-        .support-card-custom { background-color: #0f172a !important; }
+        /* Support Card */
+        .support-card-custom { background-color: #1e2532 !important; }
         .support-card-custom .btn-support { 
             background-color: #ffffff !important; 
             color: #3b82f6 !important; 
             font-weight: 700;
         }
+        .dark-mode .custom-table-border { border-color: rgba(255,255,255,0.1) !important; }
         
         /* Mobile Adjustments */
         @media (max-width: 991.98px) {

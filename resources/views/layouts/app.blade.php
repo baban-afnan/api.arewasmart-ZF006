@@ -120,6 +120,26 @@
         color: var(--text-main) !important;
     }
 
+    /* Profile Dropdown Dark Mode */
+    .dark-mode .profile-dropdown .dropdown-menu {
+        background-color: var(--bg-card) !important;
+        border-color: var(--border-color) !important;
+    }
+    .dark-mode .profile-dropdown .dropdown-item {
+        color: var(--text-main) !important;
+    }
+    .dark-mode .profile-dropdown .dropdown-item:hover,
+    .dark-mode .profile-dropdown .dropdown-item:focus {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        color: var(--text-main) !important;
+    }
+    .dark-mode .profile-dropdown .dropdown-item.text-danger {
+        color: #f87171 !important;
+    }
+    .dark-mode .profile-dropdown .dropdown-item.text-danger:hover {
+        background-color: rgba(239, 68, 68, 0.08) !important;
+    }
+
     .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode h5, .dark-mode h6,
     .dark-mode .text-dark, .dark-mode .fw-bold {
         color: var(--text-main) !important;

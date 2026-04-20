@@ -6,9 +6,6 @@
             <a href="{{ route('dashboard') }}" class="logo">
                 <img src="{{ asset('assets/img/logo/logo001.png') }}" alt="Logo" width="30" height="40">
             </a>
-            <a href="{{ route('dashboard') }}" class="dark-logo">
-                <img src="{{ asset('assets/img/logo/logo001.png') }}" alt="Logo" width="30" height="40">
-            </a>
         </div>
 
         <!-- Mobile Menu Button -->
@@ -215,39 +212,54 @@
                             </span>
                         </a>
                         <div class="dropdown-menu shadow-none">
-                            <div class="card mb-0">
-                                <div class="card-header">
+                            <div class="card mb-0 border-0">
+                                <div class="card-header border-bottom border-opacity-10 py-3">
                                     <div class="d-flex align-items-center">
-                                        <span class="avatar avatar-lg me-2 avatar-rounded">
-                                            <img src="{{ Auth::user()->photo ? asset(Auth::user()->photo) : asset('assets/img/profiles/avatar-12.jpg') }}" alt="img">
+                                        <span class="avatar avatar-lg me-3 avatar-rounded flex-shrink-0">
+                                            <img src="{{ Auth::user()->photo ? asset(Auth::user()->photo) : asset('assets/img/profiles/avatar-12.jpg') }}" alt="img" class="rounded-circle">
                                         </span>
-                                        <div>
-                                            <h5 class="mb-0">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h5>
-                                            <p class="fs-12 fw-medium mb-0">
+                                        <div class="overflow-hidden">
+                                            <h6 class="mb-0 fw-bold text-body text-truncate">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h6>
+                                            <p class="fs-12 fw-medium mb-0 text-muted text-truncate">
                                                 {{ Auth::user()->email }}
                                             </p>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-body">
-                                    <a class="dropdown-item d-inline-flex align-items-center p-0 py-2" href="{{route('profile.edit')}}">
-                                        <i class="ti ti-user-circle me-1"></i>My Profile
+                                <div class="card-body py-2 px-3">
+                                    <a class="dropdown-item d-flex align-items-center rounded-2 px-2 py-2 text-body" href="{{ route('profile.edit') }}">
+                                        <span class="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle me-2" style="width:30px;height:30px;">
+                                            <i class="ti ti-user-circle fs-15"></i>
+                                        </span>
+                                        My Profile
                                     </a>
-                                                <a class="dropdown-item d-inline-flex align-items-center p-0 py-2" href="{{route('profile.edit')}}">
-                                        <i class="ti ti-settings me-1"></i>Settings
+                                    <a class="dropdown-item d-flex align-items-center rounded-2 px-2 py-2 text-body" href="{{ route('profile.edit') }}">
+                                        <span class="d-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle me-2" style="width:30px;height:30px;">
+                                            <i class="ti ti-settings fs-15"></i>
+                                        </span>
+                                        Settings
                                     </a>
-                                    <a class="dropdown-item d-inline-flex align-items-center p-0 py-2" href="{{route('profile.edit')}}">
-                                        <i class="ti ti-circle-arrow-up me-1"></i>My Account
+                                    <a class="dropdown-item d-flex align-items-center rounded-2 px-2 py-2 text-body" href="{{ route('profile.edit') }}">
+                                        <span class="d-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info rounded-circle me-2" style="width:30px;height:30px;">
+                                            <i class="ti ti-circle-arrow-up fs-15"></i>
+                                        </span>
+                                        My Account
                                     </a>
-                                    <a class="dropdown-item d-inline-flex align-items-center p-0 py-2" href="#">
-                                        <i class="ti ti-question-mark me-1"></i>Knowledge Base
+                                    <a class="dropdown-item d-flex align-items-center rounded-2 px-2 py-2 text-body" href="#">
+                                        <span class="d-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning rounded-circle me-2" style="width:30px;height:30px;">
+                                            <i class="ti ti-question-mark fs-15"></i>
+                                        </span>
+                                        Knowledge Base
                                     </a>
                                 </div>
-                                <div class="card-footer">
+                                <div class="card-footer border-top border-opacity-10 py-2 px-3">
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <a class="dropdown-item d-inline-flex align-items-center p-0 py-2" href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">
-                                            <i class="ti ti-login me-2"></i>Logout
+                                        <a class="dropdown-item d-flex align-items-center rounded-2 px-2 py-2 text-danger" href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">
+                                            <span class="d-flex align-items-center justify-content-center bg-danger bg-opacity-10 rounded-circle me-2" style="width:30px;height:30px;">
+                                                <i class="ti ti-logout fs-15"></i>
+                                            </span>
+                                            Logout
                                         </a>
                                     </form>
                                 </div>
