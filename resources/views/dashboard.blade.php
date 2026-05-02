@@ -215,7 +215,7 @@
                             <a href="{{ route('transactions.index') }}" class="btn btn-sm btn-light fw-medium">View All</a>
                         </div>
                     </div>
-                    <div class="card-body p-0 scrollable-card-body">
+                    <div class="card-body p-0">
                         <div class="table-responsive">  
                             <table class="table-premium table-hover mb-0">
                                 <thead>
@@ -735,7 +735,7 @@
         
         /* Ensure tables are responsive */
         .table-responsive {
-            min-height: 400px;
+            min-height: auto;
         }
         
         /* Custom Scrollbar for Modal */
