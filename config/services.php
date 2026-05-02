@@ -40,4 +40,17 @@ return [
         'base_url' => env('DEEPSEEK_BASE_URL', 'https://api.deepseek.com'),
     ],
 
+    'vtpass' => [
+        'api_key'       => env('API_KEY'),
+        'secret_key'    => env('SECRET_KEY'),
+        'base_url'      => env('VTPASS_BASE_URL', 'https://sandbox.vtpass.com/api'),
+        'variation_url' => env('VARIATION_URL', 'https://sandbox.vtpass.com/api/service-variations?serviceID='),
+        'payment_url'   => env('MAKE_PAYMENT', 'https://sandbox.vtpass.com/api/pay'),
+    ],
+
+    'datastation' => [
+        'token' => env('AUTH_TOKEN'),
+        'epin_endpoint' => env('DATASTATION_EPIN_ENDPOINT', 'https://datastationapi.com/api/epin/'),
+    ],
+
 ];

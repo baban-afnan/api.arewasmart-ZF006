@@ -62,15 +62,15 @@
                         </div>
 
                         <!-- Support Card -->
-                        <div class="card border-0 shadow-sm rounded-4 mt-4 support-card-custom text-white overflow-hidden position-relative">
+                        <div class="card border-0 shadow-lg rounded-4 mt-4 support-card-custom text-white overflow-hidden position-relative">
                             <div class="position-absolute top-0 end-0 p-3 opacity-25">
-                                <i class="ti ti-headset fs-15"></i>
+                                <i class="ti ti-headset fs-3"></i>
                             </div>
                             <div class="card-body p-4 position-relative z-index-1">
-                                <h6 class="fw-bold text-white mb-2">Need Help?</h6>
-                                <p class="small text-white-50 mb-3">Our support team is available 24/7 to assist with integration.</p>
-                                <a href="https://wa.me/2347037343660" target="_blank" class="btn btn-support w-100 btn-sm rounded-pill fw-bold shadow-sm">
-                                    <i class="ti ti-brand-whatsapp me-1 fs-15"></i> Contact Support
+                                <h5 class="fw-bold text-white mb-2">Need Help?</h5>
+                                <p class="small text-white-50 mb-3">Our support team is available 24/7.</p>
+                                <a href="https://wa.me/2347037343660" target="_blank" class="btn btn-support w-100 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center py-2">
+                                    <i class="ti ti-brand-whatsapp me-2 fs-5"></i> Contact Support
                                 </a>
                             </div>
                         </div>
@@ -465,15 +465,15 @@
         
         /* Sidebar Header */
         .sidebar-nav-header { 
-            background-color: #f0f4ff !important; 
-            border-bottom: 1px solid #dce6f9;
+            background-color: #fef0e9 !important; 
+            border-bottom: 1px solid #fee0d2;
         }
-        .sidebar-nav-header h6, .sidebar-nav-header h5 { color: #0d6efd !important; }
+        .sidebar-nav-header h6, .sidebar-nav-header h5 { color: #f26922 !important; }
         .dark-mode .sidebar-nav-header {
-            background-color: rgba(13, 110, 253, 0.08) !important;
-            border-bottom: 1px solid rgba(13, 110, 253, 0.15) !important;
+            background-color: rgba(242, 105, 34, 0.08) !important;
+            border-bottom: 1px solid rgba(242, 105, 34, 0.15) !important;
         }
-        .dark-mode .sidebar-nav-header h6, .dark-mode .sidebar-nav-header h5 { color: #60a5fa !important; }
+        .dark-mode .sidebar-nav-header h6, .dark-mode .sidebar-nav-header h5 { color: #ff9b6a !important; }
 
         /* Sidebar Navigation Items */
         .custom-sidebar-nav .list-group-item { 
@@ -488,7 +488,7 @@
         }
         .custom-sidebar-nav .list-group-item:hover { 
             background-color: var(--bg-body, #f8fafc) !important; 
-            color: #0d6efd !important; 
+            color: #f26922 !important; 
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
@@ -505,18 +505,30 @@
             color: #94a3b8 !important;
         }
         .dark-mode .custom-sidebar-nav .list-group-item.active {
-            background-color: #0d6efd !important;
-            border-color: #0d6efd !important;
+            background-color: #f26922 !important;
+            border-color: #f26922 !important;
             color: #ffffff !important;
-            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+            box-shadow: 0 4px 12px rgba(242, 105, 34, 0.4);
         }
 
         /* Support Card */
-        .support-card-custom { background-color: #1e2532 !important; }
+        .support-card-custom { 
+            background-color: #f26922 !important; 
+            border-radius: 20px !important;
+        }
         .support-card-custom .btn-support { 
             background-color: #ffffff !important; 
-            color: #3b82f6 !important; 
+            color: #f26922 !important; 
             font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .support-card-custom .btn-support:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            background-color: #f8fafc !important;
+        }
+        .dark-mode .support-card-custom {
+            background-color: #d95d1e !important;
         }
         .dark-mode .custom-table-border { border-color: rgba(255,255,255,0.1) !important; }
         

@@ -50,8 +50,10 @@ class RegisteredUserController extends Controller
             $user = User::create([
                 'email'         => $request->email,
                 'password'      => Hash::make($request->password),
-                'role'          => 'api',
+                'role'          => 'personal',
                 'referral_code' => $referralDetails['myOwnCode'],
+                'referred_by'   => $referralDetails['referral_id'],
+                'limit'         => 20000,
             ]);
 
             // Create wallet

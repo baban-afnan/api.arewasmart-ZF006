@@ -85,6 +85,9 @@ Route::group(['prefix' => 'developer', 'as' => 'developer.', 'middleware' => ['a
     // BVN CRM Docs
     Route::get('/bvn-crm', [\App\Http\Controllers\Agency\BvnCrmController::class, 'index'])->name('bvn.crm.docs');
 
+    // BVN Phone Search Docs
+    Route::get('/bvn-phone-search', [\App\Http\Controllers\Agency\BvnPhoneSearchController::class, 'index'])->name('bvn.phone_search.docs');
+
     // Airtime API Docs
     Route::get('/airtime', [\App\Http\Controllers\Billpayment\AirtimeController::class, 'index'])->name('airtime.docs');
 
@@ -93,6 +96,9 @@ Route::group(['prefix' => 'developer', 'as' => 'developer.', 'middleware' => ['a
 
     // Electricity API Docs
     Route::get('/electricity', [\App\Http\Controllers\Billpayment\ElectricityController::class, 'index'])->name('electricity.docs');
+
+    // TV API Docs
+    Route::get('/tv', [\App\Http\Controllers\Billpayment\CableController::class, 'index'])->name('tv.docs');
 
     // NIN Demo
     Route::get('/nin-demo', [\App\Http\Controllers\Api\NinDemoController::class, 'index'])->name('nin.demo.docs');
@@ -103,8 +109,14 @@ Route::group(['prefix' => 'developer', 'as' => 'developer.', 'middleware' => ['a
     // SME Data API Docs
     Route::get('/sme-data', [\App\Http\Controllers\Billpayment\SmeDataController::class, 'index'])->name('sme-data.docs');
 
+    // Education API Docs
+    Route::get('/education', [\App\Http\Controllers\Billpayment\EducationController::class, 'index'])->name('education.docs');
+
     // AI Assistant Route
     Route::post('/ai-chat', [\App\Http\Controllers\Api\DocumentationAiController::class, 'chat'])->name('ai.chat');
+
+    // AI API Docs
+    Route::get('/ai-api', [\App\Http\Controllers\Api\AiApiController::class, 'index'])->name('ai.docs');
 });
 
 // Authenticated API Routes (Web-based auth for docs/usage or just API endpoints)

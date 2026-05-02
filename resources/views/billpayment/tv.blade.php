@@ -1,12 +1,12 @@
 <x-app-layout>
-    <title>Arewa Smart - {{ $title ?? 'NIN Validation API' }}</title>
+    <title>Arewa Smart - {{ $title ?? 'TV Subscription API' }}</title>
     <div class="content container-fluid">
-         <!-- Page Header -->
+           <!-- Page Header -->
         <div class="page-header mb-5">
             <div class="row align-items-center">
                 <div class="col">
                     <h3 class="page-title fw-bold text-primary display-6">
-                        NIN Validation API
+                        TV Subscription API
                     </h3>
 
                     <ul class="breadcrumb bg-transparent p-0 mt-2 mb-1">
@@ -16,7 +16,7 @@
                     </ul>
 
                     <p class="text-muted mb-0">
-                        NIN Validation API requests
+                        Integrate TV subscriptions for various providers including DSTV, GOTV, Startimes, and Showmax.
                     </p>
                 </div>
                 <div class="col-auto">
@@ -47,17 +47,20 @@
                                     <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); return false;">
                                         <i class="ti ti-info-circle me-2 opacity-75 fs-15"></i> Overview
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#services" onclick="switchTab('services'); return false;">
-                                        <i class="ti ti-currency-naira me-2 opacity-75 fs-15"></i> Services & Pricing
-                                    </a>
                                     <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); return false;">
                                         <i class="ti ti-shield-lock me-2 opacity-75 fs-15"></i> Authentication
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#submit" onclick="switchTab('submit'); return false;">
-                                        <i class="ti ti-server me-2 opacity-75 fs-15"></i> Submit Request
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#variations" onclick="switchTab('variations'); return false;">
+                                        <i class="ti ti-list me-2 opacity-75 fs-15"></i> TV Plans
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#status" onclick="switchTab('status'); return false;">
-                                        <i class="ti ti-activity me-2 opacity-75 fs-15"></i> Check Status
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#verify" onclick="switchTab('verify'); return false;">
+                                        <i class="ti ti-user-check me-2 opacity-75 fs-15"></i> Decoder Verification
+                                    </a>
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); return false;">
+                                        <i class="ti ti-server me-2 opacity-75 fs-15"></i> Payment Endpoint
+                                    </a>
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#codes" onclick="switchTab('codes'); return false;">
+                                        <i class="ti ti-list-numbers me-2 opacity-75 fs-15"></i> Commissions
                                     </a>
                                 </div>
                             </div>
@@ -71,7 +74,7 @@
                             <div class="card-body p-4 position-relative z-index-1">
                                 <h5 class="fw-bold text-white mb-2">Need Help?</h5>
                                 <p class="small text-white-50 mb-3">Our support team is available 24/7.</p>
-                                <a href="https://chat.whatsapp.com/KoSu12yDO4A8b6AvYSkvIx" target="_blank" class="btn btn-support w-100 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center py-2">
+                                <a href="https://wa.me/2347037343660" target="_blank" class="btn btn-support w-100 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center py-2">
                                     <i class="ti ti-brand-whatsapp me-2 fs-5"></i> Contact Support
                                 </a>
                             </div>
@@ -81,27 +84,30 @@
             </div>
 
             <!-- Mobile Offcanvas Sidebar -->
-            <div class="offcanvas offcanvas-start border-0 shadow-lg" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
-                <div class="offcanvas-header sidebar-nav-header border-bottom">
-                    <h5 class="offcanvas-title fw-bold" id="mobileSidebarLabel">Documentation</h5>
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+                <div class="offcanvas-header bg-white border-bottom">
+                    <h5 class="offcanvas-title fw-bold text-primary" id="mobileSidebarLabel">Documentation</h5>
                     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body p-0">
                     <div class="list-group list-group-flush custom-sidebar-nav p-3">
-                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); closeOffcanvas(); return false;">
+                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); closeOffcanvas(); return false;">
                             <i class="ti ti-info-circle me-2 fs-15"></i> Overview
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#services" onclick="switchTab('services'); closeOffcanvas(); return false;">
-                            <i class="ti ti-currency-naira me-2 fs-15"></i> Services & Pricing
-                        </a>
-                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); closeOffcanvas(); return false;">
+                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); closeOffcanvas(); return false;">
                             <i class="ti ti-shield-lock me-2 fs-15"></i> Authentication
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#submit" onclick="switchTab('submit'); closeOffcanvas(); return false;">
-                            <i class="ti ti-server me-2 fs-15"></i> Submit Request
+                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#variations" onclick="switchTab('variations'); closeOffcanvas(); return false;">
+                            <i class="ti ti-list fs-15"></i> TV Plans
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#status" onclick="switchTab('status'); closeOffcanvas(); return false;">
-                            <i class="ti ti-activity me-2 fs-15"></i> Check Status
+                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#verify" onclick="switchTab('verify'); closeOffcanvas(); return false;">
+                            <i class="ti ti-user-check me-2 fs-15"></i> Verification
+                        </a>
+                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); closeOffcanvas(); return false;">
+                            <i class="ti ti-server me-2 fs-15"></i> Payment Endpoint
+                        </a>
+                        <a class="list-group-item list-group-item-action border-0 rounded-3 mb-1 px-3 py-2 d-flex align-items-center" href="#codes" onclick="switchTab('codes'); closeOffcanvas(); return false;">
+                            <i class="ti ti-list-numbers me-2 fs-15"></i> Commissions
                         </a>
                     </div>
                 </div>
@@ -116,10 +122,10 @@
                         <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5" style="background: url('https://cdn.svgporn.com/logos/laravel.svg') no-repeat right bottom; background-size: 30%;"></div>
                         <div class="card-body p-5 position-relative">
                             <span class="badge bg-soft-primary text-primary mb-3">Introduction</span>
-                            <h2 class="fw-bold mb-3">Integration Guide</h2>
+                            <h2 class="fw-bold mb-3">TV Subscription API Guide</h2>
                             <p class="text-muted lead mb-4">
-                                Seamlessly integrate our robust NIN Validation and IPE Clearance services into your application. 
-                                Our RESTful API ensures secure, fast, and reliable identity verification.
+                                Automate TV subscriptions for DSTV, GOTV, Startimes, and Showmax. 
+                                Our API supports decoder/smartcard verification to ensure seamless renewals or bouquet changes.
                             </p>
                             
                             <!-- Endpoint Box -->
@@ -141,81 +147,9 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="text-end">
-                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="services">
-                            Next: Services <i class="ti ti-arrow-right ms-2 fs-15"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Services Section -->
-                <div class="docs-section d-none fade-in" id="services">
-                    <div class="card border-0 shadow-sm rounded-4 mb-4">
-                        <div class="card-body p-5">
-                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
-                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">1</span>
-                                Services & Pricing
-                            </h4>
-                            
-                            <!-- Refund Policy Alert - Requested Item -->
-                            <div class="alert alert-warning border border-warning border-opacity-25 rounded-3 d-flex align-items-start p-4 mb-4" role="alert">
-                                <i class="ti ti-info-circle me-3 mt-1 fs-15"></i>
-                                <div>
-                                    <h5 class="alert-heading fw-bold mb-2">Refund Policy</h5>
-                                    <p class="mb-0">
-                                        Please note our refund policy regarding failed transaction attempts:
-                                    </p>
-                                    <ul class="mb-0 mt-2">
-                                        <li><strong>NIN Validation (015):</strong> <span class="badge bg-danger bg-opacity-10 text-danger ms-1">No Refund</span> There are <strong>no refunds</strong> for failed or rejected validation requests. Ensure data is accurate before submission.</li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <p class="text-muted mb-4">
-                                Use the corresponding <strong>Service Field Code</strong> when initializing a transaction.
-                            </p>
-                            
-                            <div class="table-responsive rounded-3 border custom-table-border">
-                                <table class="table table-premium table-hover align-middle mb-0">
-                                    <thead>
-                                        <tr class="text-uppercase small text-muted">
-                                            <th class="py-3 ps-4">Service Name</th>
-                                            <th class="py-3">Type</th>
-                                            <th class="py-3">Field Code (Required)</th>
-                                            <th class="py-3 text-end pe-4">Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="border-top-0">
-                                        @forelse($services as $service)
-                                            <tr>
-                                                <td class="ps-4 fw-medium">{{ $service->name }}</td>
-                                                <td>
-                                                    @if($service->type == 'Validation')
-                                                        <span class="badge bg-indigo-soft text-indigo border border-indigo border-opacity-10 py-2 px-3 rounded-pill">Validation</span>
-                                                    @else
-                                                        <span class="badge bg-teal-soft text-teal border border-teal border-opacity-10 py-2 px-3 rounded-pill">IPE Clearance</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <code class="text-primary border rounded px-2 py-1 fw-bold fs-14">{{ $service->code }}</code>
-                                                </td>
-                                                <td class="text-end pe-4 fw-bold">₦{{ number_format($service->price, 2) }}</td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="4" class="text-center py-4 text-muted">No active services found used by this account.</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="overview">
-                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
-                        </button>
-                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="auth">
+                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="auth">
                             Next: Authentication <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
@@ -226,15 +160,15 @@
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
                             <h4 class="fw-bold mb-4 d-flex align-items-center">
-                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">2</span>
+                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">1</span>
                                 Authentication
                             </h4>
                             <p class="text-muted mb-4">
-                                Security is paramount. All requests must be authenticated using your unique API Bearer Token.
+                                Use your unique API Token to authenticate requests.
                             </p>
                             
                             <div class="mb-5">
-                                <label class="form-label fw-bold mb-2">Your Personal API Token</label>
+                                <label class="form-label fw-bold mb-2">Your API Token</label>
                                 <div class="input-group input-group-lg shadow-sm">
                                     <span class="input-group-text border-end-0 text-muted ps-3">
                                         <i class="ti ti-key fs-15"></i>
@@ -248,47 +182,95 @@
                                         <span id="copyBtnText">Copy</span> <i class="ti ti-copy ms-2 fs-15"></i>
                                     </button>
                                 </div>
-                                <div class="form-text mt-2"><i class="ti ti-lock me-1 fs-15"></i> Keep this token secret. Do not share it publicly.</div>
                             </div>
 
                             <div class="card bg-dark text-white border-0 shadow-lg overflow-hidden position-relative">
                                 <div class="card-header bg-transparent border-white border-opacity-10 py-3">
-                                     <h6 class="mb-0 fw-bold text-light"><i class="ti ti-code me-2 fs-15"></i>Header Authorization Example</h6>
+                                     <h6 class="mb-0 fw-bold text-light"><i class="ti ti-code me-2 fs-15"></i>Header Authorization</h6>
                                 </div>
                                 <div class="card-body bg-black bg-opacity-25 font-monospace p-4">
                                     <div class="d-flex">
                                         <span class="text-info me-3">Authorization:</span>
                                         <span class="text-warning">Bearer <span class="text-white-50">{{ substr(Auth::user()->api_token, 0, 15) }}...</span></span>
                                     </div>
-                                    <div class="d-flex mt-2">
-                                        <span class="text-info me-3">Accept:</span>
-                                        <span class="text-warning">application/json</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="overview">
+                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
+                        </button>
+                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="variations">
+                            Next: Fetching Plans <i class="ti ti-arrow-right ms-2 fs-15"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Variations Section -->
+                <div class="docs-section d-none fade-in" id="variations">
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-5">
+                            <h4 class="fw-bold mb-4 d-flex align-items-center">
+                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">2</span>
+                                Fetching TV Plans (Variations)
+                            </h4>
+                            <p class="text-muted mb-4">
+                                Get a list of available plans for a specific service (e.g., <code>dstv</code>, <code>gotv</code>).
+                            </p>
+
+                            <!-- Endpoint -->
+                            <div class="card border-0 bg-soft-primary mb-4 overflow-hidden">
+                                <div class="card-body d-flex align-items-center justify-content-between p-4 flex-wrap gap-2">
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-primary px-3 py-2 rounded-2 fw-bold fs-14 shadow-sm me-3">GET</span>
+                                        <code class="text-primary fw-bold fs-18 text-break">{{ url('/') }}/api/v1/tv/variations</code>
                                     </div>
-                                     <div class="d-flex mt-2">
-                                        <span class="text-info me-3">Content-Type:</span>
-                                        <span class="text-warning">application/json</span>
+                                </div>
+                            </div>
+
+                            <div class="row g-4">
+                                <!-- Success Response -->
+                                <div class="col-lg-12">
+                                    <div class="card border shadow-sm rounded-4 overflow-hidden">
+                                        <div class="card-header border-bottom py-3">
+                                            <h6 class="fw-bold text-success mb-0">Success Response (200 OK)</h6>
+                                        </div>
+                                        <div class="card-body p-0 bg-dark">
+<pre class="m-0 p-4 text-white font-monospace"><code>{
+  <span class="text-info">"status"</span>: <span class="text-warning">"success"</span>,
+  <span class="text-info">"data"</span>: [
+    {
+      <span class="text-info">"code"</span>: <span class="text-warning">"dstv-padi"</span>,
+      <span class="text-info">"name"</span>: <span class="text-warning">"DStv Padi"</span>,
+      <span class="text-info">"amount"</span>: <span class="text-warning">"2950.00"</span>
+    },
+    ...
+  ]
+}</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="services">
+                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="auth">
                             <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
-                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="submit">
-                            Next: Submit Request <i class="ti ti-arrow-right ms-2 fs-15"></i>
+                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="verify">
+                            Next: Decoder Verification <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Submit Request Section -->
-                <div class="docs-section d-none fade-in" id="submit">
+                <!-- Verify Section -->
+                <div class="docs-section d-none fade-in" id="verify">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
                             <h4 class="fw-bold mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">3</span>
-                                Submit a Request
+                                Decoder Verification
                             </h4>
 
                             <!-- Endpoint -->
@@ -296,7 +278,75 @@
                                 <div class="card-body d-flex align-items-center justify-content-between p-4 flex-wrap gap-2">
                                     <div class="d-flex align-items-center">
                                         <span class="badge bg-primary px-3 py-2 rounded-2 fw-bold fs-14 shadow-sm me-3">POST</span>
-                                        <code class="text-primary fw-bold fs-18 text-break">{{ url('/') }}/api/v1/nin/validation</code>
+                                        <code class="text-primary fw-bold fs-18 text-break">{{ url('/') }}/api/v1/tv/verify</code>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="text-muted mb-4">
+                                Verify the customer's IUC/Smartcard number before making a payment.
+                            </p>
+
+                            <div class="row g-4">
+                                <div class="col-lg-6">
+                                    <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
+                                        <div class="card-header bg-light border-bottom py-3">
+                                            <h6 class="fw-bold  mb-0">Request Body</h6>
+                                        </div>
+                                        <div class="card-body p-0 bg-dark">
+<pre class="m-0 p-4 text-white font-monospace"><code>{
+  <span class="text-info">"serviceID"</span>: <span class="text-warning">"dstv"</span>,
+  <span class="text-info">"billersCode"</span>: <span class="text-warning">"1234567890"</span> // IUC/Smartcard Number
+}</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
+                                        <div class="card-header border-bottom py-3">
+                                            <h6 class="fw-bold text-success mb-0">Success Response</h6>
+                                        </div>
+                                        <div class="card-body p-0 bg-dark">
+<pre class="m-0 p-4 text-white font-monospace"><code>{
+  <span class="text-info">"status"</span>: <span class="text-warning">"success"</span>,
+  <span class="text-info">"data"</span>: {
+    <span class="text-info">"Customer_Name"</span>: <span class="text-warning">"JOHN DOE"</span>,
+    <span class="text-info">"Status"</span>: <span class="text-warning">"Active"</span>,
+    <span class="text-info">"Current_Bouquet"</span>: <span class="text-warning">"DStv Compact"</span>
+    ...
+  }
+}</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="variations">
+                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
+                        </button>
+                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="endpoint">
+                            Next: Payment Endpoint <i class="ti ti-arrow-right ms-2 fs-15"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Purchase Endpoint Section -->
+                <div class="docs-section d-none fade-in" id="endpoint">
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-5">
+                            <h4 class="fw-bold mb-4 d-flex align-items-center">
+                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">4</span>
+                                Payment Endpoint
+                            </h4>
+
+                            <!-- Endpoint -->
+                            <div class="card border-0 bg-soft-primary mb-4 overflow-hidden">
+                                <div class="card-body d-flex align-items-center justify-content-between p-4 flex-wrap gap-2">
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-primary px-3 py-2 rounded-2 fw-bold fs-14 shadow-sm me-3">POST</span>
+                                        <code class="text-primary fw-bold fs-18 text-break">{{ url('/') }}/api/v1/tv/purchase</code>
                                     </div>
                                 </div>
                             </div>
@@ -306,17 +356,17 @@
                                 <div class="col-lg-6">
                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
                                         <div class="card-header border-bottom py-3">
-                                            <h6 class="fw-bold mb-0">Request Payload</h6>
+                                            <h6 class="fw-bold mb-0">Request Body</h6>
                                         </div>
                                         <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace"><code>{
-  <span class="text-muted">// Required. 015 for Validation</span>
-  <span class="text-info">"field_code"</span>: <span class="text-warning">"015"</span>, 
-
-  <span class="text-muted">// Required</span>
-  <span class="text-info">"nin"</span>: <span class="text-warning">"12345678901"</span>,
-  
-  <span class="text-info">"description"</span>: <span class="text-warning">"My Reference"</span>
+  <span class="text-info">"serviceID"</span>: <span class="text-warning">"dstv"</span>,
+  <span class="text-info">"billersCode"</span>: <span class="text-warning">"1234567890"</span>,
+  <span class="text-info">"variation_code"</span>: <span class="text-warning">"dstv-padi"</span>,
+  <span class="text-info">"amount"</span>: <span class="text-warning">"2950"</span>,
+  <span class="text-info">"phone"</span>: <span class="text-warning">"07037343660"</span>,
+  <span class="text-info">"subscription_type"</span>: <span class="text-warning">"renew"</span>, // or "change"
+  <span class="text-info">"request_id"</span>: <span class="text-warning">"TV_REF_12345"</span> 
 }</code></pre>
                                         </div>
                                     </div>
@@ -330,15 +380,14 @@
                                         </div>
                                         <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace"><code>{
-    "success": true,
-    "message": "Request submitted successfully",
-    "data": {
-        "reference": "val2550NQZGA",
-        "trx_ref": "val2550NQZGA",
-        "status": "successful",
-        "nin": "71073866272",
-        "response": "NIN validation is created successful"
-    }
+  <span class="text-info">"status"</span>: <span class="text-warning">"success"</span>,
+  <span class="text-info">"message"</span>: <span class="text-warning">"TV subscription successful"</span>,
+  <span class="text-info">"data"</span>: {
+    <span class="text-info">"transaction_ref"</span>: <span class="text-warning">"202403210001235"</span>,
+    <span class="text-info">"amount"</span>: <span class="text-warning">"2950.00"</span>,
+    <span class="text-info">"status"</span>: <span class="text-warning">"completed"</span>
+    ...
+  }
 }</code></pre>
                                         </div>
                                     </div>
@@ -347,75 +396,58 @@
                         </div>
                     </div>
                      <div class="d-flex justify-content-between">
-                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="auth">
+                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="verify">
                             <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
-                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="status">
-                            Next: Check Status <i class="ti ti-arrow-right ms-2 fs-15"></i>
+                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="codes">
+                            Next: Commissions <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Status Section -->
-                <div class="docs-section d-none fade-in" id="status">
+                 <!-- Commissions Section -->
+                 <div class="docs-section d-none fade-in" id="codes">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
                             <h4 class="fw-bold mb-4 d-flex align-items-center">
-                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">4</span>
-                                Check Transaction Status
+                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">5</span>
+                                Commissions & Incentives
                             </h4>
-
-                            <!-- Endpoint -->
-                             <div class="card border-0 bg-soft-success mb-4 overflow-hidden">
-                                <div class="card-body d-flex align-items-center justify-content-between p-4 flex-wrap gap-2">
-                                     <div class="d-flex align-items-center">
-                                        <span class="badge bg-success px-3 py-2 rounded-2 fw-bold fs-14 shadow-sm me-3">GET</span>
-                                        <code class="text-success fw-bold fs-18 text-break">{{ url('/') }}/api/v1/nin/validation</code>
-                                    </div>
-                                </div>
-                            </div>
                             
                             <p class="text-muted mb-4">
-                                Retrieve the current status using a query parameter.
+                                Below are the cashback rates applied to each provider for your account type (<strong>{{ ucfirst($user->role ?? 'User') }}</strong>).
                             </p>
 
-                            <div class="row g-4">
-                                <div class="col-lg-6">
-                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header border-bottom py-3">
-                                            <h6 class="fw-bold mb-0">Query Parameters</h6>
-                                        </div>
-                                        <div class="card-body p-4">
-                                            <ul class="list-unstyled mb-0 font-monospace">
-                                                <li class="mb-3">
-                                                    <span class="badge bg-light  border me-2">REQUIRED</span>
-                                                    <strong>?nin=</strong><span class="text-muted">12345678901</span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header border-bottom py-3">
-                                            <h6 class="fw-bold text-success mb-0">Response</h6>
-                                        </div>
-                                        <div class="card-body p-0 bg-dark">
-<pre class="m-0 p-4 text-white font-monospace"><code>{
-    "success": true,
-    "nin": "71073866272",
-    "status": "processing",
-    "comment": "nin: 71073866272, status: New, validationErrorType: NO RECORD FUND, reply: null",
-    "message": "Status checked."
-}</code></pre>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="table-responsive rounded-3 border custom-table-border">
+                                <table class="table table-premium table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr class="text-uppercase small text-muted">
+                                            <th class="py-3 ps-4">Provider</th>
+                                            <th class="py-3 text-center">Service ID</th>
+                                            <th class="py-3 text-end pe-4">Cashback %</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="border-top-0">
+                                        @foreach($providers as $code => $name)
+                                        <tr>
+                                            <td class="ps-4 fw-bold">{{ $name }}</td>
+                                            <td class="text-center">
+                                                <code class="text-primary bg-primary bg-opacity-10 px-2 py-1 rounded fw-bold">{{ $code }}</code>
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <span class="badge bg-soft-success text-success">
+                                                    {{ $commissions[$code] ?? 0 }}%
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                      <div class="d-flex justify-content-between">
-                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="submit">
+                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="endpoint">
                             <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
                     </div>
@@ -427,102 +459,60 @@
 
     @push('scripts')
     <script>
-        // Tab switching logic
         function switchTab(tabId) {
-            // Hide all sections with fade
             document.querySelectorAll('.docs-section').forEach(section => {
-                section.classList.add('d-none');
+                section.style.display = 'none'; 
                 section.classList.remove('active-section');
             });
-            
-            // Show target section
-            const targetSection = document.getElementById(tabId);
-            if (targetSection) {
-                targetSection.classList.remove('d-none');
-                // Small timeout to allow d-none removal to register before opacity transition
-                setTimeout(() => targetSection.classList.add('active-section'), 10);
+            const target = document.getElementById(tabId);
+            if (target) {
+                target.style.display = 'block';
+                void target.offsetWidth; 
+                setTimeout(() => target.classList.add('active-section'), 10);
             }
+            
+             document.querySelectorAll('.docs-section').forEach(section => {
+                 if (section.id !== tabId) section.classList.add('d-none');
+                 else section.classList.remove('d-none');
+            });
 
-            // Update sidebar active state
             document.querySelectorAll('.custom-sidebar-nav a').forEach(link => {
                 link.classList.remove('active', 'bg-soft-primary', 'text-primary', 'fw-bold');
                 link.classList.add('text-muted');
-                
-                // Check if this link corresponds to the tabId
                 if (link.getAttribute('href') === '#' + tabId) {
                     link.classList.remove('text-muted');
                     link.classList.add('active', 'bg-soft-primary', 'text-primary', 'fw-bold');
                 }
             });
-
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-
-        // Initialize active tab logic on load
         document.addEventListener('DOMContentLoaded', () => {
              const hash = window.location.hash.substring(1);
-             if (hash && document.getElementById(hash)) {
-                 switchTab(hash);
-             } else {
-                 // Ensure Overview is active by default visuals
-                 document.getElementById('overview').classList.add('active-section');
-             }
+             if (hash && document.getElementById(hash)) switchTab(hash);
+             else switchTab('overview');
         });
-
-        // Navigation Buttons
         document.querySelectorAll('.next-tab-btn, .prev-tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                const targetTab = this.getAttribute('data-next') || this.getAttribute('data-prev');
-                switchTab(targetTab);
+                switchTab(this.getAttribute('data-next') || this.getAttribute('data-prev'));
             });
         });
-
-        // Mobile Sidebar Logic
-        const mobileSidebar = document.getElementById('mobileSidebar');
-        const bsOffcanvas = new bootstrap.Offcanvas(mobileSidebar);
         
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            bsOffcanvas.show();
-        });
+        const bsOffcanvas = new bootstrap.Offcanvas(document.getElementById('mobileSidebar'));
+        document.getElementById('sidebarToggle').addEventListener('click', () => bsOffcanvas.show());
+        function closeOffcanvas() { bsOffcanvas.hide(); }
 
-        function closeOffcanvas() {
-            bsOffcanvas.hide();
-        }
-
-        // Copy Token Logic
         function copyToken() {
-            const tokenInput = document.getElementById('apiToken');
-            tokenInput.select();
-            tokenInput.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(tokenInput.value).then(() => {
-                const btnText = document.getElementById('copyBtnText');
-                const originalText = btnText.innerText;
-                btnText.innerText = 'Copied!';
-                
-                // Show floating alert
-                const notif = document.createElement('div');
-                notif.className = 'alert alert-success position-fixed top-0 end-0 m-3 shadow-lg fw-bold';
-                notif.style.zIndex = '9999';
-                notif.innerHTML = '<i class="ti ti-check me-2 fs-15"></i> Token copied!';
-                document.body.appendChild(notif);
-                
-                setTimeout(() => {
-                    notif.remove();
-                    btnText.innerText = originalText;
-                }, 2000);
-            });
+            const el = document.getElementById('apiToken');
+            el.select(); navigator.clipboard.writeText(el.value);
+            document.getElementById('copyBtnText').innerText = 'Copied!';
+            setTimeout(() => document.getElementById('copyBtnText').innerText = 'Copy', 2000);
         }
-        
         function copyToClipboard(text) {
-             navigator.clipboard.writeText(text).then(() => {
-                const notif = document.createElement('div');
-                notif.className = 'alert alert-info position-fixed top-0 end-0 m-3 shadow-lg fw-bold';
-                notif.style.zIndex = '9999';
-                notif.innerHTML = '<i class="ti ti-check me-2 fs-15"></i> Copied to clipboard!';
-                document.body.appendChild(notif);
-                setTimeout(() => notif.remove(), 2000);
-            });
+             navigator.clipboard.writeText(text);
+             const btn = event.currentTarget;
+             const orig = btn.innerHTML;
+             btn.innerHTML = '<i class="ti ti-check me-1 fs-15"></i> Copied';
+             setTimeout(() => btn.innerHTML = orig, 2000);
         }
     </script>
     <style>
@@ -539,7 +529,7 @@
             border-bottom: 1px solid rgba(229, 113, 94, 0.2);
         }
         .sidebar-nav-header h6, .sidebar-nav-header h5 { color: #e5715e !important; }
-
+ 
         /* Sidebar Navigation Items as Individual Cards */
         .custom-sidebar-nav .list-group-item { 
             transition: all 0.2s ease; 
@@ -565,15 +555,8 @@
             font-weight: bold; 
         }
         .dark-mode .custom-sidebar-nav .list-group-item.active {
-            background-color: #f26922 !important;
-            border-color: #f26922 !important;
-            color: #ffffff !important;
-            box-shadow: 0 4px 12px rgba(242, 105, 34, 0.4);
-        }
-        .dark-mode .custom-sidebar-nav .list-group-item {
-            background-color: #1e2532 !important;
-            border-color: #2b3346 !important;
-            color: #94a3b8 !important;
+            background-color: var(--bs-primary) !important;
+            border-color: var(--bs-primary) !important;
         }
 
         /* Support Card Redesign */
@@ -595,14 +578,6 @@
         .dark-mode .support-card-custom {
             background-color: #d95d1e !important;
         }
-
-        .dark-mode .custom-table-border { border-color: rgba(255,255,255,0.1) !important; }
-
-        /* Badges */
-        .bg-indigo-soft { background-color: rgba(102, 16, 242, 0.1); }
-        .text-indigo { color: #6610f2; }
-        .bg-teal-soft { background-color: rgba(32, 201, 151, 0.1); }
-        .text-teal { color: #20c997; }
 
         @media (max-width: 991.98px) { .sticky-top { position: relative !important; top: 0 !important; z-index: 1 !important; } }
     </style>

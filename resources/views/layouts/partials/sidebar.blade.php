@@ -121,8 +121,8 @@
                         <li><a href="{{ route('developer.data.docs') }}" class="{{ request()->routeIs('developer.data.docs') ? 'active' : '' }}">Data</a></li>
                         <li><a href="{{ route('developer.sme-data.docs') }}">SME Data</a></li>
                         <li><a href="{{ route('developer.electricity.docs') }}" class="{{ request()->routeIs('developer.electricity.docs') ? 'active' : '' }}">Electricity</a></li>
-                        <li><a href="#">TV</a></li>
-                        <li><a href="#">Education Pin</a></li>
+                        <li><a href="{{ route('developer.tv.docs') }}" class="{{ request()->routeIs('developer.tv.docs') ? 'active' : '' }}">TV</a></li>
+                        <li><a href="{{ route('developer.education.docs') }}">Education Pin</a></li>
                     </ul>
                 </li>
                 <!-- /Utility bill payment Services-->
@@ -143,6 +143,11 @@
                         <li>
                             <a href="{{ route('developer.bvn.crm.docs') }}" class="{{ request()->routeIs('developer.bvn.crm.docs') ? 'active' : '' }}">
                                 BVN CRM Docs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('developer.bvn.phone_search.docs') }}" class="{{ request()->routeIs('developer.bvn.phone_search.docs') ? 'active' : '' }}">
+                                BVN Search Docs
                             </a>
                         </li>
                     </ul>
@@ -180,6 +185,15 @@
                     </ul>
                 </li>
                 <!-- /Verification -->
+
+                 <!-- AI Support Section -->
+                <li class="menu-title"><span>AI support</span></li>
+
+                  <li>
+                    <a href="{{ route('developer.ai.docs') }}" class="{{ request()->routeIs('developer.ai.docs') ? 'active' : '' }}">
+                        <i class="ti ti-shopping-bag"></i><span>AI Api Keys</span>
+                    </a>
+                </li>
               
                 <!-- Account Section -->
                 <li class="menu-title"><span>Account</span></li>

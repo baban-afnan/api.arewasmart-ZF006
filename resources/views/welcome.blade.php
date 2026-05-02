@@ -30,11 +30,11 @@
         <meta property="og:type" content="website">
 
         <style>
-            /* Premium Design Enhancements - Gold Theme */
+            /* Premium Design Enhancements - Orange Theme */
             :root {
-                --primary-color: #D4AF37; /* Metallic Gold */
-                --primary-dark: #B8860B; /* Dark Goldenrod */
-                --accent-color: #FFDF00; /* Bright Gold */
+                --primary-color: #F26522; /* Brand Orange */
+                --primary-dark: #D44E10; /* Dark Orange */
+                --accent-color: #FF8C42; /* Light Orange */
                 --text-light: #f5f5f5;
             }
 
@@ -68,26 +68,34 @@
 
             /* Buttons */
             .btn-primary {
-                background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+                background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
                 border: none;
-                transition: all 0.3s ease;
+                border-radius: 50px !important;
+                padding: 14px 35px !important;
+                font-weight: 600;
+                transition: all 0.4s ease;
+                box-shadow: 0 4px 15px rgba(242, 101, 34, 0.3);
             }
             .btn-primary:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
-                background: linear-gradient(45deg, var(--primary-dark), var(--primary-color));
+                transform: translateY(-3px) scale(1.03);
+                box-shadow: 0 8px 25px rgba(242, 101, 34, 0.5);
+                background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
             }
             
             .btn-secondary-outline {
                 background: transparent;
-                border: 2px solid var(--primary-color);
-                color: #fff;
-                 transition: all 0.3s ease;
+                border: 2px solid var(--primary-color) !important;
+                color: #fff !important;
+                border-radius: 50px !important;
+                padding: 14px 35px !important;
+                font-weight: 600;
+                transition: all 0.4s ease;
             }
             .btn-secondary-outline:hover {
                 background: var(--primary-color);
-                color: #fff;
-                transform: translateY(-2px);
+                color: #fff !important;
+                transform: translateY(-3px) scale(1.03);
+                box-shadow: 0 8px 25px rgba(242, 101, 34, 0.3);
             }
 
 
@@ -290,10 +298,10 @@
                 Empowering northern Nigeria through innovative digital solutions and smart technology services. Join us in building a smarter, more connected future.
             </p>
             <div class="hero-btns" data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
-                <a href="{{route ('register')}}" class="btn btn-primary btn-lg me-3" style="padding: 12px 30px; border-radius: 30px;">
+                <a href="{{route ('register')}}" class="btn btn-primary btn-lg me-3">
                     Get Started
                 </a>
-                <a href="{{route ('login')}}" class="btn btn-secondary-outline btn-lg me-3" style="padding: 12px 30px; border-radius: 30px;">
+                <a href="{{route ('login')}}" class="btn btn-secondary-outline btn-lg me-3">
                     Login Now
                 </a>
             </div>
@@ -305,13 +313,13 @@
    <!-- Testimonials Section -->
     <section id="testimonials" class="testimonials-section" style="padding: 100px 0; background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); position: relative; overflow: hidden;">
         <!-- Background Patterns -->
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(#ffd700 1px, transparent 1px); background-size: 30px 30px;"></div>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(var(--primary-color) 1px, transparent 1px); background-size: 30px 30px;"></div>
         
         <div class="container" style="position: relative; z-index: 2;">
             <div class="section-title text-center mb-5" data-aos="fade-up">
-                <h4 style="color: #ffd700; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">Testimonials</h4>
+                <h4 style="color: var(--primary-color); font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">Testimonials</h4>
                 <h2 style="color: #fff; font-weight: 800; font-size: 2.5rem;">Trusted by Leaders</h2>
-                <hr style="width: 60px; height: 3px; background: #ffd700; margin: 15px auto; border: none;">
+                <hr style="width: 60px; height: 3px; background: var(--primary-color); margin: 15px auto; border: none;">
                 <p class="text-white-50" style="max-width: 600px; margin: 0 auto; font-size: 1.1rem;">
                     See what our partners and clients have to say about their experience working with Arewa Smart Idea.
                 </p>
@@ -392,7 +400,7 @@
             }
             .quote-icon {
                 font-size: 2rem;
-                color: #ffd700;
+                color: var(--primary-color);
                 margin-bottom: 20px;
                 opacity: 0.5;
             }
@@ -413,7 +421,7 @@
                 border-radius: 50%;
                 object-fit: cover;
                 margin-right: 15px;
-                border: 2px solid #ffd700;
+                border: 2px solid var(--primary-color);
             }
             .reviewer-info h4 {
                 font-size: 1.1rem;
@@ -428,7 +436,7 @@
                 margin-bottom: 5px;
             }
             .stars {
-                color: #ffd700;
+                color: var(--primary-color);
                 font-size: 0.8rem;
             }
         </style>
@@ -440,9 +448,9 @@
     <section class="partners" id="partners" style="padding: 80px 0; background-color: #fff;">
         <div class="container">
             <div class="section-title text-center mb-5" data-aos="fade-up">
-                <h4 style="color: #ffd700; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">Our Partners</h4>
+                <h4 style="color: var(--primary-color); font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">Our Partners</h4>
                 <h2 style="color: #B8860B; font-weight: 800; font-size: 2.5rem;">Trusted Collaborations</h2>
-                <hr style="width: 60px; height: 3px; background: #ffd700; margin: 15px auto; border: none;">
+                <hr style="width: 60px; height: 3px; background: var(--primary-color); margin: 15px auto; border: none;">
                 <p class="text-muted" style="max-width: 600px; margin: 0 auto; font-size: 1.1rem;">
                     We proudly collaborate with leading organizations to deliver excellence and innovation.
                 </p>
@@ -497,7 +505,7 @@
             <div class="row g-5">
                 <!-- Company Info -->
                 <div class="col-lg-4 col-md-6">
-                    <h2 style="color: #ffd700; font-weight: 700; margin-bottom: 20px;">Arewa Smart Idea</h2>
+                    <h2 style="color: var(--primary-color); font-weight: 700; margin-bottom: 20px;">Arewa Smart Idea</h2>
                     <p style="color: rgba(255,255,255,0.7); line-height: 1.8; margin-bottom: 25px;">
                         Providing innovative technology solutions to help businesses thrive in the digital world. We are committed to excellence and sustainable growth in Northern Nigeria.
                     </p>
@@ -511,7 +519,7 @@
                 
                 <!-- Quick Links -->
                 <div class="col-lg-2 col-md-6">
-                    <h3 style="color: #fff; font-size: 1.2rem; font-weight: 600; margin-bottom: 25px; border-bottom: 2px solid #ffd700; display: inline-block; padding-bottom: 5px;">Quick Links</h3>
+                    <h3 style="color: #fff; font-size: 1.2rem; font-weight: 600; margin-bottom: 25px; border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 5px;">Quick Links</h3>
                     <ul class="footer-links list-unstyled">
                         <li><a href="#home">Home</a></li>
                         <li><a href="#services">Services</a></li>
@@ -524,7 +532,7 @@
                 
                 <!-- Services -->
                 <div class="col-lg-3 col-md-6">
-                    <h3 style="color: #fff; font-size: 1.2rem; font-weight: 600; margin-bottom: 25px; border-bottom: 2px solid #ffd700; display: inline-block; padding-bottom: 5px;">Our Services</h3>
+                    <h3 style="color: #fff; font-size: 1.2rem; font-weight: 600; margin-bottom: 25px; border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 5px;">Our Services</h3>
                     <ul class="footer-links list-unstyled">
                         <li><a href="#">Web Development</a></li>
                         <li><a href="#">Mobile Apps</a></li>
@@ -536,18 +544,18 @@
                 
                 <!-- Contact -->
                 <div class="col-lg-3 col-md-6">
-                    <h3 style="color: #fff; font-size: 1.2rem; font-weight: 600; margin-bottom: 25px; border-bottom: 2px solid #ffd700; display: inline-block; padding-bottom: 5px;">Contact Us</h3>
+                    <h3 style="color: #fff; font-size: 1.2rem; font-weight: 600; margin-bottom: 25px; border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 5px;">Contact Us</h3>
                     <ul class="footer-contact list-unstyled">
                         <li style="margin-bottom: 15px; display: flex;">
-                            <i class="fas fa-map-marker-alt" style="color: #ffd700; margin-top: 5px; margin-right: 10px;"></i>
+                            <i class="fas fa-map-marker-alt" style="color: var(--primary-color); margin-top: 5px; margin-right: 10px;"></i>
                             <span style="color: rgba(255,255,255,0.8);">NO983 BABANTUDE ADELEKE STREET APAPA LAGOS</span>
                         </li>
                         <li style="margin-bottom: 15px; display: flex;">
-                            <i class="fas fa-phone" style="color: #ffd700; margin-top: 5px; margin-right: 10px;"></i>
+                            <i class="fas fa-phone" style="color: var(--primary-color); margin-top: 5px; margin-right: 10px;"></i>
                             <span style="color: rgba(255,255,255,0.8);">09112345678</span>
                         </li>
                         <li style="margin-bottom: 15px; display: flex;">
-                            <i class="fas fa-envelope" style="color: #ffd700; margin-top: 5px; margin-right: 10px;"></i>
+                            <i class="fas fa-envelope" style="color: var(--primary-color); margin-top: 5px; margin-right: 10px;"></i>
                             <span style="color: rgba(255,255,255,0.8);">info@arewasmart.com.ng</span>
                         </li>
                     </ul>
@@ -557,7 +565,7 @@
             <hr style="border-color: rgba(255,255,255,0.1); margin: 40px 0;">
             
             <div class="footer-bottom text-center">
-                <p style="color: rgba(255,255,255,0.6); margin: 0;">&copy; 2024 Arewa Smart Idea. All rights reserved. | Designed with <i class="fas fa-heart" style="color: #ffd700;"></i> by Arewa Smart Team.</p>
+                <p style="color: rgba(255,255,255,0.6); margin: 0;">&copy; 2024 Arewa Smart Idea. All rights reserved. | Designed with <i class="fas fa-heart" style="color: var(--primary-color);"></i> by Arewa Smart Team.</p>
             </div>
         </div>
 
@@ -572,7 +580,7 @@
                 display: inline-block;
             }
             .footer-links a:hover {
-                color: #ffd700;
+                color: var(--primary-color);
                 transform: translateX(5px);
             }
             .footer-social {
@@ -589,7 +597,7 @@
                 transition: all 0.3s ease;
             }
             .footer-social:hover {
-                background: #ffd700;
+                background: var(--primary-color);
                 color: #b71c1c;
                 transform: translateY(-3px);
             }

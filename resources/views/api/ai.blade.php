@@ -1,12 +1,12 @@
 <x-app-layout>
-    <title>Arewa Smart - {{ $title ?? 'NIN IPE API' }}</title>
+    <title>Arewa Smart - {{ $title ?? 'AI Assistant API' }}</title>
     <div class="content container-fluid">
-         <!-- Page Header -->
+        <!-- Page Header -->
         <div class="page-header mb-5">
             <div class="row align-items-center">
                 <div class="col">
                     <h3 class="page-title fw-bold text-primary display-6">
-                        NIN IPE Clearance API
+                        AI Assistant API
                     </h3>
 
                     <ul class="breadcrumb bg-transparent p-0 mt-2 mb-1">
@@ -16,9 +16,10 @@
                     </ul>
 
                     <p class="text-muted mb-0">
-                        NIN IPE Clearance API requests
+                        Integrate DeepSeek AI into your applications
                     </p>
                 </div>
+
                 <div class="col-auto">
                     <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill fw-medium fs-14 border border-primary border-opacity-10">
                         <i class="ti ti-tag me-1 fs-15"></i> Version 1.0.0
@@ -47,17 +48,14 @@
                                     <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); return false;">
                                         <i class="ti ti-info-circle me-2 opacity-75 fs-15"></i> Overview
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#services" onclick="switchTab('services'); return false;">
-                                        <i class="ti ti-currency-naira me-2 opacity-75 fs-15"></i> Services & Pricing
-                                    </a>
                                     <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); return false;">
                                         <i class="ti ti-shield-lock me-2 opacity-75 fs-15"></i> Authentication
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#submit" onclick="switchTab('submit'); return false;">
-                                        <i class="ti ti-server me-2 opacity-75 fs-15"></i> Submit Request
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); return false;">
+                                        <i class="ti ti-server me-2 opacity-75 fs-15"></i> AI Chat Endpoint
                                     </a>
-                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#status" onclick="switchTab('status'); return false;">
-                                        <i class="ti ti-activity me-2 opacity-75 fs-15"></i> Check Status
+                                    <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#responses" onclick="switchTab('responses'); return false;">
+                                        <i class="ti ti-message-code me-2 opacity-75 fs-15"></i> Responses & Billing
                                     </a>
                                 </div>
                             </div>
@@ -71,7 +69,7 @@
                             <div class="card-body p-4 position-relative z-index-1">
                                 <h5 class="fw-bold text-white mb-2">Need Help?</h5>
                                 <p class="small text-white-50 mb-3">Our support team is available 24/7.</p>
-                                <a href="https://chat.whatsapp.com/KoSu12yDO4A8b6AvYSkvIx" target="_blank" class="btn btn-support w-100 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center py-2">
+                                <a href="https://wa.me/2347037343660" target="_blank" class="btn btn-support w-100 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center py-2">
                                     <i class="ti ti-brand-whatsapp me-2 fs-5"></i> Contact Support
                                 </a>
                             </div>
@@ -91,17 +89,14 @@
                         <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center active" href="#overview" onclick="switchTab('overview'); closeOffcanvas(); return false;">
                             <i class="ti ti-info-circle me-2 fs-15"></i> Overview
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#services" onclick="switchTab('services'); closeOffcanvas(); return false;">
-                            <i class="ti ti-currency-naira me-2 fs-15"></i> Services & Pricing
-                        </a>
                         <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#auth" onclick="switchTab('auth'); closeOffcanvas(); return false;">
                             <i class="ti ti-shield-lock me-2 fs-15"></i> Authentication
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#submit" onclick="switchTab('submit'); closeOffcanvas(); return false;">
-                            <i class="ti ti-server me-2 fs-15"></i> Submit Request
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#endpoint" onclick="switchTab('endpoint'); closeOffcanvas(); return false;">
+                            <i class="ti ti-server me-2 fs-15"></i> AI Chat Endpoint
                         </a>
-                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#status" onclick="switchTab('status'); closeOffcanvas(); return false;">
-                            <i class="ti ti-activity me-2 fs-15"></i> Check Status
+                        <a class="list-group-item list-group-item-action border-0 mb-2 px-3 py-2 d-flex align-items-center" href="#responses" onclick="switchTab('responses'); closeOffcanvas(); return false;">
+                            <i class="ti ti-message-code me-2 fs-15"></i> Responses & Billing
                         </a>
                     </div>
                 </div>
@@ -109,17 +104,16 @@
 
             <!-- Main Content -->
             <div class="col-lg-9">
-                
                 <!-- Overview Section -->
                 <div class="docs-section fade-in" id="overview">
                     <div class="card border-0 shadow-sm rounded-4 mb-4 position-relative overflow-hidden">
                         <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5" style="background: url('https://cdn.svgporn.com/logos/laravel.svg') no-repeat right bottom; background-size: 30%;"></div>
                         <div class="card-body p-5 position-relative">
                             <span class="badge bg-soft-primary text-primary mb-3">Introduction</span>
-                            <h2 class="fw-bold mb-3">IPE Integration Guide</h2>
+                            <h2 class="fw-bold  mb-3">AI Integration Guide</h2>
                             <p class="text-muted lead mb-4">
-                                Seamlessly integrate our NIN IPE Clearance services into your application. 
-                                Our RESTful API ensures secure, fast, and reliable identity verification.
+                                Leverage the power of DeepSeek AI in your application via our simplified REST API. 
+                                No need to manage complex AI infrastructure - just send a message and get a response.
                             </p>
                             
                             <!-- Endpoint Box -->
@@ -141,76 +135,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="text-end">
-                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="services">
-                            Next: Services <i class="ti ti-arrow-right ms-2 fs-15"></i>
-                        </button>
-                    </div>
-                </div>
 
-                <!-- Services Section -->
-                <div class="docs-section d-none fade-in" id="services">
-                    <div class="card border-0 shadow-sm rounded-4 mb-4">
-                        <div class="card-body p-5">
-                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
-                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">1</span>
-                                Services & Pricing
-                            </h4>
-                            
-                            <!-- Refund Policy Alert -->
-                            <div class="alert alert-warning border border-warning border-opacity-25 rounded-3 d-flex align-items-start p-4 mb-4" role="alert">
-                                <i class="ti ti-info-circle me-3 mt-1 fs-15"></i>
-                                <div>
-                                    <h5 class="alert-heading fw-bold mb-2">Refund Policy</h5>
-                                    <p class="mb-0">
-                                        Please note our refund policy regarding failed transaction attempts:
-                                    </p>
-                                    <ul class="mb-0 mt-2">
-                                        <li><strong>IPE Clearance (002):</strong> <span class="badge bg-success bg-opacity-10 text-success ms-1">Auto-Refund</span> We provide instant automatic refunds for failed or rejected IPE requests.</li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <p class="text-muted mb-4">
-                                Use the corresponding <strong>Service Field Code</strong> when initializing a transaction.
+                    <!-- Service Fee Information -->
+                    <div class="alert alert-success border border-success border-opacity-25 rounded-3 d-flex align-items-start p-4 mb-4" role="alert">
+                        <i class="ti ti-wallet me-3 mt-1 text-success fs-15"></i>
+                        <div>
+                            <h5 class="alert-heading fw-bold mb-2">Service Fee</h5>
+                            <p class="mb-0 ">
+                                You will be charged <span class="fw-bold">₦{{ number_format($aiPrice ?? 0, 2) }}</span> per successful AI request.
+                                <span class="badge bg-success bg-opacity-10 text-success ms-1 border border-success border-opacity-25">{{ ucfirst($user->role ?? 'personal') }} Rate</span>
                             </p>
-                            
-                            <div class="table-responsive rounded-3 border custom-table-border">
-                                <table class="table table-premium table-hover align-middle mb-0">
-                                    <thead>
-                                        <tr class="text-uppercase small text-muted">
-                                            <th class="py-3 ps-4">Service Name</th>
-                                            <th class="py-3">Type</th>
-                                            <th class="py-3">Field Code (Required)</th>
-                                            <th class="py-3 text-end pe-4">Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="border-top-0">
-                                        @forelse($services as $service)
-                                            <tr>
-                                                <td class="ps-4 fw-medium">{{ $service->name }}</td>
-                                                <td>
-                                                    <span class="badge bg-teal-soft text-teal border border-teal border-opacity-10 py-2 px-3 rounded-pill">IPE Clearance</span>
-                                                </td>
-                                                <td>
-                                                    <code class="text-primary border rounded px-2 py-1 fw-bold fs-14">{{ $service->code }}</code>
-                                                </td>
-                                                <td class="text-end pe-4 fw-bold">₦{{ number_format($service->price, 2) }}</td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="4" class="text-center py-4 text-muted">No active services found used by this account.</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="overview">
-                            <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
-                        </button>
+
+                    <div class="text-end">
                         <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="auth">
                             Next: Authentication <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
@@ -222,13 +160,12 @@
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
                             <h4 class="fw-bold  mb-4 d-flex align-items-center">
-                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">2</span>
+                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">1</span>
                                 Authentication
                             </h4>
                             <p class="text-muted mb-4">
                                 Security is paramount. All requests must be authenticated using your unique API Bearer Token.
                             </p>
-                            
                             <div class="mb-5">
                                 <label class="form-label fw-bold mb-2">Your Personal API Token</label>
                                 <div class="input-group input-group-lg shadow-sm">
@@ -249,7 +186,7 @@
 
                             <div class="card bg-dark text-white border-0 shadow-lg overflow-hidden position-relative">
                                 <div class="card-header bg-transparent border-white border-opacity-10 py-3">
-                                     <h6 class="mb-0 fw-bold text-light"><i class="ti ti-code me-2 fs-15"></i>Header Authorization Example</h6>
+                                    <h6 class="mb-0 fw-bold text-light"><i class="ti ti-code me-2 fs-15"></i>Header Authorization Example</h6>
                                 </div>
                                 <div class="card-body bg-black bg-opacity-25 font-monospace p-4">
                                     <div class="d-flex">
@@ -260,7 +197,7 @@
                                         <span class="text-info me-3">Accept:</span>
                                         <span class="text-warning">application/json</span>
                                     </div>
-                                     <div class="d-flex mt-2">
+                                    <div class="d-flex mt-2">
                                         <span class="text-info me-3">Content-Type:</span>
                                         <span class="text-warning">application/json</span>
                                     </div>
@@ -269,22 +206,22 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="services">
+                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="overview">
                             <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
-                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="submit">
-                            Next: Submit Request <i class="ti ti-arrow-right ms-2 fs-15"></i>
+                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="endpoint">
+                            Next: AI Chat Endpoint <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Submit Request Section -->
-                <div class="docs-section d-none fade-in" id="submit">
+                <!-- Verify Endpoint Section -->
+                <div class="docs-section d-none fade-in" id="endpoint">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
                             <h4 class="fw-bold  mb-4 d-flex align-items-center">
-                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">3</span>
-                                Submit a Request
+                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">2</span>
+                                AI Chat Endpoint
                             </h4>
 
                             <!-- Endpoint -->
@@ -292,25 +229,27 @@
                                 <div class="card-body d-flex align-items-center justify-content-between p-4 flex-wrap gap-2">
                                     <div class="d-flex align-items-center">
                                         <span class="badge bg-primary px-3 py-2 rounded-2 fw-bold fs-14 shadow-sm me-3">POST</span>
-                                        <code class="text-primary fw-bold fs-18 text-break">{{ url('/') }}/api/v1/nin/ipe</code>
+                                        <code class="text-primary fw-bold fs-18 text-break">{{ url('/') }}/api/v1/ai/chat</code>
                                     </div>
                                 </div>
                             </div>
+
+                            <p class="text-muted mb-4">
+                                Send a message to the AI and receive a structured response.
+                            </p>
 
                             <div class="row g-4">
                                 <!-- Request Body -->
                                 <div class="col-lg-6">
                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header border-bottom py-3">
-                                            <h6 class="fw-bold mb-0">Request Payload</h6>
+                                        <div class="card-header bg-theme-subtle border-bottom border-theme py-3">
+                                            <h6 class="fw-bold  mb-0">Request Payload</h6>
                                         </div>
                                         <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace"><code>{
-  "field_code": "002", 
-  "tracking_id": "0T3NU7RSKMCHTT4",
-  "description": "My Reference"
-}
-</code></pre>
+  <span class="text-info">"message"</span>: <span class="text-warning">"Hello, how can you help me today?"</span>,
+  <span class="text-info">"model"</span>: <span class="text-warning">"deepseek-chat"</span> <span class="text-muted">// Optional</span>
+}</code></pre>
                                         </div>
                                     </div>
                                 </div>
@@ -318,19 +257,19 @@
                                 <!-- Success Response -->
                                 <div class="col-lg-6">
                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header border-bottom py-3">
+                                        <div class="card-header bg-theme-subtle border-bottom border-theme py-3">
                                             <h6 class="fw-bold text-success mb-0">Success Response (200 OK)</h6>
                                         </div>
                                         <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace"><code>{
-    "success": true,
-    "message": "Request submitted, pending processing",
-    "data": {
-        "reference": "ipe32191WRJL",
-        "trx_ref": "ipe32191WRJL",
-        "status": "processing",
-        "response": "Request submitted"
-    }
+  <span class="text-info">"status"</span>: <span class="text-warning">"success"</span>,
+  <span class="text-info">"message"</span>: <span class="text-warning">"Successful"</span>,
+  <span class="text-info">"data"</span>: {
+    <span class="text-info">"answer"</span>: <span class="text-warning">"Hello! I am your AI assistant..."</span>,
+    <span class="text-info">"model"</span>: <span class="text-warning">"deepseek-chat"</span>
+  },
+  <span class="text-info">"transaction_ref"</span>: <span class="text-warning">"AI-123..."</span>,
+  <span class="text-info">"charge"</span>: <span class="text-warning">50.00</span>
 }</code></pre>
                                         </div>
                                     </div>
@@ -338,82 +277,82 @@
                             </div>
                         </div>
                     </div>
-                     <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between">
                         <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="auth">
                             <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
-                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="status">
-                            Next: Check Status <i class="ti ti-arrow-right ms-2 fs-15"></i>
+                        <button class="btn btn-primary d-inline-flex btn-lg align-items-center shadow-sm next-tab-btn" data-next="responses">
+                            Next: Responses & Billing <i class="ti ti-arrow-right ms-2 fs-15"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Status Section -->
-                <div class="docs-section d-none fade-in" id="status">
+                <!-- Responses Section -->
+                <div class="docs-section d-none fade-in" id="responses">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
                             <h4 class="fw-bold  mb-4 d-flex align-items-center">
-                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">4</span>
-                                Check Transaction Status
+                                <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">3</span>
+                                Responses & Billing
                             </h4>
 
-                            <!-- Endpoint -->
-                             <div class="card border-0 bg-soft-success mb-4 overflow-hidden">
-                                <div class="card-body d-flex align-items-center justify-content-between p-4 flex-wrap gap-2">
-                                     <div class="d-flex align-items-center">
-                                        <span class="badge bg-success px-3 py-2 rounded-2 fw-bold fs-14 shadow-sm me-3">GET</span>
-                                        <code class="text-success fw-bold fs-18 text-break">{{ url('/') }}/api/v1/nin/ipe</code>
-                                    </div>
+                            <!-- Billing Policy Alert -->
+                            <div class="alert alert-warning border border-warning border-opacity-25 rounded-3 d-flex align-items-start p-4 mb-4" role="alert">
+                                <i class="ti ti-info-circle me-3 mt-1 fs-15"></i>
+                                <div>
+                                    <h5 class="alert-heading fw-bold mb-2">Billing Policy</h5>
+                                    <p class="mb-0 ">
+                                        Only successful AI responses are charged. If the AI service is unavailable or the request fails, no charge will be applied to your wallet.
+                                    </p>
                                 </div>
                             </div>
                             
-                            <p class="text-muted mb-4">
-                                Retrieve the current status using the tracking ID.
-                            </p>
-
-                            <div class="row g-4">
-                                <div class="col-lg-6">
-                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header border-bottom py-3">
-                                            <h6 class="fw-bold mb-0">Query Parameters</h6>
-                                        </div>
-                                        <div class="card-body p-4">
-                                            <ul class="list-unstyled mb-0 font-monospace">
-                                                <li>
-                                                    <span class="badge bg-light  border me-2">REQUIRED</span>
-                                                    <strong>?tracking_id=</strong><span class="text-muted">IPE-123456</span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                                        <div class="card-header border-bottom py-3">
-                                            <h6 class="fw-bold text-success mb-0">Response</h6>
-                                        </div>
-                                        <div class="card-body p-0 bg-dark">
-<pre class="m-0 p-4 text-white font-monospace"><code>{
-    "success": true,
-    "tracking_id": "0T3NU7RSKMCHTT4",
-    "status": "processing",
-    "comment": "status: New, reply: SUCCESSFUL, nin: 12345678900, 
-    name: MUSA TANKO, dob: 01-01-1990",
-    "message": "Status checked."
-}</code></pre>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="table-responsive rounded-3 border custom-table-border">
+                                <table class="table table-premium table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr class="text-uppercase small text-muted">
+                                            <th class="py-3 ps-4">HTTP Code</th>
+                                            <th class="py-3">Description</th>
+                                            <th class="py-3">Status</th>
+                                            <th class="py-3 text-end pe-4">Billing</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="border-top-0">
+                                        <tr>
+                                            <td class="ps-4"><code class="text-success fw-bold">200</code></td>
+                                            <td class=" fw-medium">Successful Request</td>
+                                            <td><span class="badge bg-soft-success text-success">Success</span></td>
+                                            <td class="text-end pe-4"><span class="badge bg-danger">Charged</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-4"><code class="text-warning fw-bold">402</code></td>
+                                            <td class=" fw-medium">Insufficient Balance</td>
+                                            <td><span class="badge bg-soft-warning text-warning">Balance Low</span></td>
+                                            <td class="text-end pe-4"><span class="badge bg-success">Free</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-4"><code class="text-secondary fw-bold">422</code></td>
+                                            <td class=" fw-medium">Validation Error</td>
+                                            <td><span class="badge bg-light ">Invalid Data</span></td>
+                                            <td class="text-end pe-4"><span class="badge bg-success">Free</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-4"><code class="text-secondary fw-bold">503</code></td>
+                                            <td class=" fw-medium">Service Unavailable</td>
+                                            <td><span class="badge bg-light ">Upstream Down</span></td>
+                                            <td class="text-end pe-4"><span class="badge bg-success">Free</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                     <div class="d-flex justify-content-between">
-                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="submit">
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-secondary d-inline-flex btn-lg align-items-center shadow-sm prev-tab-btn" data-prev="endpoint">
                             <i class="ti ti-arrow-left me-2 fs-15"></i> Previous
                         </button>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -441,6 +380,7 @@
                 link.classList.remove('active', 'bg-soft-primary', 'text-primary', 'fw-bold');
                 link.classList.add('text-muted');
                 
+                // Check if this link corresponds to the tabId
                 if (link.getAttribute('href') === '#' + tabId) {
                     link.classList.remove('text-muted');
                     link.classList.add('active', 'bg-soft-primary', 'text-primary', 'fw-bold');
@@ -453,12 +393,13 @@
 
         // Initialize active tab logic on load
         document.addEventListener('DOMContentLoaded', () => {
-             const hash = window.location.hash.substring(1);
-             if (hash && document.getElementById(hash)) {
-                 switchTab(hash);
-             } else {
-                 document.getElementById('overview').classList.add('active-section');
-             }
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById(hash)) {
+                switchTab(hash);
+            } else {
+                // Ensure Overview is active by default visuals
+                document.getElementById('overview').classList.add('active-section');
+            }
         });
 
         // Navigation Buttons
@@ -491,6 +432,7 @@
                 const originalText = btnText.innerText;
                 btnText.innerText = 'Copied!';
                 
+                // Show floating alert
                 const notif = document.createElement('div');
                 notif.className = 'alert alert-success position-fixed top-0 end-0 m-3 shadow-lg fw-bold';
                 notif.style.zIndex = '9999';
@@ -505,7 +447,7 @@
         }
         
         function copyToClipboard(text) {
-             navigator.clipboard.writeText(text).then(() => {
+            navigator.clipboard.writeText(text).then(() => {
                 const notif = document.createElement('div');
                 notif.className = 'alert alert-info position-fixed top-0 end-0 m-3 shadow-lg fw-bold';
                 notif.style.zIndex = '9999';
@@ -516,21 +458,23 @@
         }
     </script>
     <style>
+        /* Smooth Fade Transitions */
         .docs-section { opacity: 0; transition: opacity 0.3s ease-in-out; }
         .docs-section.active-section { opacity: 1; }
         
-        /* New Premium Sidebar Header */
+        /* Sidebar Header */
         .sidebar-nav-header { 
-            background-color: #FFF5F2 !important; 
-            border-bottom: 1px solid #f8e1da;
+            background-color: #fef0e9 !important; 
+            border-bottom: 1px solid #fee0d2;
         }
+        .sidebar-nav-header h6, .sidebar-nav-header h5 { color: #f26922 !important; }
         .dark-mode .sidebar-nav-header {
-            background-color: rgba(229, 113, 94, 0.1) !important;
-            border-bottom: 1px solid rgba(229, 113, 94, 0.2);
+            background-color: rgba(242, 105, 34, 0.08) !important;
+            border-bottom: 1px solid rgba(242, 105, 34, 0.15) !important;
         }
-        .sidebar-nav-header h6, .sidebar-nav-header h5 { color: #e5715e !important; }
+        .dark-mode .sidebar-nav-header h6, .dark-mode .sidebar-nav-header h5 { color: #ff9b6a !important; }
 
-        /* Sidebar Navigation Items as Individual Cards */
+        /* Sidebar Navigation Items */
         .custom-sidebar-nav .list-group-item { 
             transition: all 0.2s ease; 
             font-weight: 500; 
@@ -543,7 +487,7 @@
         }
         .custom-sidebar-nav .list-group-item:hover { 
             background-color: var(--bg-body, #f8fafc) !important; 
-            color: var(--bs-primary) !important; 
+            color: #f26922 !important; 
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
@@ -554,9 +498,16 @@
             box-shadow: 0 4px 12px rgba(26, 43, 75, 0.2);
             font-weight: bold; 
         }
+        .dark-mode .custom-sidebar-nav .list-group-item {
+            background-color: #1e2532 !important;
+            border-color: #2b3346 !important;
+            color: #94a3b8 !important;
+        }
         .dark-mode .custom-sidebar-nav .list-group-item.active {
-            background-color: var(--bs-primary) !important;
-            border-color: var(--bs-primary) !important;
+            background-color: #f26922 !important;
+            border-color: #f26922 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(242, 105, 34, 0.4);
         }
 
         /* Support Card Redesign */
@@ -578,28 +529,11 @@
         .dark-mode .support-card-custom {
             background-color: #d95d1e !important;
         }
-
-        /* Dark mode sidebar items */
-        .dark-mode .custom-sidebar-nav .list-group-item {
-            background-color: #1e2532 !important;
-            border-color: #2b3346 !important;
-            color: #94a3b8 !important;
+        
+        /* Mobile Adjustments */
+        @media (max-width: 991.98px) {
+            .sticky-top { position: relative !important; top: 0 !important; z-index: 1 !important; }
         }
-        .dark-mode .custom-sidebar-nav .list-group-item.active {
-            background-color: #f26922 !important;
-            border-color: #f26922 !important;
-            color: #ffffff !important;
-            box-shadow: 0 4px 12px rgba(242, 105, 34, 0.4);
-        }
-        .dark-mode .custom-table-border { border-color: rgba(255,255,255,0.1) !important; }
-
-        /* Badges */
-        .bg-indigo-soft { background-color: rgba(102, 16, 242, 0.1); }
-        .text-indigo { color: #6610f2; }
-        .bg-teal-soft { background-color: rgba(32, 201, 151, 0.1); }
-        .text-teal { color: #20c997; }
-
-        @media (max-width: 991.98px) { .sticky-top { position: relative !important; top: 0 !important; z-index: 1 !important; } }
     </style>
     @endpush
 </x-app-layout>

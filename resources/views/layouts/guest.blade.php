@@ -31,29 +31,9 @@
             <div class="container-fuild">
                 <div class="w-100 overflow-hidden position-relative flex-wrap d-block vh-100">
                     <div class="row">
-                        {{-- The left-side image/text column is static and placed here --}}
-                        <div class="col-lg-5">
-                            <div class="login-background position-relative d-lg-flex align-items-center justify-content-center d-none flex-wrap vh-100">
-                                <div class="bg-overlay-img">
-                                 </div>
-                                <div class="authentication-card w-100">
-                                    <div class="authen-overlay-item border w-100">
-                                        <h1 class="text-white fs-20 fw-semibold text-center">Transform Your Business Journey with Arewa Smart API  </h1>
-                                        <div class="my-4 mx-auto authen-overlay-img">
-                                            <img src="{{ asset('assets/img/landing/api.png') }}" alt="Img">
-                                        </div>
-                                        <div>
-                                            <p class="text-white fs-20 fw-semibold text-center">Efficiently manage your workforce, streamline <br> operations effortlessly.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- The right-side form column contains the slot for the actual form --}}
-                        <div class="col-lg-7 col-md-12 col-sm-12">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
                             <div class="row justify-content-center align-items-center vh-100 overflow-auto flex-wrap">
-                                <div class="col-md-7 mx-auto vh-100">
+                                <div class="col-md-6 col-lg-5 mx-auto">
                                     {{ $slot }} {{-- This is where your register form content will go --}}
                                 </div>
                             </div>
@@ -81,74 +61,80 @@
             const passwordMatchError = document.getElementById('passwordMatchError');
 
             // Email Validation
-            email.addEventListener('input', () => {
-                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailPattern.test(email.value.trim())) {
-                    emailError.classList.remove('d-none');
-                } else {
-                    emailError.classList.add('d-none');
-                }
-            });
+            if (email && emailError) {
+                email.addEventListener('input', () => {
+                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailPattern.test(email.value.trim())) {
+                        emailError.classList.remove('d-none');
+                    } else {
+                        emailError.classList.add('d-none');
+                    }
+                });
+            }
 
             // Password Strength
-            password.addEventListener('input', () => {
-                const val = password.value;
-                let strength = 0;
+            if (password && passwordStrengthBar && passwordStrengthText) {
+                password.addEventListener('input', () => {
+                    const val = password.value;
+                    let strength = 0;
 
-                if (val.length >= 8) strength++;
-                if (/[A-Z]/.test(val)) strength++;
-                if (/[a-z]/.test(val)) strength++;  // Added lowercase check
-                if (/[0-9]/.test(val)) strength++;
-                if (/[^A-Za-z0-9]/.test(val)) strength++;
-                if (val.length >= 12) strength++;   // Extra point for longer passwords
+                    if (val.length >= 8) strength++;
+                    if (/[A-Z]/.test(val)) strength++;
+                    if (/[a-z]/.test(val)) strength++;  // Added lowercase check
+                    if (/[0-9]/.test(val)) strength++;
+                    if (/[^A-Za-z0-9]/.test(val)) strength++;
+                    if (val.length >= 12) strength++;   // Extra point for longer passwords
 
-                let width = 0, color = '', label = '';
+                    let width = 0, color = '', label = '';
 
-                switch (strength) {
-                    case 0: 
-                        width = 0; 
-                        color = 'bg-secondary';
-                        label = 'Time to create something special! 🎯'; 
-                        break;
-                    case 1: 
-                        width = 20; 
-                        color = 'bg-danger'; 
-                        label = 'Getting started! Add some magic to make it stronger ✨'; 
-                        break;
-                    case 2: 
-                        width = 40; 
-                        color = 'bg-warning'; 
-                        label = 'Nice progress! Mix it up a bit more! 🌟'; 
-                        break;
-                    case 3: 
-                        width = 60; 
-                        color = 'bg-info'; 
-                        label = 'Looking good! Almost fortress-level security! 🏰'; 
-                        break;
-                    case 4: 
-                        width = 80; 
-                        color = 'bg-success'; 
-                        label = 'Excellent! Your password is getting super strong! 💪'; 
-                        break;
-                    case 5: 
-                        width = 100; 
-                        color = 'bg-success'; 
-                        label = 'Perfect! Your password is now fortress-level secure! 🔒'; 
-                        break;
-                }
+                    switch (strength) {
+                        case 0: 
+                            width = 0; 
+                            color = 'bg-secondary';
+                            label = 'Time to create something special! 🎯'; 
+                            break;
+                        case 1: 
+                            width = 20; 
+                            color = 'bg-danger'; 
+                            label = 'Getting started! Add some magic to make it stronger ✨'; 
+                            break;
+                        case 2: 
+                            width = 40; 
+                            color = 'bg-warning'; 
+                            label = 'Nice progress! Mix it up a bit more! 🌟'; 
+                            break;
+                        case 3: 
+                            width = 60; 
+                            color = 'bg-info'; 
+                            label = 'Looking good! Almost fortress-level security! 🏰'; 
+                            break;
+                        case 4: 
+                            width = 80; 
+                            color = 'bg-success'; 
+                            label = 'Excellent! Your password is getting super strong! 💪'; 
+                            break;
+                        case 5: 
+                            width = 100; 
+                            color = 'bg-success'; 
+                            label = 'Perfect! Your password is now fortress-level secure! 🔒'; 
+                            break;
+                    }
 
-                passwordStrengthBar.style.width = width + '%';
-                passwordStrengthBar.className = 'progress-bar ' + color;
-                passwordStrengthText.textContent = label;
-            });
+                    passwordStrengthBar.style.width = width + '%';
+                    passwordStrengthBar.className = 'progress-bar ' + color;
+                    passwordStrengthText.textContent = label;
+                });
+            }
 
             // Password Match
-            confirmPassword.addEventListener('input', () => {
-                if (confirmPassword.value && confirmPassword.value !== password.value) {
-                    passwordMatchError.classList.remove('d-none');
-                } else {
-                    passwordMatchError.classList.add('d-none');
-                }
-            });
+            if (password && confirmPassword && passwordMatchError) {
+                confirmPassword.addEventListener('input', () => {
+                    if (confirmPassword.value && confirmPassword.value !== password.value) {
+                        passwordMatchError.classList.remove('d-none');
+                    } else {
+                        passwordMatchError.classList.add('d-none');
+                    }
+                });
+            }
         });
     </script>

@@ -135,7 +135,24 @@ class DocumentationAiController extends Controller
             $smeList .= "\n#### Network: " . strtoupper($network) . "\n";
             foreach ($plans as $plan) {
                 $price = $plan->calculatePriceForRole($role);
-                $smeList .= "- {$plan->size} ({$plan->plan_type}): ₦" . number_format($price, 2) . " (Code: {$plan->data_id}, Validity: {$plan->validity})\n";
+                $smeList .= "\n- {$plan->size} ({$plan->plan_type}): ₦" . number_format($price, 2) . " (Code: {$plan->data_id}, Validity: {$plan->validity})";
+            }
+        }
+
+        // 5. Fetch TV Subscription Details
+        $tvService = Service::where('name', 'TV')->first();
+        $tvList = "";
+        if ($tvService) {
+            $tvProviders = ['dstv' => 'DSTV', 'gotv' => 'GOTV', 'startimes' => 'Startimes', 'showmax' => 'Showmax'];
+            $tvList .= "\n### TV Subscription Providers\n";
+            foreach ($tvProviders as $code => $name) {
+                $field = $tvService->fields()->where('field_code', $code)->first();
+                $cashback = 0;
+                if ($field) {
+                    $priceObj = DB::table('service_prices')->where('service_fields_id', $field->id)->where('user_type', $role)->first();
+                    $cashback = $priceObj ? $priceObj->price : $field->base_price;
+                }
+                $tvList .= "- {$name} (ID: {$code}): {$cashback}% Cashback\n";
             }
         }
 
@@ -158,6 +175,13 @@ You are the **Arewa Smart AI Support Assistant**. Your goal is to help developer
 Arewa Smart is a top-tier Nigeria API provider for Identity Verification (NIN, BVN, TIN) and Utility Payments.
 - **Base URL**: " . url('/api/v1') . "
 - **Auth**: 'Authorization: Bearer <API_TOKEN>'
+- **Available Services**:
+    - **Identity**: NIN Verification (610), BVN Verification (600), TIN Verification.
+    - **Modifications**: NIN Modification (DOB, Name, etc.), BVN Modification.
+    - **NEW: Educational PINs**: JAMB, WAEC, NECO, NABTEB (Instant PIN delivery).
+    - **NEW: BVN Phone Search**: Lookup phone numbers linked to any BVN.
+    - **NEW: AI Assistant API**: Integrate our DeepSeek-powered AI into your own applications.
+    - **Utilities**: Data Bundles (Regular & SME), Airtime, TV Subscriptions, Electricity.
 
 ### LIVE PRICING & PLANS (FOR THIS USER):
 - **User Role**: {$role}
@@ -168,6 +192,15 @@ Arewa Smart is a top-tier Nigeria API provider for Identity Verification (NIN, B
 
 ### SME/SPECIAL DATA PLANS:
 {$smeList}
+
+### TV SUBSCRIPTION:
+{$tvList}
+- **Endpoints**: `GET /tv/variations`, `POST /tv/verify`, `POST /tv/purchase`
+
+### NEW SERVICES INTEGRATION:
+- **Education API**: `GET /education/variations`, `POST /education/purchase`
+- **BVN Search API**: `POST /bvn/search`
+- **AI Assistant API**: `POST /ai/chat` (For external developers to use our AI)
 
 ### GUIDELINES FOR THE USER:
 1. **Security**: Always use HTTPS. Store API tokens in environment variables (.env), never hardcode them.

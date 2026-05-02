@@ -202,7 +202,7 @@
     .dark-mode .form-select:focus {
         background-color: rgba(255, 255, 255, 0.08) !important;
         border-color: var(--primary) !important;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        box-shadow: 0 0 0 0.25rem rgba(242, 105, 34, 0.25);
     }
 
     .dark-mode .form-floating > label {
@@ -316,13 +316,13 @@
     .badge-subtle-danger { background-color: rgba(239, 68, 68, 0.1) !important; color: #ef4444 !important; }
     .badge-subtle-warning { background-color: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important; }
     .badge-subtle-info { background-color: rgba(6, 182, 212, 0.1) !important; color: #06b6d4 !important; }
-    .badge-subtle-primary { background-color: rgba(13, 110, 253, 0.1) !important; color: #0d6efd !important; }
+    .badge-subtle-primary { background-color: rgba(242, 105, 34, 0.1) !important; color: #f26922 !important; }
 
     .dark-mode .badge-subtle-success { background-color: rgba(34, 197, 94, 0.2) !important; color: #4ade80 !important; }
     .dark-mode .badge-subtle-danger { background-color: rgba(239, 68, 68, 0.2) !important; color: #f87171 !important; }
     .dark-mode .badge-subtle-warning { background-color: rgba(245, 158, 11, 0.2) !important; color: #fbbf24 !important; }
     .dark-mode .badge-subtle-info { background-color: rgba(6, 182, 212, 0.2) !important; color: #22d3ee !important; }
-    .dark-mode .badge-subtle-primary { background-color: rgba(13, 110, 253, 0.2) !important; color: #3b82f6 !important; }
+    .dark-mode .badge-subtle-primary { background-color: rgba(242, 105, 34, 0.2) !important; color: #f26922 !important; }
     </style>
 </head>
 
@@ -448,7 +448,7 @@
 
   /* Premium Skeleton Shimmer Effect */
   .skeleton-shimmer {
-    background: linear-gradient(90deg, transparent 25%, rgba(13, 110, 253, 0.05) 50%, transparent 75%);
+    background: linear-gradient(90deg, transparent 25%, rgba(242, 105, 34, 0.05) 50%, transparent 75%);
     background-size: 200% 100%;
     animation: skeleton-load 1.5s infinite;
     border-radius: 4px;

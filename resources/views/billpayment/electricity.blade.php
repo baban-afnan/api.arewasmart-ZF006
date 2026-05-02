@@ -67,15 +67,15 @@
                         </div>
 
                         <!-- Support Card -->
-                        <div class="card border-0 shadow-sm rounded-4 mt-4 support-card-custom text-white overflow-hidden position-relative">
+                        <div class="card border-0 shadow-lg rounded-4 mt-4 support-card-custom text-white overflow-hidden position-relative">
                             <div class="position-absolute top-0 end-0 p-3 opacity-25">
-                                <i class="ti ti-headset fs-15"></i>
+                                <i class="ti ti-headset fs-3"></i>
                             </div>
                             <div class="card-body p-4 position-relative z-index-1">
-                                <h6 class="fw-bold text-white mb-2">Need Help?</h6>
-                                <p class="small text-white-50 mb-3">Our support team is available 24/7 to assist with integration.</p>
-                                <a href="https://wa.me/2347037343660" target="_blank" class="btn btn-support w-100 btn-sm rounded-pill fw-bold shadow-sm">
-                                    <i class="ti ti-brand-whatsapp me-1 fs-15"></i> Contact Support
+                                <h5 class="fw-bold text-white mb-2">Need Help?</h5>
+                                <p class="small text-white-50 mb-3">Our support team is available 24/7.</p>
+                                <a href="https://wa.me/2347037343660" target="_blank" class="btn btn-support w-100 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center py-2">
+                                    <i class="ti ti-brand-whatsapp me-2 fs-5"></i> Contact Support
                                 </a>
                             </div>
                         </div>
@@ -565,11 +565,23 @@
         }
 
         /* Support Card Redesign */
-        .support-card-custom { background-color: #0f172a !important; }
+        .support-card-custom { 
+            background-color: #f26922 !important; 
+            border-radius: 20px !important;
+        }
         .support-card-custom .btn-support { 
             background-color: #ffffff !important; 
-            color: #3b82f6 !important; 
+            color: #f26922 !important; 
             font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .support-card-custom .btn-support:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            background-color: #f8fafc !important;
+        }
+        .dark-mode .support-card-custom {
+            background-color: #d95d1e !important;
         }
 
         @media (max-width: 991.98px) { .sticky-top { position: relative !important; top: 0 !important; z-index: 1 !important; } }

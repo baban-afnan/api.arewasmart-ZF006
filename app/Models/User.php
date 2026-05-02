@@ -47,6 +47,7 @@ class User extends Authenticatable implements MustVerifyEmail
         // Other
         'claim_id',
         'role',
+        'limit',
         'password',
         'two_factor_code',
         'two_factor_expires_at',

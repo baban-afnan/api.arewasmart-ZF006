@@ -14,8 +14,8 @@
 
     <style>
         :root {
-            --primary-color: #3b82f6;
-            --primary-dark: #1d4ed8;
+            --primary-color: #f26922;
+            --primary-dark: #d95d1e;
             --sidebar-width: 300px;
             --peach-soft: #FFF5F2;
             --peach-text: #e5715e;
@@ -31,7 +31,7 @@
             --text-heading: #1e293b;
             --border-color: #eef2f6;
             --sidebar-link: #64748b;
-            --sidebar-link-hover: #3b82f6;
+            --sidebar-link-hover: #f26922;
             --sidebar-link-bg: #fff;
             --sidebar-link-hover-bg: #f8fafc;
             --bg-soft-primary: #eff6ff;
@@ -48,7 +48,7 @@
             --text-heading: #f1f5f9;
             --border-color: #334155;
             --sidebar-link: #94a3b8;
-            --sidebar-link-hover: #3b82f6;
+            --sidebar-link-hover: #f26922;
             --sidebar-link-bg: rgba(255, 255, 255, 0.02);
             --sidebar-link-hover-bg: rgba(255, 255, 255, 0.05);
             --bg-soft-primary: rgba(59, 130, 246, 0.1);
@@ -135,11 +135,29 @@
             border-color: var(--border-color);
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
         }
+        .support-card-custom {
+            background-color: #f26922 !important;
+            border: none !important;
+            border-radius: 20px !important;
+        }
         .support-card-custom .btn-support { 
             background-color: #ffffff !important; 
-            color: #3b82f6 !important; 
+            color: #f26922 !important; 
             font-weight: 700;
             border-radius: 50px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6rem;
+        }
+        .support-card-custom .btn-support:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            background-color: #f8fafc !important;
+        }
+        .dark-mode .support-card-custom {
+            background-color: #d95d1e !important; /* Slightly deeper orange for dark mode */
         }
 
         /* Documentation Theme Helper Overrides */
@@ -170,7 +188,7 @@
         }
         .docs-nav li a.active {
             background-color: var(--navy-dark) !important;
-            color: #3b82f6 !important;
+            color: #f26922 !important;
             font-weight: 700;
             box-shadow: 0 10px 15px -3px rgba(26, 43, 75, 0.2);
             border-color: var(--navy-dark);
@@ -420,15 +438,15 @@
             </ul>
 
             <!-- Support Card -->
-            <div class="card border-0 shadow-sm support-card-custom text-white overflow-hidden position-relative mt-5">
+            <div class="card border-0 shadow-lg support-card-custom text-white overflow-hidden position-relative mt-5">
                 <div class="position-absolute top-0 end-0 p-3 opacity-25">
-                    <i class="ti ti-headset fs-1"></i>
+                    <i class="ti ti-headset fs-3"></i>
                 </div>
                 <div class="card-body p-4 position-relative z-index-1">
-                    <h6 class="fw-bold text-white mb-2">Need Help?</h6>
-                    <p class="small text-white-50 mb-3" style="font-size: 0.8rem;">Our support team is available 24/7 to assist with integration.</p>
-                    <a href="https://chat.whatsapp.com/KoSu12yDO4A8b6AvYSkvIx" target="_blank" class="btn btn-support w-100 btn-sm shadow-sm">
-                        <i class="ti ti-brand-whatsapp me-1"></i> Contact Support
+                    <h5 class="fw-bold text-white mb-2">Need Help?</h5>
+                    <p class="small text-white-50 mb-3" style="font-size: 0.85rem;">Our support team is available 24/7.</p>
+                    <a href="https://chat.whatsapp.com/KoSu12yDO4A8b6AvYSkvIx" target="_blank" class="btn btn-support w-100 shadow-sm">
+                        <i class="ti ti-brand-whatsapp me-2 fs-5"></i> Contact Support
                     </a>
                 </div>
             </div>
