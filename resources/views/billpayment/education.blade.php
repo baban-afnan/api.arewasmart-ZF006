@@ -437,7 +437,7 @@
                                             <td class="text-end pe-4">
                                                 @if(in_array($code, ['jamb', 'waec']))
                                                     <span class="badge bg-soft-success text-success">
-                                                        {{ $commissions[$code] ?? 0 }}% Cashback
+                                                        ₦{{ number_format($commissions[$code] ?? 0, 2) }} Cashback
                                                     </span>
                                                 @else
                                                     <span class="badge bg-soft-primary text-primary">

@@ -25,7 +25,7 @@ class EducationController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         $service = Service::where('name', 'Education')->first();
         if (!$service) {
             $this->initializeService();
@@ -46,7 +46,7 @@ class EducationController extends Controller
                     ->where('service_fields_id', $field->id)
                     ->where('user_type', $role)
                     ->first();
-                
+
                 $commissions[$code] = $priceObj ? $priceObj->price : $field->base_price;
             } else {
                 $commissions[$code] = 0;
@@ -91,7 +91,7 @@ class EducationController extends Controller
             // 2. Fetch NECO & NABTEB from Service Fields (Fixed Price)
             $fixedServices = ['neco', 'nabteb'];
             $educationService = Service::where('name', 'Education')->first();
-            
+
             foreach ($fixedServices as $fs) {
                 $field = ServiceField::where('service_id', $educationService->id)->where('field_code', $fs)->first();
                 if ($field) {
@@ -107,12 +107,12 @@ class EducationController extends Controller
 
             return response()->json(['status' => 'success', 'data' => $allVariations]);
         }
-        
+
         if (in_array($serviceId, ['neco', 'nabteb'])) {
             // NECO and NABTEB are fixed price from service_fields
             $service = Service::where('name', 'Education')->first();
             $field = ServiceField::where('service_id', $service->id)->where('field_code', $serviceId)->first();
-            
+
             if (!$field) {
                 return response()->json(['status' => 'error', 'message' => 'Service not configured.']);
             }
@@ -150,7 +150,7 @@ class EducationController extends Controller
         if (in_array($serviceId, ['jamb', 'waec'])) {
             try {
                 $response = Http::withHeaders([
-                    'api-key'    => config('services.vtpass.api_key'),
+                    'api-key' => config('services.vtpass.api_key'),
                     'secret-key' => config('services.vtpass.secret_key'),
                 ])->get(config('services.vtpass.variation_url') . $serviceId);
 
@@ -161,19 +161,19 @@ class EducationController extends Controller
                         foreach ($data['content']['variations'] as $v) {
                             $variations[] = [
                                 'service_id' => $serviceId,
-                                'code'   => $v['variation_code'],
-                                'name'   => $v['name'],
+                                'code' => $v['variation_code'],
+                                'name' => $v['name'],
                                 'amount' => $v['variation_amount'],
                             ];
-                            
+
                             DB::table('data_variations')->updateOrInsert(
                                 ['variation_code' => $v['variation_code'], 'service_id' => $serviceId],
                                 [
-                                    'name'             => $v['name'],
+                                    'name' => $v['name'],
                                     'variation_amount' => $v['variation_amount'],
-                                    'fixedPrice'      => $v['fixedPrice'] ?? 'Yes',
-                                    'status'           => 'enabled',
-                                    'updated_at'       => Carbon::now(),
+                                    'fixedPrice' => $v['fixedPrice'] ?? 'Yes',
+                                    'status' => 'enabled',
+                                    'updated_at' => Carbon::now(),
                                 ]
                             );
                         }
@@ -199,9 +199,9 @@ class EducationController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'serviceID'   => 'required|string|in:jamb',
+            'serviceID' => 'required|string|in:jamb',
             'billersCode' => 'required|string', // Profile ID
-            'type'        => 'required|string'  // utme or direct-entry
+            'type' => 'required|string'  // utme or direct-entry
         ]);
 
         if ($validator->fails()) {
@@ -210,20 +210,20 @@ class EducationController extends Controller
 
         try {
             $response = Http::withHeaders([
-                'api-key'    => config('services.vtpass.api_key'),
+                'api-key' => config('services.vtpass.api_key'),
                 'secret-key' => config('services.vtpass.secret_key'),
             ])->post(config('services.vtpass.base_url') . '/merchant-verify', [
-                'serviceID'   => $request->serviceID,
-                'billersCode' => $request->billersCode,
-                'type'        => $request->type
-            ]);
+                        'serviceID' => $request->serviceID,
+                        'billersCode' => $request->billersCode,
+                        'type' => $request->type
+                    ]);
 
             if ($response->successful()) {
                 $data = $response->json();
                 if (isset($data['code']) && $data['code'] == '000') {
                     return response()->json([
                         'status' => 'success',
-                        'data'   => $data['content']
+                        'data' => $data['content']
                     ]);
                 }
             }
@@ -248,12 +248,12 @@ class EducationController extends Controller
             }
 
             $validator = Validator::make($request->all(), [
-                'serviceID'      => 'required|string|in:jamb,waec,neco,nabteb',
-                'billersCode'    => 'required|string', // Profile ID or Phone
+                'serviceID' => 'required|string|in:jamb,waec,neco,nabteb',
+                'billersCode' => 'required|string', // Profile ID or Phone
                 'variation_code' => 'required|string',
-                'amount'         => 'required|numeric',
-                'phone'          => 'required|numeric|digits:11',
-                'request_id'     => 'nullable|string|unique:transactions,transaction_ref'
+                'amount' => 'required|numeric',
+                'phone' => 'required|numeric|digits:11',
+                'request_id' => 'nullable|string|unique:transactions,transaction_ref'
             ]);
 
             if ($validator->fails()) {
@@ -275,95 +275,95 @@ class EducationController extends Controller
             $discountAmount = $pricing['discount_amount'];
 
             if (in_array($serviceID, ['neco', 'nabteb'])) {
-            // Safeguard: Prevent 0.00 purchase if price not set
-            if ($pricing['final_amount'] <= 0) {
-                return response()->json(['status' => 'error', 'message' => 'This service is currently unavailable for purchase (Price not set).'], 400);
-            }
-        }
-
-        DB::beginTransaction();
-
-        try {
-            $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
-
-            if (!$wallet || $wallet->status !== 'active') {
-                DB::rollBack();
-                return response()->json(['status' => 'error', 'message' => 'Wallet inactive.'], 400);
+                // Safeguard: Prevent 0.00 purchase if price not set
+                if ($pricing['final_amount'] <= 0) {
+                    return response()->json(['status' => 'error', 'message' => 'This service is currently unavailable for purchase (Price not set).'], 400);
+                }
             }
 
-            if ($wallet->balance < $finalAmount) {
-                DB::rollBack();
-                return response()->json(['status' => 'error', 'message' => 'Insufficient wallet balance.'], 402);
-            }
+            DB::beginTransaction();
 
-            $transaction = Transaction::create([
-                'transaction_ref' => $transactionRef,
-                'user_id' => $user->id,
-                'payer_name' => $performedBy,
-                'amount' => $finalAmount,
-                'description' => strtoupper($serviceID) . " PIN Purchase: {$request->variation_code} - {$request->billersCode}",
-                'type' => 'debit',
-                'status' => 'completed',
-                'trans_source' => 'api',
-                'performed_by' => $performedBy,
-                'metadata' => [
-                    'service_name' => $this->getEducationProviders()[$serviceID] ?? $serviceID,
-                    'service_id' => $serviceID, 
-                    'billersCode' => $request->billersCode,
-                    'variation_code' => $request->variation_code,
-                    'phone' => $request->phone,
-                    'external_ref' => $requestId
-                ]
-            ]);
+            try {
+                $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
 
-            $wallet->decrement('balance', $finalAmount);
+                if (!$wallet || $wallet->status !== 'active') {
+                    DB::rollBack();
+                    return response()->json(['status' => 'error', 'message' => 'Wallet inactive.'], 400);
+                }
 
-            // Handle Cashback/Discount if applicable
-            if ($discountAmount > 0) {
-                $wallet->increment('available_balance', $discountAmount);
-                Transaction::create([
-                    'transaction_ref' => $this->generateTransactionRef(),
+                if ($wallet->balance < $finalAmount) {
+                    DB::rollBack();
+                    return response()->json(['status' => 'error', 'message' => 'Insufficient wallet balance.'], 402);
+                }
+
+                $transaction = Transaction::create([
+                    'transaction_ref' => $transactionRef,
                     'user_id' => $user->id,
-                    'amount' => $discountAmount,
-                    'description' => strtoupper($serviceID) . " Cashback",
-                    'type' => 'bonus',
+                    'payer_name' => $performedBy,
+                    'amount' => $finalAmount,
+                    'description' => strtoupper($serviceID) . " PIN Purchase: {$request->variation_code} - {$request->billersCode}",
+                    'type' => 'debit',
                     'status' => 'completed',
                     'trans_source' => 'api',
                     'performed_by' => $performedBy,
-                    'metadata' => ['related_transaction' => $transactionRef]
+                    'metadata' => [
+                        'service_name' => $this->getEducationProviders()[$serviceID] ?? $serviceID,
+                        'service_id' => $serviceID,
+                        'billersCode' => $request->billersCode,
+                        'variation_code' => $request->variation_code,
+                        'phone' => $request->phone,
+                        'external_ref' => $requestId
+                    ]
                 ]);
-            }
 
-            // Call Upstream API
-            $response = $this->callUpstreamApi($serviceID, $requestId, $request->all(), $pricing);
+                $wallet->decrement('balance', $finalAmount);
 
-            if (!$response['success']) {
-                DB::rollBack();
+                // Handle Cashback/Discount if applicable
+                if ($discountAmount > 0) {
+                    $wallet->increment('available_balance', $discountAmount);
+                    Transaction::create([
+                        'transaction_ref' => $this->generateTransactionRef(),
+                        'user_id' => $user->id,
+                        'amount' => $discountAmount,
+                        'description' => strtoupper($serviceID) . " Cashback",
+                        'type' => 'bonus',
+                        'status' => 'completed',
+                        'trans_source' => 'api',
+                        'performed_by' => $performedBy,
+                        'metadata' => ['related_transaction' => $transactionRef]
+                    ]);
+                }
+
+                // Call Upstream API
+                $response = $this->callUpstreamApi($serviceID, $requestId, $request->all(), $pricing);
+
+                if (!$response['success']) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => $response['message'] ?? 'Purchase failed.',
+                        'upstream_response' => $response['data'] ?? null
+                    ], 400);
+                }
+
+                // Unified PIN Extraction
+                $pinData = $this->extractPin($serviceID, $response['data']);
+
+                DB::commit();
+
                 return response()->json([
-                    'status' => 'error', 
-                    'message' => $response['message'] ?? 'Purchase failed.', 
-                    'upstream_response' => $response['data'] ?? null
-                ], 400); 
-            }
-
-            // Unified PIN Extraction
-            $pinData = $this->extractPin($serviceID, $response['data']);
-
-            DB::commit();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => strtoupper($serviceID) . ' purchase successful',
-                'data' => array_merge($response['data'], [
-                    'pin' => $pinData['pin'] ?? 'See response for details',
-                    'serial' => $pinData['serial'] ?? null,
-                    'transaction_ref' => $transactionRef,
-                    'request_id' => $requestId,
-                    'amount' => $finalAmount,
-                    'new_balance' => $wallet->balance,
-                    'status' => 'completed'
-                ])
-            ], 200);
+                    'status' => 'success',
+                    'message' => strtoupper($serviceID) . ' purchase successful',
+                    'data' => array_merge($response['data'], [
+                        'pin' => $pinData['pin'] ?? 'See response for details',
+                        'serial' => $pinData['serial'] ?? null,
+                        'transaction_ref' => $transactionRef,
+                        'request_id' => $requestId,
+                        'amount' => $finalAmount,
+                        'new_balance' => $wallet->balance,
+                        'status' => 'completed'
+                    ])
+                ], 200);
 
             } catch (\Exception $e) {
                 DB::rollBack();
@@ -382,7 +382,7 @@ class EducationController extends Controller
     {
         $service = Service::where('name', 'Education')->first();
         $field = ServiceField::where('service_id', $service->id)->where('field_code', $serviceID)->first();
-        
+
         if (!$field) {
             return ['success' => false, 'message' => 'Service configuration missing.'];
         }
@@ -392,8 +392,8 @@ class EducationController extends Controller
         $commissionOrPrice = $priceObj ? $priceObj->price : $field->base_price;
 
         if (in_array($serviceID, ['jamb', 'waec'])) {
-            // JAMB/WAEC: requestAmount is base, commissionOrPrice is percentage discount
-            $discount = ($requestAmount * $commissionOrPrice) / 100;
+            // JAMB/WAEC: requestAmount is base, commissionOrPrice is fixed amount discount
+            $discount = $commissionOrPrice;
             return [
                 'success' => true,
                 'final_amount' => $requestAmount,
@@ -422,16 +422,16 @@ class EducationController extends Controller
     {
         try {
             $vtPayload = [
-                'request_id'     => $requestId,
-                'serviceID'      => $serviceID,
-                'billersCode'    => $payload['billersCode'],
+                'request_id' => $requestId,
+                'serviceID' => $serviceID,
+                'billersCode' => $payload['billersCode'],
                 'variation_code' => $payload['variation_code'],
-                'amount'         => $payload['amount'],
-                'phone'          => $payload['phone'],
+                'amount' => $payload['amount'],
+                'phone' => $payload['phone'],
             ];
 
             $response = Http::withHeaders([
-                'api-key'    => config('services.vtpass.api_key'),
+                'api-key' => config('services.vtpass.api_key'),
                 'secret-key' => config('services.vtpass.secret_key'),
             ])->post(config('services.vtpass.payment_url'), $vtPayload);
 
@@ -512,7 +512,8 @@ class EducationController extends Controller
 
     private function authenticateApiUser(Request $request)
     {
-        if ($request->user()) return $request->user();
+        if ($request->user())
+            return $request->user();
         $token = $request->bearerToken() ?? $request->header('Authorization');
         if (is_string($token) && strpos($token, 'Bearer ') === 0) {
             $token = substr($token, 7);
@@ -529,7 +530,7 @@ class EducationController extends Controller
     {
         DB::transaction(function () {
             $service = Service::updateOrCreate(['name' => 'Education'], ['description' => 'Education Pin Services', 'is_active' => 1]);
-            
+
             $providers = $this->getEducationProviders();
             foreach ($providers as $code => $name) {
                 ServiceField::updateOrCreate(
