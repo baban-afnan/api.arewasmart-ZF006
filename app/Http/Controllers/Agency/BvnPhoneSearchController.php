@@ -203,7 +203,7 @@ class BvnPhoneSearchController extends Controller
             }
             
             $query = AgentService::where('user_id', $user->id)
-                ->where('service_type', 'search BVN');
+                ->where('service_type', 'BVN_SEARCH');
 
             if ($request->reference) {
                 $query->where('reference', $request->reference);
