@@ -156,7 +156,7 @@ class BvnPhoneSearchController extends Controller
                 'field_code'       => $serviceField->field_code,
                 'field_name'       => $serviceField->field_name,
                 'bank'             => $service->name,
-                'phone_number'     => $request->number,
+                'phone_number'     => $request->phone_number,
                 'amount'           => $servicePrice,
                 'transaction_id'   => $transaction->id,
                 'submission_date'  => now(),
