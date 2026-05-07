@@ -79,23 +79,29 @@ class BvnModificationController extends Controller
         }
 
         // 2. Validate request
+        $allowedCodes = array_merge(self::KEYSTONE_CODES, self::FIRST_BANK_CODES, self::AGENCY_CODES);
         $validator = Validator::make($request->all(), [
-            'field_code'        => 'required',
+            'field_code'        => ['required', 'in:' . implode(',', $allowedCodes)],
             'bvn'               => 'required|digits:11',
             'nin'               => 'required|digits:11',
             'modification_data' => 'nullable|array',
-            'description'       => 'required', // Required as per user request
+            'description'       => 'required',
             'surname'           => 'nullable|string',
             'firstname'         => 'nullable|string',
             'middlename'        => 'nullable|string',
+        ], [
+            'field_code.in' => 'The selected field code is not authorized for BVN Modification requests.'
         ]);
 
         if ($validator->fails()) {
              return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
         }
 
-        // 3. Check service active
-        $serviceField = ServiceField::with('service')->where('field_code', $request->field_code)->first();
+        // 3. Check service active (Strictly restricted to authorized codes)
+        $serviceField = ServiceField::with('service')
+            ->where('field_code', $request->field_code)
+            ->whereIn('field_code', $allowedCodes)
+            ->first();
         
         if (!$serviceField) {
              return response()->json(['success' => false, 'message' => 'Invalid Service Field Code.'], 400);
@@ -111,8 +117,8 @@ class BvnModificationController extends Controller
         $role = $user->role ?? 'user';
         $servicePrice = $this->calculateServicePrice($serviceField, $role);
 
-        if ($servicePrice === null) {
-             return response()->json(['success' => false, 'message' => 'Service price not configured.'], 400);
+        if ($servicePrice === null || $servicePrice <= 0) {
+             return response()->json(['success' => false, 'message' => 'Service price not configured or invalid.'], 400);
         }
 
         DB::beginTransaction();
@@ -133,8 +139,11 @@ class BvnModificationController extends Controller
                 return response()->json(['success' => false, 'message' => 'Insufficient wallet balance.'], 400);
             }
 
-            // Generate Reference
-            $transactionRef = 'B1' . strtoupper(Str::random(10)); // B1 for BVN
+            // Generate Unique Reference
+            do {
+                $transactionRef = 'B1' . strtoupper(Str::random(10));
+            } while (Transaction::where('transaction_ref', $transactionRef)->exists());
+            
             $performedBy = trim($user->first_name . ' ' . $user->last_name);
             
             // Handle Description & Name Extraction
@@ -276,6 +285,11 @@ class BvnModificationController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            Log::error('BVN Modification Status Check failed', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id ?? 'unknown',
+                'request' => $request->only(['reference', 'bvn', 'nin'])
+            ]);
             return response()->json(['success' => false, 'message' => 'Failed to check status.'], 400);
         }
     }

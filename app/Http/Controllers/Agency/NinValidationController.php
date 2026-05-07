@@ -69,9 +69,11 @@ class NinValidationController extends Controller
 
         // 2. Validate request
         $validator = Validator::make($request->all(), [
-            'field_code' => 'required',
+            'field_code' => ['required', 'string', 'regex:/015/'],
             'nin' => 'required|digits:11',
             'description' => 'nullable|string|max:255',
+        ], [
+            'field_code.regex' => 'The selected field code is not authorized for NIN Validation requests.'
         ]);
 
         if ($validator->fails()) {
@@ -85,9 +87,12 @@ class NinValidationController extends Controller
         }
         cache()->put($lockKey, true, 5); // Lock for 5 seconds
 
-        // 3. Check service active
+        // 3. Check service active (Strictly restricted to Validation codes)
         $fieldCode = $request->field_code;
-        $serviceField = ServiceField::with('service')->where('field_code', $fieldCode)->first();
+        $serviceField = ServiceField::with('service')
+            ->where('field_code', $fieldCode)
+            ->where('field_code', 'LIKE', '%015%')
+            ->first();
         
         if (!$serviceField) {
              return response()->json(['success' => false, 'message' => 'Invalid Service Field Code.'], 400);
@@ -108,8 +113,8 @@ class NinValidationController extends Controller
             ? $serviceField->getPriceForUserType($role) 
             : ($serviceField->prices()->where('user_type', $role)->value('price') ?? $serviceField->base_price);
 
-        if ($servicePrice === null) {
-            return response()->json(['success' => false, 'message' => 'Service price not configured.'], 400);
+        if ($servicePrice === null || $servicePrice <= 0) {
+            return response()->json(['success' => false, 'message' => 'Service price not configured or invalid.'], 400);
         }
 
         DB::beginTransaction();
@@ -129,9 +134,11 @@ class NinValidationController extends Controller
                 return response()->json(['success' => false, 'message' => 'Insufficient wallet balance.'], 400);
             }
 
-            // Generate Reference
+            // Generate Unique Reference
             $performedBy = $user->first_name . ' ' . $user->last_name;
-            $transactionRef = 'val' . date('is') . strtoupper(Str::random(5));
+            do {
+                $transactionRef = 'val' . date('is') . strtoupper(Str::random(5));
+            } while (Transaction::where('transaction_ref', $transactionRef)->exists());
 
             // 8. Create transaction (pending or success)
             $transaction = Transaction::create([
@@ -400,7 +407,11 @@ class NinValidationController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Validation Status Check Error: ' . $e->getMessage());
+            Log::error('Validation Status Check Error', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id ?? 'unknown',
+                'nin' => $request->nin ?? $id,
+            ]);
             return response()->json(['success' => false, 'message' => 'Failed to check status'], 400);
         }
     }

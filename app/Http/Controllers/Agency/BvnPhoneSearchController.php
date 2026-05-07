@@ -74,16 +74,21 @@ class BvnPhoneSearchController extends Controller
 
         // 2. Validate request
         $validator = Validator::make($request->all(), [
-            'field_code'        => 'required',
+            'field_code'        => ['required', 'in:' . implode(',', self::PHONE_SEARCH_CODES)],
             'phone_number'      => 'required|digits_between:10,11',
+        ], [
+            'field_code.in' => 'The selected field code is not authorized for BVN Phone Search requests.'
         ]);
 
         if ($validator->fails()) {
              return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
         }
 
-        // 3. Check service active
-        $serviceField = ServiceField::with('service')->where('field_code', $request->field_code)->first();
+        // 3. Check service active (Strictly restricted to Phone Search codes)
+        $serviceField = ServiceField::with('service')
+            ->where('field_code', $request->field_code)
+            ->whereIn('field_code', self::PHONE_SEARCH_CODES)
+            ->first();
         
         if (!$serviceField || !in_array($serviceField->field_code, self::PHONE_SEARCH_CODES)) {
              return response()->json(['success' => false, 'message' => 'Invalid Service Field Code for Phone Search.'], 400);
@@ -99,8 +104,8 @@ class BvnPhoneSearchController extends Controller
         $role = $user->role ?? 'user';
         $servicePrice = $this->calculateServicePrice($serviceField, $role);
 
-        if ($servicePrice === null) {
-             return response()->json(['success' => false, 'message' => 'Service price not configured.'], 400);
+        if ($servicePrice === null || $servicePrice <= 0) {
+             return response()->json(['success' => false, 'message' => 'Service price not configured or invalid.'], 400);
         }
 
         DB::beginTransaction();
@@ -121,8 +126,11 @@ class BvnPhoneSearchController extends Controller
                 return response()->json(['success' => false, 'message' => 'Insufficient wallet balance.'], 400);
             }
 
-            // Generate Reference
-            $transactionRef = 'BVNS' . strtoupper(Str::random(10)); // BVNS for BVN Search
+            // Generate Unique Reference
+            do {
+                $transactionRef = 'BVNS' . strtoupper(Str::random(10));
+            } while (Transaction::where('transaction_ref', $transactionRef)->exists());
+
             $performedBy = trim($user->first_name . ' ' . $user->last_name);
 
             // 8. Create transaction (pending or success)
@@ -231,6 +239,11 @@ class BvnPhoneSearchController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            Log::error('BVN Phone Search Status Check failed', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id ?? 'unknown',
+                'request' => $request->only(['reference', 'phone_number'])
+            ]);
             return response()->json(['success' => false, 'message' => 'Failed to check status.'], 400);
         }
     }

@@ -75,22 +75,28 @@ class NinModificationController extends Controller
         }
 
         // 2. Validate request
+        $targetCodes = ['032', '033', '034', '035', '037'];
         $rules = [
-            'field_code' => 'required',
+            'field_code' => ['required', 'in:' . implode(',', $targetCodes)],
             'nin' => 'required|digits:11',
             'modification_data' => 'nullable|array',
-            'description' => 'required|string|max:1000' // Required as per standardization
+            'description' => 'required|string|max:1000'
         ];
 
-        $validator = Validator::make($request->all(), $rules);
+        $validator = Validator::make($request->all(), $rules, [
+            'field_code.in' => 'The selected field code is not authorized for NIN Modification requests.'
+        ]);
 
         if ($validator->fails()) {
              return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
         }
 
-        // 3. Check service active
+        // 3. Check service active (Strictly restricted to authorized codes)
         $fieldCode = $request->field_code;
-        $serviceField = ServiceField::with('service')->where('field_code', $fieldCode)->first();
+        $serviceField = ServiceField::with('service')
+            ->where('field_code', $fieldCode)
+            ->whereIn('field_code', $targetCodes)
+            ->first();
         
         if (!$serviceField) {
              return response()->json(['success' => false, 'message' => 'Invalid Service Field Code.'], 400);
@@ -118,8 +124,8 @@ class NinModificationController extends Controller
             ? $serviceField->getPriceForUserType($role) 
             : ($serviceField->prices()->where('user_type', $role)->value('price') ?? $serviceField->base_price);
 
-        if ($servicePrice === null) {
-             return response()->json(['success' => false, 'message' => 'Service price not configured.'], 400);
+        if ($servicePrice === null || $servicePrice <= 0) {
+             return response()->json(['success' => false, 'message' => 'Service price not configured or invalid.'], 400);
         }
 
         DB::beginTransaction();
@@ -140,8 +146,10 @@ class NinModificationController extends Controller
                 return response()->json(['success' => false, 'message' => 'Insufficient wallet balance.'], 400);
             }
 
-            // Generate Reference
-            $transactionRef = 'M1' . strtoupper(Str::random(10));
+            // Generate Unique Reference
+            do {
+                $transactionRef = 'M1' . strtoupper(Str::random(10));
+            } while (Transaction::where('transaction_ref', $transactionRef)->exists());
             $performedBy = trim($user->first_name . ' ' . $user->last_name);
 
             // 8. Create transaction (pending or success)
@@ -264,7 +272,11 @@ class NinModificationController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Status Check Error: ' . $e->getMessage());
+            Log::error('NIN Modification Status Check Error', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id ?? 'unknown',
+                'request' => $request->only(['reference', 'nin'])
+            ]);
             return response()->json(['success' => false, 'message' => 'Failed to check status.'], 400);
         }
     }

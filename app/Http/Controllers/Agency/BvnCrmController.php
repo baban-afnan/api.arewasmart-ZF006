@@ -37,7 +37,7 @@ class BvnCrmController extends Controller
         $fields = ServiceField::with(['service', 'prices'])
             ->whereIn('field_code', self::CRM_CODES)
             ->where('is_active', 1)
-            ->whereHas('service', function($q) {
+            ->whereHas('service', function ($q) {
                 $q->where('is_active', 1);
             })
             ->get();
@@ -47,11 +47,11 @@ class BvnCrmController extends Controller
         foreach ($fields as $field) {
             $price = $this->calculateServicePrice($field, $role);
 
-            $availableServices->push((object)[
-                'id' => $field->id, 
-                'name' => $field->field_name, 
-                'code' => $field->field_code, 
-                'price' => $price, 
+            $availableServices->push((object) [
+                'id' => $field->id,
+                'name' => $field->field_name,
+                'code' => $field->field_code,
+                'price' => $price,
                 'bank' => $field->service->name,
                 'category' => 'crm',
                 'type' => 'CRM'
@@ -69,29 +69,34 @@ class BvnCrmController extends Controller
         // 1. Authenticate user
         $user = $this->authenticateUser($request);
         if (!$user) {
-             return response()->json(['success' => false, 'message' => 'Unauthorized. Invalid API Token.'], 401);
+            return response()->json(['success' => false, 'message' => 'Unauthorized. Invalid API Token.'], 401);
         }
 
         // 2. Validate request
         $validator = Validator::make($request->all(), [
-            'field_code'        => 'required',
-            'ticket_id'         => 'required|digits:8',
-            'batch_id'          => 'required|digits:7',
+            'field_code' => ['required', 'in:' . implode(',', self::CRM_CODES)],
+            'ticket_id' => 'required|digits:8',
+            'batch_id' => 'required|digits:7',
+        ], [
+            'field_code.in' => 'The selected field code is not authorized for CRM requests.'
         ]);
 
         if ($validator->fails()) {
-             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
         }
 
-        // 3. Check service active
-        $serviceField = ServiceField::with('service')->where('field_code', $request->field_code)->first();
-        
+        // 3. Check service active (Strictly restricted to CRM codes)
+        $serviceField = ServiceField::with('service')
+            ->where('field_code', $request->field_code)
+            ->whereIn('field_code', self::CRM_CODES)
+            ->first();
+
         if (!$serviceField) {
-             return response()->json(['success' => false, 'message' => 'Invalid Service Field Code.'], 400);
+            return response()->json(['success' => false, 'message' => 'Invalid Service Field Code.'], 400);
         }
 
         $service = $serviceField->service;
-        
+
         if (!$service || !$service->is_active || !$serviceField->is_active) {
             return response()->json(['success' => false, 'message' => 'Service or Field is not active'], 503);
         }
@@ -100,8 +105,8 @@ class BvnCrmController extends Controller
         $role = $user->role ?? 'user';
         $servicePrice = $this->calculateServicePrice($serviceField, $role);
 
-        if ($servicePrice === null) {
-             return response()->json(['success' => false, 'message' => 'Service price not configured.'], 400);
+        if ($servicePrice === null || $servicePrice <= 0) {
+            return response()->json(['success' => false, 'message' => 'Service price not configured or invalid.'], 400);
         }
 
         DB::beginTransaction();
@@ -122,26 +127,29 @@ class BvnCrmController extends Controller
                 return response()->json(['success' => false, 'message' => 'Insufficient wallet balance.'], 400);
             }
 
-            // Generate Reference
-            $transactionRef = 'CRM' . strtoupper(Str::random(10)); // CRM for CRM
+            // Generate Unique Reference
+            do {
+                $transactionRef = 'CRM' . strtoupper(Str::random(10));
+            } while (Transaction::where('transaction_ref', $transactionRef)->exists());
+
             $performedBy = trim($user->first_name . ' ' . $user->last_name);
 
             // 8. Create transaction (pending or success)
             $transaction = Transaction::create([
                 'transaction_ref' => $transactionRef,
-                'user_id'        => $user->id,
-                'amount'         => $servicePrice,
-                'description'    => "BVN CRM for {$serviceField->field_name}",
-                'type'           => 'debit',
-                'status'         => 'completed',
-                'trans_source'   => 'API',
-                'performed_by'   => $performedBy,
-                'metadata'       => [
-                    'service'          => $service->name,
-                    'service_field'    => $serviceField->field_name,
-                    'field_code'       => $serviceField->field_code,
-                    'ticket_id'        => $request->ticket_id,
-                    'batch_id'         => $request->batch_id,
+                'user_id' => $user->id,
+                'amount' => $servicePrice,
+                'description' => "BVN CRM for {$serviceField->field_name}",
+                'type' => 'debit',
+                'status' => 'completed',
+                'trans_source' => 'API',
+                'performed_by' => $performedBy,
+                'metadata' => [
+                    'service' => $service->name,
+                    'service_field' => $serviceField->field_name,
+                    'field_code' => $serviceField->field_code,
+                    'ticket_id' => $request->ticket_id,
+                    'batch_id' => $request->batch_id,
                 ],
             ]);
 
@@ -150,23 +158,23 @@ class BvnCrmController extends Controller
 
             // 10. Create service record and send to api if the service required api
             $agentService = AgentService::create([
-                'reference'        => $transactionRef,
-                'user_id'          => $user->id,
-                'service_id'       => $service->id, 
+                'reference' => $transactionRef,
+                'user_id' => $user->id,
+                'service_id' => $service->id,
                 'service_field_id' => $serviceField->id,
-                'service_name'     => $service->name,
-                'field_code'       => $serviceField->field_code,
-                'field_name'       => $serviceField->field_name,
-                'bank'             => $service->name,
-                'ticket_id'        => $request->ticket_id,
-                'batch_id'         => $request->batch_id,
-                'amount'           => $servicePrice,
-                'transaction_id'   => $transaction->id,
-                'submission_date'  => now(),
-                'status'           => 'pending',
-                'service_type'     => 'crm',
-                'comment'          => 'Request submitted, pending we will update you shortly.',
-                'performed_by'     => $performedBy,
+                'service_name' => $service->name,
+                'field_code' => $serviceField->field_code,
+                'field_name' => $serviceField->field_name,
+                'bank' => $service->name,
+                'ticket_id' => $request->ticket_id,
+                'batch_id' => $request->batch_id,
+                'amount' => $servicePrice,
+                'transaction_id' => $transaction->id,
+                'submission_date' => now(),
+                'status' => 'pending',
+                'service_type' => 'CRM',
+                'comment' => 'Request submitted, pending we will update you shortly.',
+                'performed_by' => $performedBy,
             ]);
 
             DB::commit();
@@ -199,12 +207,13 @@ class BvnCrmController extends Controller
     {
         try {
             $user = $this->authenticateUser($request);
-            if (!$user) return response()->json(['success' => false, 'message' => 'Unauthorized.'], 401);
+            if (!$user)
+                return response()->json(['success' => false, 'message' => 'Unauthorized.'], 401);
 
             if (!$request->reference && !$request->ticket_id && !$request->batch_id) {
-                 return response()->json(['success' => false, 'message' => 'Provide either reference, ticket_id, or batch_id.'], 400);
+                return response()->json(['success' => false, 'message' => 'Provide either reference, ticket_id, or batch_id.'], 400);
             }
-            
+
             $query = AgentService::where('user_id', $user->id)
                 ->where('service_type', 'CRM');
 
@@ -225,18 +234,23 @@ class BvnCrmController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'reference'       => $agentService->reference,
-                    'ticket_id'       => $agentService->ticket_id,
-                    'batch_id'        => $agentService->batch_id,
-                    'service'         => $agentService->service_field_name ?? $agentService->field_name,
-                    'status'          => $agentService->status,
-                    'comment'         => $agentService->comment,
-                    'file_url'        => $agentService->file_url,
+                    'reference' => $agentService->reference,
+                    'ticket_id' => $agentService->ticket_id,
+                    'batch_id' => $agentService->batch_id,
+                    'service' => $agentService->service_field_name ?? $agentService->field_name,
+                    'status' => $agentService->status,
+                    'comment' => $agentService->comment,
+                    'file_url' => $agentService->file_url,
                     'submission_date' => $agentService->submission_date
                 ]
             ]);
 
         } catch (\Exception $e) {
+            Log::error('BVN CRM Status Check failed', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id ?? 'unknown',
+                'request' => $request->only(['reference', 'ticket_id', 'batch_id'])
+            ]);
             return response()->json(['success' => false, 'message' => 'Failed to check status.'], 400);
         }
     }
@@ -248,14 +262,15 @@ class BvnCrmController extends Controller
     {
         $apiToken = $request->header('Authorization');
         if (!$apiToken) {
-             $apiToken = $request->input('api_token');
+            $apiToken = $request->input('api_token');
         } else {
-             if (str_starts_with($apiToken, 'Bearer ')) {
-                 $apiToken = substr($apiToken, 7);
-             }
+            if (str_starts_with($apiToken, 'Bearer ')) {
+                $apiToken = substr($apiToken, 7);
+            }
         }
 
-        if (!$apiToken) return null;
+        if (!$apiToken)
+            return null;
 
         return \App\Models\User::where('api_token', $apiToken)->first();
     }
@@ -268,7 +283,7 @@ class BvnCrmController extends Controller
         if (method_exists($field, 'getPriceForUserType')) {
             return $field->getPriceForUserType($role);
         }
-        
+
         return $field->prices()->where('user_type', $role)->value('price') ?? $field->base_price;
     }
 }

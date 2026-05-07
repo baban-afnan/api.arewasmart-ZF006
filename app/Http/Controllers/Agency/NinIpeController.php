@@ -70,17 +70,22 @@ class NinIpeController extends Controller
 
         // 2. Validate request
         $validator = Validator::make($request->all(), [
-            'field_code' => 'required|string|max:50',
+            'field_code' => ['required', 'string', 'max:50', 'regex:/002/'],
             'tracking_id' => 'required|string|min:15|max:100|alpha_dash',
+        ], [
+            'field_code.regex' => 'The selected field code is not authorized for IPE requests.'
         ]);
 
         if ($validator->fails()) {
              return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
         }
 
-        // 3. Check service active
+        // 3. Check service active (Strictly restricted to IPE codes)
         $fieldCode = $request->field_code;
-        $serviceField = ServiceField::with('service')->where('field_code', $fieldCode)->first();
+        $serviceField = ServiceField::with('service')
+            ->where('field_code', $fieldCode)
+            ->where('field_code', 'LIKE', '%002%')
+            ->first();
         
         if (!$serviceField) {
              return response()->json(['success' => false, 'message' => 'Invalid Service Field Code.'], 400);
@@ -101,6 +106,10 @@ class NinIpeController extends Controller
             ? $serviceField->getPriceForUserType($role) 
             : ($serviceField->prices()->where('user_type', $role)->value('price') ?? $serviceField->base_price);
 
+        if ($servicePrice === null || $servicePrice <= 0) {
+             return response()->json(['success' => false, 'message' => 'Service price not configured or invalid.'], 400);
+        }
+
         DB::beginTransaction();
         try {
             // 5. Lock wallet row
@@ -118,9 +127,11 @@ class NinIpeController extends Controller
                 return response()->json(['success' => false, 'message' => 'Insufficient wallet balance.'], 400);
             }
 
-            // Generate Reference
+            // Generate Unique Reference
             $performedBy = $user->first_name . ' ' . $user->last_name;
-            $transactionRef = 'ipe' . date('is') . strtoupper(Str::random(5));
+            do {
+                $transactionRef = 'ipe' . date('is') . strtoupper(Str::random(5));
+            } while (Transaction::where('transaction_ref', $transactionRef)->exists());
             
             // 8. Create transaction (pending or success)
             $transaction = Transaction::create([
@@ -389,7 +400,11 @@ class NinIpeController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('IPE Status Check Error: ' . $e->getMessage());
+            Log::error('IPE Status Check Error', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id ?? 'unknown',
+                'tracking_id' => $request->tracking_id ?? $id,
+            ]);
             return response()->json(['success' => false, 'message' => 'Failed to check status'], 400);
         }
     }
