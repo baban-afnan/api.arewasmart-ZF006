@@ -83,7 +83,7 @@ class AirtimeController extends Controller
             $validator = Validator::make($request->all(), [
                 'network'   => ['required', 'string'],
                 'mobileno'  => 'required|numeric|digits:11',
-                'amount'    => 'required|numeric|min:50|max:50000',
+                'amount'    => 'required|numeric|min:50|max:5000',
                 'request_id' => 'nullable|string|unique:transactions,transaction_ref'
             ]);
 

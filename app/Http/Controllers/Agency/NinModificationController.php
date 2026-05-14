@@ -80,7 +80,7 @@ class NinModificationController extends Controller
             'field_code' => ['required', 'in:' . implode(',', $targetCodes)],
             'nin' => 'required|digits:11',
             'modification_data' => 'nullable|array',
-            'description' => 'required|string|max:1000'
+            'description' => 'required|string'
         ];
 
         $validator = Validator::make($request->all(), $rules, [
