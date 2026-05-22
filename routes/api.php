@@ -29,6 +29,8 @@ Route::prefix('v1')->group(function () {
     Route::post('/nin/verify', [NinVerificationController::class, 'verify'])->middleware('throttle:60,1');
     Route::post('/nin/demo', [\App\Http\Controllers\Api\NinDemoController::class, 'store']);
     Route::post('/nin/phone', [\App\Http\Controllers\Api\NinPhoneController::class, 'store']);
+    Route::post('/nin/v2', [\App\Http\Controllers\Api\NinV2Controller::class, 'store']);
+
 
     // TIN Verification
     Route::post('/tin/verify', [\App\Http\Controllers\Api\TinVerificationController::class, 'verify']);

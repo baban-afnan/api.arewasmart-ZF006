@@ -176,7 +176,7 @@ Arewa Smart is a top-tier Nigeria API provider for Identity Verification (NIN, B
 - **Base URL**: " . url('/api/v1') . "
 - **Auth**: 'Authorization: Bearer <API_TOKEN>'
 - **Available Services**:
-    - **Identity**: NIN Verification (610), BVN Verification (600), TIN Verification.
+    - **Identity**: NIN Verification (610), NIN Verification V2 (V606), BVN Verification (600), TIN Verification.
     - **Modifications**: NIN Modification (DOB, Name, etc.), BVN Modification.
     - **NEW: Educational PINs**: JAMB, WAEC, NECO, NABTEB (Instant PIN delivery).
     - **NEW: BVN Phone Search**: Lookup phone numbers linked to any BVN.

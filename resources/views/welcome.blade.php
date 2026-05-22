@@ -552,11 +552,11 @@
                         </li>
                         <li style="margin-bottom: 15px; display: flex;">
                             <i class="fas fa-phone" style="color: var(--primary-color); margin-top: 5px; margin-right: 10px;"></i>
-                            <span style="color: rgba(255,255,255,0.8);">09112345678</span>
+                            <span style="color: rgba(255,255,255,0.8);">08064333983</span>
                         </li>
                         <li style="margin-bottom: 15px; display: flex;">
                             <i class="fas fa-envelope" style="color: var(--primary-color); margin-top: 5px; margin-right: 10px;"></i>
-                            <span style="color: rgba(255,255,255,0.8);">info@arewasmart.com.ng</span>
+                            <span style="color: rgba(255,255,255,0.8);">customercare@arewasmart.com.ng</span>
                         </li>
                     </ul>
                 </div>
@@ -692,8 +692,8 @@
                      <div class="policy-section">
                         <h5>7. Contact Us</h5>
                         <p>If you have any questions about this policy or wish to exercise your rights, please contact our Data Protection Officer at:</p>
-                        <p><strong>Email:</strong> privacy@arewasmart.com.ng<br>
-                        <strong>Phone:</strong> 09112345678<br>
+                        <p><strong>Email:</strong> customercare@arewasmart.com.ng<br>
+                        <strong>Phone:</strong> 08064333983<br>
                         <strong>Address:</strong> NO983 Babantude Adelke Street Apapa Lagos.</p>
                     </div>
 
@@ -773,7 +773,7 @@
     <script> AOS.init({ duration: 1000, once: true }) </script>
 
     <!-- WhatsApp Floating Button -->
-    <a href="https://wa.me/2349110501995" class="whatsapp-float" target="_blank" title="Chat with us on WhatsApp">
+    <a href="https://wa.me/2348064333983" class="whatsapp-float" target="_blank" title="Chat with us on WhatsApp">
         <i class="fab fa-whatsapp"></i>
     </a>
 

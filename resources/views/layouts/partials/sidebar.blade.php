@@ -179,6 +179,7 @@
                     <ul>
                         <li><a href="{{ route('developer.bvn.docs') }}" class="{{ request()->routeIs('developer.bvn.docs') ? 'active' : '' }}">BVN API Docs</a></li>
                         <li><a href="{{ route('developer.nin.docs') }}" class="{{ request()->routeIs('developer.nin.docs') ? 'active' : '' }}">NIN API Docs</a></li>
+                        <li><a href="{{ route('developer.nin-v2.docs') }}" class="{{ request()->routeIs('developer.nin-v2.docs') ? 'active' : '' }}">NIN API V2 Docs</a></li>
                         <li><a href="{{ route('developer.tin.docs') }}" class="{{ request()->routeIs('developer.tin.docs') ? 'active' : '' }}">TIN API Docs</a></li>
                         <li><a href="{{ route('developer.nin.demo.docs') }}" class="{{ request()->routeIs('developer.nin.demo.docs') ? 'active' : '' }}">NIN DEMO Docs</a></li>
                         <li><a href="{{ route('developer.nin.phone.docs') }}" class="{{ request()->routeIs('developer.nin.phone.docs') ? 'active' : '' }}">NIN Phone No Docs</a></li>

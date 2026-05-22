@@ -54,6 +54,7 @@ Route::group(['prefix' => 'docs', 'as' => 'docs.'], function () {
     Route::view('/nin', 'documentation.nin')->name('nin');
     Route::view('/nin-demo', 'documentation.nin-demo')->name('nin-demo');
     Route::view('/nin-phone', 'documentation.nin-phone')->name('nin-phone');
+    Route::view('/nin-v2', 'documentation.nin-v2')->name('nin-v2');
     Route::view('/nin-validation', 'documentation.nin-validation')->name('nin-validation');
     Route::view('/nin-modification', 'documentation.nin-modification')->name('nin-modification');
     Route::view('/nin-ipe', 'documentation.nin-ipe')->name('nin-ipe');
@@ -105,6 +106,9 @@ Route::group(['prefix' => 'developer', 'as' => 'developer.', 'middleware' => ['a
 
     // NIN Phone
     Route::get('/nin-phone', [\App\Http\Controllers\Api\NinPhoneController::class, 'index'])->name('nin.phone.docs');
+
+    // NIN V2
+    Route::get('/nin-v2', [\App\Http\Controllers\Api\NinV2Controller::class, 'index'])->name('nin-v2.docs');
 
     // SME Data API Docs
     Route::get('/sme-data', [\App\Http\Controllers\Billpayment\SmeDataController::class, 'index'])->name('sme-data.docs');
