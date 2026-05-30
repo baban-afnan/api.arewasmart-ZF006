@@ -16,7 +16,7 @@
                     </ul>
 
                     <p class="text-muted mb-0">
-                        Integrate DeepSeek AI into your applications
+                        Integrate Arewa Smart AI into your applications
                     </p>
                 </div>
 
@@ -111,7 +111,7 @@
                             <span class="badge bg-soft-primary text-primary mb-3">Introduction</span>
                             <h2 class="fw-bold mb-3">AI Integration Guide</h2>
                             <p class="text-muted lead mb-4">
-                                Leverage the power of DeepSeek AI in your application via our simplified REST API. 
+                                Leverage the power of Arewa Smart AI in your application via our simplified REST API. 
                                 Our system runs entirely on subscription plans, providing flat-rate usage limits.
                             </p>
                             
@@ -231,7 +231,7 @@
                                             </div>
                                             <ul class="list-unstyled mb-4 text-start d-inline-block">
                                                 <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> <strong>1,000</strong> AI Requests</li>
-                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> DeepSeek Chat & Reasoner</li>
+                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> Arewa Smart Chat & Reasoner</li>
                                                 <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> Auto-resubscription</li>
                                                 <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> 24/7 Priority Support</li>
                                             </ul>
@@ -260,7 +260,7 @@
                                             </div>
                                             <ul class="list-unstyled mb-4 text-start d-inline-block">
                                                 <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> <strong>Unlimited</strong> AI Requests</li>
-                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> DeepSeek Chat & Reasoner</li>
+                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> Arewa Smart Chat & Reasoner</li>
                                                 <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> Premium Model Features</li>
                                                 <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> Ultra-Fast Priority Speed</li>
                                             </ul>
