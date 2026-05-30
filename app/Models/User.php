@@ -52,6 +52,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'two_factor_code',
         'two_factor_expires_at',
         'two_factor_enabled',
+
+        // AI Subscription Fields
+        'ai_plan',
+        'ai_remaining_requests',
+        'ai_subscription_expires_at',
     ];
 
     /**
@@ -76,6 +81,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'password'          => 'hashed',
             'two_factor_expires_at' => 'datetime',
             'two_factor_enabled' => 'boolean',
+            'ai_subscription_expires_at' => 'datetime',
         ];
     }
 

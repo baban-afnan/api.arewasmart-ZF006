@@ -107,17 +107,16 @@
                 <!-- Overview Section -->
                 <div class="docs-section fade-in" id="overview">
                     <div class="card border-0 shadow-sm rounded-4 mb-4 position-relative overflow-hidden">
-                        <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5" style="background: url('https://cdn.svgporn.com/logos/laravel.svg') no-repeat right bottom; background-size: 30%;"></div>
                         <div class="card-body p-5 position-relative">
                             <span class="badge bg-soft-primary text-primary mb-3">Introduction</span>
-                            <h2 class="fw-bold  mb-3">AI Integration Guide</h2>
+                            <h2 class="fw-bold mb-3">AI Integration Guide</h2>
                             <p class="text-muted lead mb-4">
                                 Leverage the power of DeepSeek AI in your application via our simplified REST API. 
-                                No need to manage complex AI infrastructure - just send a message and get a response.
+                                Our system runs entirely on subscription plans, providing flat-rate usage limits.
                             </p>
                             
                             <!-- Endpoint Box -->
-                            <div class="bg-dark rounded-4 p-4 text-white shadow-lg position-relative overflow-hidden">
+                            <div class="bg-dark rounded-4 p-4 text-white shadow-lg position-relative overflow-hidden mb-4">
                                 <div class="position-absolute top-0 end-0 p-3 opacity-10">
                                     <i class="ti ti-world-www fs-15"></i>
                                 </div>
@@ -133,18 +132,150 @@
                                     <span>Ensure all requests are made via <strong>HTTPS</strong>.</span>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <!-- Service Fee Information -->
-                    <div class="alert alert-success border border-success border-opacity-25 rounded-3 d-flex align-items-start p-4 mb-4" role="alert">
-                        <i class="ti ti-wallet me-3 mt-1 text-success fs-15"></i>
-                        <div>
-                            <h5 class="alert-heading fw-bold mb-2">Service Fee</h5>
-                            <p class="mb-0 ">
-                                You will be charged <span class="fw-bold">₦{{ number_format($aiPrice ?? 0, 2) }}</span> per successful AI request.
-                                <span class="badge bg-success bg-opacity-10 text-success ms-1 border border-success border-opacity-25">{{ ucfirst($user->role ?? 'personal') }} Rate</span>
-                            </p>
+                            <!-- Subscription Status Dashboard -->
+                            <h4 class="fw-bold mt-5 mb-4 text-primary"><i class="ti ti-cpu me-2"></i> Your Subscription Status</h4>
+                            @if($subscription)
+                                <div class="card border border-primary border-opacity-10 shadow-sm rounded-4 overflow-hidden mb-5">
+                                    <div class="card-body p-4">
+                                        <div class="row align-items-center g-3">
+                                            <div class="col-md-3 text-center text-md-start">
+                                                <div class="d-flex flex-column gap-2 align-items-center align-items-md-start">
+                                                    <span class="badge {{ $subscription['status_badge'] }} rounded-pill px-4 py-2 fs-13 fw-bold shadow-sm">
+                                                        <i class="ti ti-circle-filled me-1 fs-10"></i> {{ $subscription['status_text'] }}
+                                                    </span>
+                                                    @if($subscription['is_active'])
+                                                        <button onclick="unsubscribeFromPlan()" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold border border-danger border-opacity-50 mt-1">
+                                                            <i class="ti ti-trash me-1"></i> Cancel Plan
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="row g-3">
+                                                    <div class="col-sm-4 border-end border-light">
+                                                        <span class="small text-muted d-block text-uppercase ls-1">Active Plan</span>
+                                                        <strong class="fs-18 text-primary">{{ ucfirst($subscription['plan']) }} Plan</strong>
+                                                    </div>
+                                                    <div class="col-sm-4 border-end border-light">
+                                                        <span class="small text-muted d-block text-uppercase ls-1">Requests Remaining</span>
+                                                        <strong class="fs-18 text-success">{{ $subscription['remaining'] }}</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <span class="small text-muted d-block text-uppercase ls-1">Expiration Date</span>
+                                                        <strong class="fs-10 text-warning">{{ $subscription['expires_at'] }}</strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3 border-top border-light pt-3 small text-muted d-flex align-items-center">
+                                            <i class="ti ti-info-circle-filled text-primary me-2 fs-15"></i>
+                                            <span><strong>Auto-Renewal Enabled:</strong> If your subscription expires or hits 0 requests, your first request will automatically resubscribe you using your wallet balance.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="alert alert-warning border border-warning border-opacity-25 rounded-4 d-flex align-items-center p-4 mb-5" role="alert">
+                                    <i class="ti ti-alert-circle me-3 text-warning fs-2"></i>
+                                    <div>
+                                        <h5 class="alert-heading fw-bold mb-1">No Active AI Subscription</h5>
+                                        <p class="mb-0">
+                                            Please choose and subscribe to one of our dynamic plans below to begin sending AI Chat queries.
+                                        </p>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Subscription Plans Grid -->
+                            <h4 class="fw-bold mb-4 text-primary"><i class="ti ti-align-box-left me-2"></i> Subscription Plans</h4>
+                            <p class="text-muted mb-4">Prices are tailored specifically for your account level (<span class="badge bg-soft-success text-success px-2 py-1">{{ ucfirst($user->role ?? 'personal') }} Rate</span>).</p>
+                            
+                            <div class="row g-4 mb-5">
+                                <!-- Basic Plan -->
+                                <div class="col-md-4">
+                                    <div class="card h-100 border shadow-sm rounded-4 text-center overflow-hidden plan-card-standard position-relative {{ ($subscription && $subscription['plan'] === 'basic') ? 'border-primary' : '' }}">
+                                        @if($subscription && $subscription['plan'] === 'basic')
+                                            <div class="bg-primary text-white text-uppercase py-1 fs-11 fw-bold tracking-widest shadow-sm">Current Active Plan</div>
+                                        @endif
+                                        <div class="card-body p-4">
+                                            <h5 class="fw-bold mb-2">Basic</h5>
+                                            <div class="my-4">
+                                                <h3 class="fw-bold text-primary text-nowrap mb-0" style="font-size: 2.2rem;">₦{{ number_format($prices['basic'], 0) }}</h3>
+                                                <span class="text-muted small">/ 30 Days</span>
+                                            </div>
+                                            <ul class="list-unstyled mb-4 text-start d-inline-block">
+                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> <strong>500</strong> AI Requests</li>
+                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> Auto-resubscription</li>
+                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> 24/7 Priority Support</li>
+                                            </ul>
+                                            <button onclick="subscribeToPlan('basic')" class="btn {{ ($subscription && $subscription['plan'] === 'basic' && $subscription['is_active']) ? 'btn-success' : 'btn-primary' }} w-100 rounded-pill py-2 shadow-sm fw-bold">
+                                                @if($subscription && $subscription['plan'] === 'basic' && $subscription['is_active'])
+                                                    <i class="ti ti-checkbox me-1"></i> Active
+                                                @else
+                                                    Subscribe Now
+                                                @endif
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Standard Plan -->
+                                <div class="col-md-4">
+                                    <div class="card h-100 border shadow-sm rounded-4 text-center overflow-hidden plan-card-standard position-relative {{ ($subscription && $subscription['plan'] === 'standard') ? 'border-primary' : '' }}">
+                                        <div class="bg-warning text-dark text-uppercase py-1 fs-11 fw-bold tracking-widest shadow-sm">Most Popular</div>
+                                        <div class="card-body p-4">
+                                            <h5 class="fw-bold mb-2">Standard</h5>
+                                            <div class="my-4">
+                                                <h3 class="fw-bold text-primary text-nowrap mb-0" style="font-size: 2.2rem;">₦{{ number_format($prices['standard'], 0) }}</h3>
+                                                <span class="text-muted small">/ 30 Days</span>
+                                            </div>
+                                            <ul class="list-unstyled mb-4 text-start d-inline-block">
+                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> <strong>1,000</strong> AI Requests</li>
+                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> DeepSeek Chat & Reasoner</li>
+                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> Auto-resubscription</li>
+                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> 24/7 Priority Support</li>
+                                            </ul>
+                                            <button onclick="subscribeToPlan('standard')" class="btn {{ ($subscription && $subscription['plan'] === 'standard' && $subscription['is_active']) ? 'btn-success' : 'btn-primary' }} w-100 rounded-pill py-2 shadow-sm fw-bold">
+                                                @if($subscription && $subscription['plan'] === 'standard' && $subscription['is_active'])
+                                                    <i class="ti ti-checkbox me-1"></i> Active
+                                                @else
+                                                    Subscribe Now
+                                                @endif
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Premium Plan -->
+                                <div class="col-md-4">
+                                    <div class="card h-100 border shadow-sm rounded-4 text-center overflow-hidden plan-card-standard plan-premium-card position-relative {{ ($subscription && $subscription['plan'] === 'premium') ? 'border-primary' : '' }}">
+                                        @if($subscription && $subscription['plan'] === 'premium')
+                                            <div class="bg-primary text-white text-uppercase py-1 fs-11 fw-bold tracking-widest shadow-sm">Current Active Plan</div>
+                                        @endif
+                                        <div class="card-body p-4">
+                                            <h5 class="fw-bold mb-2">Premium</h5>
+                                            <div class="my-4">
+                                                <h3 class="fw-bold text-primary text-nowrap mb-0" style="font-size: 2.2rem;">₦{{ number_format($prices['premium'], 0) }}</h3>
+                                                <span class="text-muted small">/ 30 Days</span>
+                                            </div>
+                                            <ul class="list-unstyled mb-4 text-start d-inline-block">
+                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> <strong>Unlimited</strong> AI Requests</li>
+                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> DeepSeek Chat & Reasoner</li>
+                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> Premium Model Features</li>
+                                                <li class="mb-2"><i class="ti ti-check text-success me-2 fs-15"></i> Ultra-Fast Priority Speed</li>
+                                            </ul>
+                                            <button onclick="subscribeToPlan('premium')" class="btn {{ ($subscription && $subscription['plan'] === 'premium' && $subscription['is_active']) ? 'btn-success' : 'btn-primary' }} w-100 rounded-pill py-2 shadow-sm fw-bold">
+                                                @if($subscription && $subscription['plan'] === 'premium' && $subscription['is_active'])
+                                                    <i class="ti ti-checkbox me-1"></i> Active
+                                                @else
+                                                    Subscribe Now
+                                                @endif
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -159,7 +290,7 @@
                 <div class="docs-section d-none fade-in" id="auth">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">1</span>
                                 Authentication
                             </h4>
@@ -219,7 +350,7 @@
                 <div class="docs-section d-none fade-in" id="endpoint">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">2</span>
                                 AI Chat Endpoint
                             </h4>
@@ -235,20 +366,49 @@
                             </div>
 
                             <p class="text-muted mb-4">
-                                Send a message to the AI and receive a structured response.
+                                Send a message to the AI by providing your message and subscription plan in the request body.
                             </p>
+
+                            <!-- Parameters Table -->
+                            <h5 class="fw-bold mb-3"><i class="ti ti-list me-1"></i> Request Parameters</h5>
+                            <div class="table-responsive rounded-3 border custom-table-border mb-4">
+                                <table class="table table-premium table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr class="text-uppercase small text-muted">
+                                            <th class="py-3 ps-4">Field</th>
+                                            <th class="py-3">Type</th>
+                                            <th class="py-3">Required</th>
+                                            <th class="py-3 pe-4">Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="ps-4"><code class="text-primary fw-bold">plan</code></td>
+                                            <td><span class="badge bg-soft-primary text-primary">string</span></td>
+                                            <td><span class="badge bg-danger">Yes</span></td>
+                                            <td class="pe-4">Your current subscription plan. Must be one of: <code>basic</code>, <code>standard</code>, <code>premium</code>.</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-4"><code class="text-primary fw-bold">message</code></td>
+                                            <td><span class="badge bg-soft-primary text-primary">string</span></td>
+                                            <td><span class="badge bg-danger">Yes</span></td>
+                                            <td class="pe-4">The chat prompt or query to send to the AI (max 2,000 characters).</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
 
                             <div class="row g-4">
                                 <!-- Request Body -->
                                 <div class="col-lg-6">
                                     <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
                                         <div class="card-header bg-theme-subtle border-bottom border-theme py-3">
-                                            <h6 class="fw-bold  mb-0">Request Payload</h6>
+                                            <h6 class="fw-bold mb-0">Request Payload</h6>
                                         </div>
                                         <div class="card-body p-0 bg-dark">
 <pre class="m-0 p-4 text-white font-monospace"><code>{
+  <span class="text-info">"plan"</span>: <span class="text-warning">"basic"</span>,
   <span class="text-info">"message"</span>: <span class="text-warning">"Hello, how can you help me today?"</span>,
-  <span class="text-info">"model"</span>: <span class="text-warning">"deepseek-chat"</span> <span class="text-muted">// Optional</span>
 }</code></pre>
                                         </div>
                                     </div>
@@ -266,10 +426,11 @@
   <span class="text-info">"message"</span>: <span class="text-warning">"Successful"</span>,
   <span class="text-info">"data"</span>: {
     <span class="text-info">"answer"</span>: <span class="text-warning">"Hello! I am your AI assistant..."</span>,
-    <span class="text-info">"model"</span>: <span class="text-warning">"deepseek-chat"</span>
+    <span class="text-info">"remaining_requests"</span>: <span class="text-warning">499</span>,
+    <span class="text-info">"expires_at"</span>: <span class="text-warning">"2026-06-29 20:30:15"</span>
   },
-  <span class="text-info">"transaction_ref"</span>: <span class="text-warning">"AI-123..."</span>,
-  <span class="text-info">"charge"</span>: <span class="text-warning">50.00</span>
+  <span class="text-info">"auto_renewed"</span>: <span class="text-warning">false</span>,
+  <span class="text-info">"renew_charge"</span>: <span class="text-warning">0</span>
 }</code></pre>
                                         </div>
                                     </div>
@@ -291,7 +452,7 @@
                 <div class="docs-section d-none fade-in" id="responses">
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-body p-5">
-                            <h4 class="fw-bold  mb-4 d-flex align-items-center">
+                            <h4 class="fw-bold mb-4 d-flex align-items-center">
                                 <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">3</span>
                                 Responses & Billing
                             </h4>
@@ -300,9 +461,9 @@
                             <div class="alert alert-warning border border-warning border-opacity-25 rounded-3 d-flex align-items-start p-4 mb-4" role="alert">
                                 <i class="ti ti-info-circle me-3 mt-1 fs-15"></i>
                                 <div>
-                                    <h5 class="alert-heading fw-bold mb-2">Billing Policy</h5>
-                                    <p class="mb-0 ">
-                                        Only successful AI responses are charged. If the AI service is unavailable or the request fails, no charge will be applied to your wallet.
+                                    <h5 class="alert-heading fw-bold mb-2">Subscription-Based Billing</h5>
+                                    <p class="mb-0">
+                                        Queries under active subscriptions are completely free. Wallet charges only occur on manual subscription purchases or automatic plan renewals. If an API request fails, no renewals or charges are triggered.
                                     </p>
                                 </div>
                             </div>
@@ -314,33 +475,33 @@
                                             <th class="py-3 ps-4">HTTP Code</th>
                                             <th class="py-3">Description</th>
                                             <th class="py-3">Status</th>
-                                            <th class="py-3 text-end pe-4">Billing</th>
+                                            <th class="py-3 text-end pe-4">Subscription Billing</th>
                                         </tr>
                                     </thead>
                                     <tbody class="border-top-0">
                                         <tr>
                                             <td class="ps-4"><code class="text-success fw-bold">200</code></td>
-                                            <td class=" fw-medium">Successful Request</td>
+                                            <td class="fw-medium">Successful Request</td>
                                             <td><span class="badge bg-soft-success text-success">Success</span></td>
-                                            <td class="text-end pe-4"><span class="badge bg-danger">Charged</span></td>
+                                            <td class="text-end pe-4"><span class="badge bg-success">1 request decremented</span></td>
                                         </tr>
                                         <tr>
                                             <td class="ps-4"><code class="text-warning fw-bold">402</code></td>
-                                            <td class=" fw-medium">Insufficient Balance</td>
+                                            <td class="fw-medium">Payment Required (Expired & Wallet Empty)</td>
                                             <td><span class="badge bg-soft-warning text-warning">Balance Low</span></td>
-                                            <td class="text-end pe-4"><span class="badge bg-success">Free</span></td>
+                                            <td class="text-end pe-4"><span class="badge bg-danger">Renewal Blocked</span></td>
                                         </tr>
                                         <tr>
                                             <td class="ps-4"><code class="text-secondary fw-bold">422</code></td>
-                                            <td class=" fw-medium">Validation Error</td>
-                                            <td><span class="badge bg-light ">Invalid Data</span></td>
-                                            <td class="text-end pe-4"><span class="badge bg-success">Free</span></td>
+                                            <td class="fw-medium">Validation / Plan Mismatch Error</td>
+                                            <td><span class="badge bg-light">Invalid Request</span></td>
+                                            <td class="text-end pe-4"><span class="badge bg-success">No charge</span></td>
                                         </tr>
                                         <tr>
                                             <td class="ps-4"><code class="text-secondary fw-bold">503</code></td>
-                                            <td class=" fw-medium">Service Unavailable</td>
-                                            <td><span class="badge bg-light ">Upstream Down</span></td>
-                                            <td class="text-end pe-4"><span class="badge bg-success">Free</span></td>
+                                            <td class="fw-medium">Service / Upstream Down</td>
+                                            <td><span class="badge bg-light">Upstream Down</span></td>
+                                            <td class="text-end pe-4"><span class="badge bg-success">No charge</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -456,6 +617,140 @@
                 setTimeout(() => notif.remove(), 2000);
             });
         }
+
+        // Plan Subscription Call
+        function subscribeToPlan(planName) {
+            const activePlan = '{{ $subscription && $subscription['is_active'] ? $subscription['plan'] : '' }}';
+            if (activePlan === planName) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Already Active',
+                    text: `Your AI ${planName.toUpperCase()} plan is currently active with requests remaining. There is no need to re-subscribe!`,
+                    confirmButtonColor: '#f26922'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `Do you want to subscribe to the AI ${planName.toUpperCase()} Plan?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#f26922',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Yes, subscribe!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Activating your AI subscription...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch('/api/v1/ai/subscribe', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Authorization': 'Bearer {{ Auth::user()->api_token }}'
+                        },
+                        body: JSON.stringify({ plan: planName })
+                    })
+                    .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                    .then(res => {
+                        if (res.status === 200) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Subscribed!',
+                                text: res.body.message,
+                                confirmButtonColor: '#f26922'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Subscription Failed',
+                                text: res.body.message || 'Subscription failed.',
+                                confirmButtonColor: '#f26922'
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'System Error',
+                            text: 'System error. Please try again.',
+                            confirmButtonColor: '#f26922'
+                        });
+                    });
+                }
+            });
+        }
+
+        // Plan Unsubscription Call
+        function unsubscribeFromPlan() {
+            Swal.fire({
+                title: 'Are you absolutely sure?',
+                text: "Do you want to cancel your AI subscription? Please note: No refund will be given for any unused requests or remaining subscription time.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Yes, unsubscribe!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Cancelling your AI subscription...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch('/api/v1/ai/unsubscribe', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Authorization': 'Bearer {{ Auth::user()->api_token }}'
+                        }
+                    })
+                    .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                    .then(res => {
+                        if (res.status === 200) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Cancelled!',
+                                text: res.body.message,
+                                confirmButtonColor: '#f26922'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: res.body.message || 'Cancellation failed.',
+                                confirmButtonColor: '#f26922'
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'System Error',
+                            text: 'Something went wrong. Please try again.',
+                            confirmButtonColor: '#f26922'
+                        });
+                    });
+                }
+            });
+        }
     </script>
     <style>
         /* Smooth Fade Transitions */
@@ -528,6 +823,31 @@
         }
         .dark-mode .support-card-custom {
             background-color: #d95d1e !important;
+        }
+        
+        /* Plan Cards Styling */
+        .plan-card-standard {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-color: var(--border-color, #eef2f6) !important;
+            border-width: 2px !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
+        }
+        .plan-card-standard:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(242, 105, 34, 0.12) !important;
+            border-color: #f26922 !important;
+        }
+        .plan-card-standard.border-primary {
+            border-color: #f26922 !important;
+            box-shadow: 0 10px 25px rgba(26, 43, 75, 0.08) !important;
+        }
+        .plan-premium-card {
+            background: linear-gradient(135deg, rgba(26, 43, 75, 0.01) 0%, rgba(242, 105, 34, 0.03) 100%);
+            border-color: rgba(242, 105, 34, 0.15) !important;
+        }
+        .plan-premium-card:hover {
+            border-color: #f26922 !important;
+            background: linear-gradient(135deg, rgba(26, 43, 75, 0.03) 0%, rgba(242, 105, 34, 0.06) 100%);
         }
         
         /* Mobile Adjustments */

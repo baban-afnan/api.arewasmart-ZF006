@@ -87,6 +87,8 @@ Route::prefix('v1')->group(function () {
 
     // AI API
     Route::post('/ai/chat', [\App\Http\Controllers\Api\AiApiController::class, 'chat'])->middleware('throttle:50,1')->name('api.ai.chat');
+    Route::post('/ai/subscribe', [\App\Http\Controllers\Api\AiApiController::class, 'subscribe'])->name('api.ai.subscribe');
+    Route::post('/ai/unsubscribe', [\App\Http\Controllers\Api\AiApiController::class, 'unsubscribe'])->name('api.ai.unsubscribe');
 });
 
 // Webhooks
