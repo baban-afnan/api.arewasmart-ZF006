@@ -392,7 +392,7 @@
                                             <td class="ps-4"><code class="text-primary fw-bold">message</code></td>
                                             <td><span class="badge bg-soft-primary text-primary">string</span></td>
                                             <td><span class="badge bg-danger">Yes</span></td>
-                                            <td class="pe-4">The chat prompt or query to send to the AI (max 2,000 characters).</td>
+                                            <td class="pe-4">The chat prompt or query to send to the AI (max 5,000 characters).</td>
                                         </tr>
                                     </tbody>
                                 </table>

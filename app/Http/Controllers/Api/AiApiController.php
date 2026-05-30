@@ -115,7 +115,7 @@ class AiApiController extends Controller
 
         // 2. Validate Request (User must include 'plan' as requested by the user!)
         $validator = Validator::make($request->all(), [
-            'message' => 'required|string|max:2000',
+            'message' => 'required|string|max:5000',
             'plan' => 'required|string|in:basic,standard,premium',
         ]);
 
