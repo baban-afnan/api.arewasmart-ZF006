@@ -35,25 +35,6 @@ class AiServiceSeeder extends Seeder
             ]
         );
 
-        // Define Role-Based Prices for 700
-        $prices = [
-            'personal' => 50.00,
-            'agent' => 45.00,
-            'partner' => 40.00,
-            'business' => 35.00,
-        ];
-
-        foreach ($prices as $role => $price) {
-            ServicePrice::updateOrCreate(
-                [
-                    'service_id' => $service->id,
-                    'service_fields_id' => $field->id,
-                    'user_type' => $role
-                ],
-                ['price' => $price]
-            );
-        }
-
         // 3. Create AI Subscription Plans
         $plans = [
             'basic' => [
@@ -61,41 +42,23 @@ class AiServiceSeeder extends Seeder
                 'name' => 'AI Basic Subscription (500 Requests)',
                 'description' => 'AI Chat access with 500 requests limit',
                 'base_price' => 1500.00,
-                'prices' => [
-                    'personal' => 1500.00,
-                    'agent' => 1400.00,
-                    'partner' => 1300.00,
-                    'business' => 1200.00,
-                ]
             ],
             'standard' => [
                 'code' => '702',
                 'name' => 'AI Standard Subscription (1000 Requests)',
                 'description' => 'AI Chat access with 1000 requests limit',
                 'base_price' => 3000.00,
-                'prices' => [
-                    'personal' => 3000.00,
-                    'agent' => 2800.00,
-                    'partner' => 2600.00,
-                    'business' => 2400.00,
-                ]
             ],
             'premium' => [
                 'code' => '703',
                 'name' => 'AI Premium Subscription (Unlimited)',
                 'description' => 'Unlimited AI Chat access',
                 'base_price' => 7000.00,
-                'prices' => [
-                    'personal' => 7000.00,
-                    'agent' => 6500.00,
-                    'partner' => 6000.00,
-                    'business' => 5500.00,
-                ]
             ]
         ];
 
         foreach ($plans as $planKey => $planDetails) {
-            $planField = ServiceField::updateOrCreate(
+            ServiceField::updateOrCreate(
                 ['field_code' => $planDetails['code']],
                 [
                     'service_id' => $service->id,
@@ -105,17 +68,6 @@ class AiServiceSeeder extends Seeder
                     'is_active' => true
                 ]
             );
-
-            foreach ($planDetails['prices'] as $role => $price) {
-                ServicePrice::updateOrCreate(
-                    [
-                        'service_id' => $service->id,
-                        'service_fields_id' => $planField->id,
-                        'user_type' => $role
-                    ],
-                    ['price' => $price]
-                );
-            }
         }
     }
 }
