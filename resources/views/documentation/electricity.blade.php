@@ -16,7 +16,7 @@
             <div class="bg-soft-primary p-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div class="d-flex align-items-center">
                     <span class="badge bg-primary px-3 py-2 rounded-2 fw-bold fs-14 shadow-sm me-3">POST</span>
-                    <code class="text-primary fw-bold fs-5 font-monospace">/api/v1/electricity/validate</code>
+                    <code class="text-primary fw-bold fs-15 font-monospace">/api/v1/electricity/validate</code>
                 </div>
             </div>
             <div class="table-responsive">
@@ -63,7 +63,7 @@
             <div class="bg-soft-primary p-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div class="d-flex align-items-center">
                     <span class="badge bg-primary px-3 py-2 rounded-2 fw-bold fs-14 shadow-sm me-3">POST</span>
-                    <code class="text-primary fw-bold fs-5 font-monospace">/api/v1/electricity/pay</code>
+                    <code class="text-primary fw-bold fs-15 font-monospace">/api/v1/electricity/pay</code>
                 </div>
             </div>
             <div class="table-responsive">

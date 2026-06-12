@@ -12,18 +12,18 @@
             <div class="position-absolute top-0 end-0 p-4 opacity-10">
                 <i class="ti ti-world-www" style="font-size: 8rem;"></i>
             </div>
-            <h4 class="fw-bold mb-4 d-flex align-items-center">
-                <i class="ti ti-link me-2 text-primary"></i> Base Endpoint
+            <h4 class="text-white fw-bold mb-4 d-flex align-items-center">
+                <i class="ti ti-link me-2" style="color: var(--primary-color) !important;"></i> Base Endpoint
             </h4>
-            <div class="bg-white bg-opacity-10 border border-white border-opacity-10 rounded-3 p-4 d-flex align-items-center justify-content-between">
-                <code class="text-white fs-5 font-monospace">{{ url('/') }}/api/v1</code>
-                <button class="btn btn-primary rounded-pill px-4" onclick="copyToClipboard('{{ url('/') }}/api/v1')">
+            <div class="bg-white bg-opacity-10 border border-white border-opacity-10 rounded-3 p-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <code class="text-white fs-15 font-monospace text-break">{{ url('/') }}/api/v1</code>
+                <button class="btn btn-primary rounded-pill px-4 flex-shrink-0" onclick="copyToClipboard('{{ url('/') }}/api/v1')">
                     <i class="ti ti-copy me-1"></i> Copy
                 </button>
             </div>
-            <div class="mt-4 text-warning-emphasis d-flex align-items-center small">
-                <i class="ti ti-shield-lock me-2"></i>
-                <span>All requests must be served over <strong>HTTPS</strong> for security.</span>
+            <div class="mt-4 d-flex align-items-center small" style="color: rgba(255, 255, 255, 0.75) !important;">
+                <i class="ti ti-shield-lock me-2 text-warning fs-15"></i>
+                <span>All requests must be served over <strong class="text-white">HTTPS</strong> for security.</span>
             </div>
         </div>
     </div>
@@ -87,7 +87,7 @@
     <div class="row g-4 mb-5">
         <div class="col-lg-6">
             <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                <div class="card-header border-bottom py-3">
+                <div class="card-header bg-transparent border-bottom py-3">
                     <h6 class="fw-bold text-success mb-0 d-flex align-items-center">
                         <i class="ti ti-circle-check me-2"></i> Success Response (2xx)
                     </h6>
@@ -103,7 +103,7 @@
         </div>
         <div class="col-lg-6">
             <div class="card h-100 border shadow-sm rounded-4 overflow-hidden">
-                <div class="card-header border-bottom py-3">
+                <div class="card-header bg-transparent border-bottom py-3">
                     <h6 class="fw-bold text-danger mb-0 d-flex align-items-center">
                         <i class="ti ti-circle-x me-2"></i> Error Response (4xx/5xx)
                     </h6>

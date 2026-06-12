@@ -18,13 +18,13 @@
             <!-- Alerts -->
             @if (session('success'))
               <div class="alert alert-success d-flex align-items-center rounded-3 border-0 shadow-sm" role="alert">
-                <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                <i class="bi bi-check-circle-fill me-2 fs-15"></i>
                 <div>{{ session('success') }}</div>
               </div>
             @endif
             @if (session('error'))
               <div class="alert alert-danger d-flex align-items-center rounded-3 border-0 shadow-sm" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                <i class="bi bi-exclamation-triangle-fill me-2 fs-15"></i>
                 <div>{{ session('error') }}</div>
               </div>
             @endif

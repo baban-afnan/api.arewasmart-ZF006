@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/all.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/plugins/tabler-icons/tabler-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/tabler-icons/tabler-icons.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
     <style>
@@ -149,7 +149,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0.6rem;
+            padding: 0.5rem 0.25rem;
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
         .support-card-custom .btn-support:hover {
             transform: translateY(-2px);
@@ -249,10 +251,24 @@
             transition: all 0.2s;
             margin-right: 10px;
         }
+        .theme-toggle-btn i {
+            font-size: 1.25rem !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
         .theme-toggle-btn:hover {
             transform: scale(1.1);
             background: var(--primary-color);
             color: white;
+        }
+        .text-theme {
+            color: var(--text-main) !important;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        .text-theme:hover {
+            color: var(--primary-color) !important;
         }
 
         /* Content Area Customizations */
@@ -346,7 +362,7 @@
     <aside class="docs-sidebar" id="sidebar">
         <div class="docs-sidebar-header">
             <div class="d-flex align-items-center">
-                <img src="{{ asset('assets/img/logo/logo.png') }}" alt="Arewa Smart" class="me-2">
+                <img src="{{ asset('assets/img/logo/logo.png') }}" alt="Arewa Smart" class="me-2" style="height: 32px; width: auto; max-width: 100%;">
                 <h5 class="mb-0">Docs</h5>
             </div>
             <button class="btn-mobile-toggle d-lg-none" id="closeSidebar">
@@ -442,11 +458,11 @@
                 <div class="position-absolute top-0 end-0 p-3 opacity-25">
                     <i class="ti ti-headset fs-3"></i>
                 </div>
-                <div class="card-body p-4 position-relative z-index-1">
+                <div class="card-body p-3 position-relative z-index-1">
                     <h5 class="fw-bold text-white mb-2">Need Help?</h5>
                     <p class="small text-white-50 mb-3" style="font-size: 0.85rem;">Our support team is available 24/7.</p>
                     <a href="https://chat.whatsapp.com/KoSu12yDO4A8b6AvYSkvIx" target="_blank" class="btn btn-support w-100 shadow-sm">
-                        <i class="ti ti-brand-whatsapp me-2 fs-5"></i> Contact Support
+                        <i class="ti ti-brand-whatsapp me-2 fs-15"></i> Contact Support
                     </a>
                 </div>
             </div>
@@ -469,7 +485,7 @@
                 <button class="theme-toggle-btn" id="themeToggle" title="Toggle Dark Mode">
                     <i class="ti ti-moon" id="themeIcon"></i>
                 </button>
-                <a href="{{ route('login') }}" class="btn btn-ghost-dark btn-sm rounded-pill px-3">Login</a>
+                <a href="{{ route('login') }}" class="btn btn-sm px-3 text-theme text-decoration-none">Login</a>
                 <a href="{{ route('register') }}" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm fw-bold">Get API Key</a>
             </div>
         </header>

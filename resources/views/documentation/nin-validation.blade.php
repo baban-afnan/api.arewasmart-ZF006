@@ -13,7 +13,7 @@
             <div class="bg-soft-primary p-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div class="d-flex align-items-center">
                     <span class="badge bg-primary px-3 py-2 rounded-2 fw-bold fs-14 shadow-sm me-3">POST</span>
-                    <code class="text-primary fw-bold fs-5 font-monospace">/api/v1/nin-validation</code>
+                    <code class="text-primary fw-bold fs-15 font-monospace">/api/v1/nin-validation</code>
                 </div>
                 <button class="btn btn-white btn-sm rounded-pill px-3 shadow-sm" onclick="copyToClipboard('{{ url('/') }}/api/v1/nin-validation')">
                     <i class="ti ti-copy me-1 fs-15"></i> Copy URL

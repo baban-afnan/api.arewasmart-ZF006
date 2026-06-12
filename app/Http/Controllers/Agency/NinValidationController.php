@@ -11,7 +11,6 @@ use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
@@ -161,7 +160,7 @@ class NinValidationController extends Controller
             // 9. Debit wallet
             $wallet->decrement('balance', $servicePrice);
 
-            // 10. Pre-create AgentService record early to release database lock rapidly
+            // 10. Create AgentService record in database with pending status
             $agentService = AgentService::create([
                 'reference' => $transactionRef,
                 'user_id' => $user->id,
@@ -172,11 +171,11 @@ class NinValidationController extends Controller
                 'service_type' => 'NIN_VALIDATION',
                 'nin' => $request->nin,
                 'amount' => $servicePrice,
-                'status' => 'processing',
+                'status' => 'pending',
                 'submission_date' => now(),
                 'service_field_name' => $serviceField->field_name,
                 'description' => $request->description ?? $serviceField->field_name,
-                'comment' => 'Request submitted, processing...',
+                'comment' => 'Request submitted, pending processing',
                 'performed_by' => $performedBy,
             ]);
 
@@ -188,117 +187,15 @@ class NinValidationController extends Controller
             return response()->json(['success' => false, 'message' => 'System Error: ' . $e->getMessage()], 500);
         }
 
-        // --- ASYNC SAFE OUTSIDE LOCK ---
-        // 11. Interact with API safely without choking Database
-        $agentServiceStatus = 'processing';
-        $comment = 'Request submitted, processing...';
-        $isSuccess = false;
-
-        // Check if record already exists and has a conclusive comment
-        $existingRecord = AgentService::where('nin', $request->nin)
-            ->where('service_type', 'NIN_VALIDATION')
-            ->where('id', '!=', $agentService->id) // Skip the exact one we just generated
-            ->whereNotNull('comment')
-            ->where('comment', '!=', 'Request submitted, processing...')
-            ->orderBy('created_at', 'desc')
-            ->first();
-
-        if ($existingRecord) {
-            // Use stored response
-            $isSuccess = in_array($existingRecord->status, ['successful', 'completed']);
-            $agentServiceStatus = $existingRecord->status;
-            $comment = $existingRecord->comment;
-        } else {
-            $apiKey = env('IDENFY_API_KEY');
-            
-            $hasConclusiveStatus = false;
-            
-            try {
-                // First, seamlessly check if the Provider already has this NIN's status
-                $statusUrl = 'https://www.idenfy.ng/api/nin-validation-status';
-                $statusPayload = ['nin' => $request->nin];
-
-                $statusResponse = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $apiKey,
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                ])->timeout(20)->post($statusUrl, $statusPayload);
-                
-                $apiResponse = $statusResponse->json();
-                
-                if ($statusResponse->successful() && $apiResponse) {
-                    $jsonString = is_array($apiResponse) ? json_encode($apiResponse, JSON_PRETTY_PRINT) : (string) $apiResponse;
-                    $cleanResponse = str_replace(['{', '}', '"', "'"], '', $jsonString);
-                    $cleanResponse = preg_replace('/\s+/', ' ', $cleanResponse);
-                    $cleanResponse = trim($cleanResponse);
-
-                    $statusRaw = null;
-                    if (isset($apiResponse['code'])) {
-                        $statusRaw = $apiResponse['code'];
-                    } elseif (isset($apiResponse['status']) && is_string($apiResponse['status'])) {
-                        $statusRaw = $apiResponse['status'];
-                    }
-                    
-                    if ($statusRaw && !in_array(strtolower(trim($statusRaw)), ['not found', 'failed', 'invalid'])) {
-                        $newStatus = $this->normalizeStatus($statusRaw);
-                        $isSuccess = in_array($newStatus, ['successful', 'completed']);
-                        $agentServiceStatus = $newStatus;
-                        $comment = $cleanResponse;
-                        $hasConclusiveStatus = true;
-                    }
-                }
-            } catch (\Exception $e) {
-                Log::error('Validation Status API Check Error in Store: ' . $e->getMessage());
-                // Soft error, safely fallback to Create API
-            }
-
-            // If Status API didn't return a definitive existing record, natively create a new one
-            if (!$hasConclusiveStatus) {
-                // API Integration (Post method)
-                $url = 'https://www.idenfy.ng/api/nin-validation';
-                $payload = [
-                    'message' => 'Record not found',
-                    'nin' => $request->nin
-                ];
-
-                try {
-                    $response = Http::withHeaders([
-                        'Authorization' => 'Bearer ' . $apiKey,
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ])->timeout(30)->post($url, $payload);
-                    
-                    $apiResponseData = $response->json();
-
-                    if ($response->successful() && isset($apiResponseData['status']) && $apiResponseData['status'] === true && isset($apiResponseData['code']) && $apiResponseData['code'] === 'REQUEST_SUBMITTED') {
-                        $isSuccess = true;
-                        $agentServiceStatus = 'processing';
-                        $comment = 'your nin validation request was sent successful know that it make take upto 3 working days';
-                    } else {
-                         $comment = strip_tags($apiResponseData['message'] ?? 'API Error');
-                    }
-                } catch (\Exception $e) {
-                    Log::error('Validation API Error: ' . $e->getMessage());
-                    $comment = 'Connection Error: Provider unreachable. queued for retry.';
-                }
-            }
-        }
-
-        // Apply final conclusions directly onto unlocked row safely.
-        $agentService->update([
-            'status' => $agentServiceStatus,
-            'comment' => $comment,
-        ]);
-
         return response()->json([
             'success' => true,
-            'message' => $isSuccess ? 'your nin validation request was sent successful know that it make take upto 3 working days' : 'Request submitted, pending processing',
+            'message' => 'Request submitted, pending processing',
             'data' => [
                 'reference' => $agentService->reference,
                 'trx_ref' => $transactionRef,
-                'status' => $agentServiceStatus,
+                'status' => 'pending',
                 'nin' => $request->nin,
-                'response' => $comment
+                'comment' => 'Request submitted, pending processing'
             ]
         ], 200);
 
@@ -339,65 +236,6 @@ class NinValidationController extends Controller
                     return response()->json(['success' => false, 'message' => 'Transaction not found.'], 404);
             }
 
-            // CHECK DATABASE FIRST - if comment exists and is conclusive
-            if (!empty($agentService->comment) && $agentService->comment !== 'Request submitted, processing...') {
-                return response()->json([
-                    'success' => true,
-                    'nin' => $agentService->nin,
-                    'status' => $agentService->status,
-                    'comment' => $agentService->comment,
-                    'message' => 'Status retrieved from database.',
-                    'cached' => true
-                ]);
-            }
-
-            // DATA NOT IN DB - Call Upstream Status API
-            $apiKey = env('IDENFY_API_KEY');
-            $url = 'https://www.idenfy.ng/api/nin-validation-status';
-            $payload = ['nin' => $agentService->nin];
-
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $apiKey,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ])->post($url, $payload);
-            
-            $apiResponse = $response->json();
-            
-            if ($response->successful() && $apiResponse) {
-                // Clean Response logic
-                $jsonString = is_array($apiResponse) ? json_encode($apiResponse, JSON_PRETTY_PRINT) : (string) $apiResponse;
-                $cleanResponse = str_replace(['{', '}', '"', "'"], '', $jsonString);
-                $cleanResponse = preg_replace('/\s+/', ' ', $cleanResponse);
-                $cleanResponse = trim($cleanResponse);
-
-                $updateData = ['comment' => $cleanResponse];
-                $newStatus = null;
-                $statusRaw = null;
-
-                if (isset($apiResponse['code'])) {
-                    $statusRaw = $apiResponse['code'];
-                } elseif (isset($apiResponse['status']) && is_string($apiResponse['status'])) {
-                    $statusRaw = $apiResponse['status'];
-                }
-
-                if ($statusRaw) {
-                    $newStatus = $this->normalizeStatus($statusRaw);
-                    $updateData['status'] = $newStatus;
-                }
-
-                $agentService->update($updateData);
-
-                return response()->json([
-                    'success' => true,
-                    'nin' => $agentService->nin,
-                    'status' => $agentService->status,
-                    'response' => $apiResponse,
-                    'comment' => $cleanResponse,
-                    'message' => 'Status checked.'
-                ]);
-            }
-
             return response()->json([
                 'success' => true,
                 'nin' => $agentService->nin,
@@ -422,24 +260,5 @@ class NinValidationController extends Controller
         if (!$apiToken) $apiToken = $request->input('api_token');
         else if (str_starts_with($apiToken, 'Bearer ')) $apiToken = substr($apiToken, 7);
         return \App\Models\User::where('api_token', $apiToken)->first();
-    }
-
-    private function cleanApiResponse($response): string
-    {
-        $jsonString = is_array($response) ? json_encode($response, JSON_PRETTY_PRINT) : (string) $response;
-        $cleanResponse = str_replace(['{', '}', '"', "'"], '', $jsonString);
-        $cleanResponse = preg_replace('/\s+/', ' ', $cleanResponse);
-        return trim($cleanResponse);
-    }
-
-    private function normalizeStatus($status): string
-    {
-        $s = strtoupper(trim((string) $status));
-        return match ($s) {
-            'SUCCESSFUL', 'SUCCESS' => 'successful',
-            'PENDING', 'IN-PROGRESS', 'REQUEST_SUBMITTED', 'PROCESSING' => 'processing',
-            'FAILED', 'REJECTED', 'CANCELLED', 'DECLINED' => 'failed',
-            default => 'pending',
-        };
     }
 }
